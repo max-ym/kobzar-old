@@ -28,6 +28,7 @@ ISODIR := $(BUILDDIR)iso/
 # Rust libraries directory
 RUSTLIBDIR := ./rustlibs/
 
+# Configuration scripts
 CONFIGDIR  ?= ./config/$(ARCH)/
 GRUBCFG    := $(CONFIGDIR)grub.cfg
 LINKSCRIPT := $(CONFIGDIR)link.ld
