@@ -49,3 +49,98 @@ section '.text'
 public _start
 use32
 _start:
+
+    ; >>>>> >>>>>
+    ; To work properly, we need to do some basic things first.
+    ; 1. Set up stack register.
+    ; 2. Allocate space for the pointer to the GRUB information structure.
+    ; 3. Save the pointer
+    ; >>>>>
+
+    mov      esp , stack_top - 4    ; 1 and 2
+    mov     [esp], ebx              ; 3
+
+    ; >>>>> >>>>>
+    ; Now we need to check if Kobzar kernel is able to work on this CPU.
+    ; We need x86_64 CPU, so let's check if CPUID instruction is supported.
+    ; Then we can use it to test if LongMode is available.
+    ;
+    ; 1. Check CPUID support
+    ; 2. Check Extended CPUID support
+    ; 3. Check LongMode support
+    ; >>>>>
+
+    ; Step 1
+    pushfd                  ; Get flags
+    mov     eax, [esp]      ; Save them in %EAX and %EDX registers
+    mov     edx, [esp]
+
+    xor      eax , 1 shl 21 ; Flip the ID-bit, which is 21-st bit
+    mov     [esp], eax      ; Save result back in stack...
+    popfd                   ; and pop flags back to Flag Register
+    pushfd                  ; Get flags back...
+    mov      eax , [esp]    ; and save in %EAX
+    mov     [esp],  edx     ; Restore initial flags
+    popfd
+    xor     eax, edx        ; Check if flag flipped
+    jz      .no_cpuid       ; If it didn't, CPUID is not supported
+
+    ; Step 2
+    mov     eax, 0x80000000
+    cpuid
+    cmp     eax, 0x80000001
+    jb      .no_ext_cpuid
+
+    ; Step 3
+    mov     eax, 0x80000001
+    cpuid
+    bt      edx, 29         ; Test LongMode bit
+    jnc     .no_long_mode   ; If it is not set, LongMode is not supported
+
+
+; >>>>> >>>>>
+; ERRORS that occur on beginning of the initialization.
+; >>>>>
+use32
+  ; TODO do some fun stuff in spite of halting on compatibility errors.
+  .end:
+    mov      esi , 0xB8000
+    mov     [esi], byte 'E'
+    hlt
+    jmp     .end        ; Make a deadloop with jmp just to make sure
+  .end.print:
+    mov      al  , [esi]
+    mov     [edi],  al
+    add      edi ,  2
+    inc      esi
+    and      al  , al
+    jnz     .end.print
+    ret
+  .no_ext_cpuid:
+    call    .end.prerr
+    mov     esi, @f
+    call    .end.print
+    jmp     .end
+  @@:
+    db      'NO_EXT_CPUID Extended CPUID is required to start the kernel', 0
+  .no_cpuid:
+    call    .end.prerr
+    mov     esi, @f
+    call    .end.print
+    jmp     .end
+  @@:
+    db      'NO_CPUID Processor is quite too old to run Kobzar Kernel', 0
+  .no_long_mode:
+    call    .end.prerr
+    mov     esi, @f
+    call    .end.print
+    jmp     .end
+  @@:
+    db      'NO_LONG_MODE Operating System is x64, so Long Mode is '
+    db      'required', 0
+  .end.prerr:
+    mov     edi, 0xB8000
+    mov     esi, @f
+    jmp     .end.print
+  @@:
+    db      'ERROR:', 0
