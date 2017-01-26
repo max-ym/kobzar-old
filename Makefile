@@ -13,8 +13,11 @@ else
 endif
 ##########
 
-# Rust compiler
+# Rust compiler, flags and combination.
 RUSTC ?= rustc
+RUSTF ?= -O --cfg arch__$(ARCH) --target=$(TARGETSPEC)
+RUSTCF := $(RUSTC)
+RUSTCF += $(RUSTF)
 
 # Build directory
 BUILDDIR ?= ./build/
@@ -27,6 +30,9 @@ ISODIR := $(BUILDDIR)iso/
 
 # Rust libraries directory
 RUSTLIBDIR := ./rustlibs/
+
+# All rust sources list
+RSRCLIST := $(shell find . -type f -name '*.rs')
 
 # Configuration scripts
 CONFIGDIR  ?= ./config/$(ARCH)/
