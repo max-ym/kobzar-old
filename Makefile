@@ -32,7 +32,7 @@ ISODIR := $(BUILDDIR)iso/
 RUSTLIBDIR := ./rustlibs/
 
 # All rust sources list
-RSRCLIST := $(shell find . -type f -name '*.rs')
+RSRCLIST := $(shell find $(SRCDIR) -type f -name '*.rs')
 
 # Configuration scripts
 CONFIGDIR  ?= ./config/$(ARCH)/
