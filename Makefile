@@ -44,7 +44,7 @@ RUSTCF := $(RUSTC)
 RUSTCF += $(RUSTF)
 
 # Kernel object file
-KERNOBJ := $(BUILDDIR)kernel.o
+KERNOBJ := $(OBJBDIR)kernel.o
 
 # Rules to make libcore (used by rust compiler for kernel sources).
 include mk/libcore.mk
