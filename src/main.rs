@@ -9,8 +9,7 @@
 /// Before this point runs some initial assembly code that initializes
 /// the environment where Rust code can start performing.
 #[no_mangle]
-#[lang = "start"]
-pub fn main() -> ! {
+pub extern fn main() -> ! {
     /* Things to be done:
      *
      * Initialize CCS model.
