@@ -1,3 +1,4 @@
+# Variables that are used in other rules. Configure building environment.
 include mk/config.mk
 
 # Rules to get Rust Compiler repo. Used to build compiler core libraries.
