@@ -2,7 +2,7 @@
 # further rust code compilation.
 
 # Rust download directory
-RUSTDOWNDIR := $(DOWNDIR)rust
+RUSTDOWNDIR := $(DOWNDIR)rust/
 
 # Rule to download the Rust compiler and libraries from the official repo.
 $(RUSTDOWNDIR):
