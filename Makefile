@@ -9,3 +9,6 @@ include mk/libcore.mk
 
 # Rules to build Rust kernel sources.
 include mk/kernobj.mk
+
+# Rules to build assembly.
+include mk/asm.mk
