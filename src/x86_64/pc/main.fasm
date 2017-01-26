@@ -1,0 +1,51 @@
+; The execution of the kernel begins here. This code
+; must setup the Long Mode and transafere execution to the
+; rust code.
+format ELF64
+
+CODE_SEG    equ 0x0008
+DATA_SEG    equ 0x0010
+TSS_SEG     equ 0x0018
+
+; #####
+; ### MultiBoot header
+; #
+
+MBALIGN     equ  1 shl 0    ; Align loaded modules on page boundaries
+MEMINFO     equ  1 shl 1    ; Provide memory map
+
+; Multiboot 'flag' field
+FLAGS       equ  MBALIGN or MEMINFO
+
+; 'magic number' lets bootloader find the header
+MAGIC       equ  0x1BADB002
+
+; Checksum of above, to prove we are multiboot
+CHECKSUM    equ -(MAGIC + FLAGS)
+
+; Declare a header as required by the Multiboot Standard.
+section '.multiboot'
+    dd      MAGIC
+    dd      FLAGS
+    dd      CHECKSUM
+
+; #####
+; ### Stack
+; #
+
+section '.bootstrap_stack'
+stack_bottom:
+    repeat 16 * 1024     ; Create a stack with 16KiB size
+        db      ?
+    end repeat
+stack_top:
+
+; #####
+; ### Code
+; #
+
+section '.text'
+
+public _start
+use32
+_start:
