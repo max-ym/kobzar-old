@@ -53,6 +53,6 @@ include mk/libcore.mk
 # Build only kernel rust code.
 krust: $(RSRCLIST) $(KERNOBJ)
 
-$(KERNOBJ):
+$(KERNOBJ): $(TARGETSPEC)
 	@mkdir -p $(OBJBDIR)
 	$(RUSTCF) --out-dir=$(OBJBDIR) -C lto --emit=asm,obj $(RSRCLIST)
