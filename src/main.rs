@@ -37,6 +37,11 @@ pub extern fn rust_eh_personality() {
 pub extern fn rust_begin_panic(_msg: core::fmt::Arguments,
                                _file: &'static str,
                                _line: u32) -> ! {
+    halt_forever();
+}
+
+#[cfg(target_arch = "x86_64")]
+fn halt_forever() -> ! {
     unsafe { asm!("cli \n hlt"); }
     loop {}
 }
