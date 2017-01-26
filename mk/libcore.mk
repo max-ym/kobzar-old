@@ -6,8 +6,9 @@ RUSTDOWNDIR := $(DOWNDIR)rust
 
 # Rule to download the Rust compiler and libraries from the official repo.
 $(RUSTDOWNDIR):
+	@echo 'New Rust Compiler sources will be downloaded from github.'
 	@mkdir -p $(DOWNDIR)
-	@git -C $(RUSTDOWNDIR) clone https://github.com/rust-lang/rust.git --branch beta
+	@git -C $(DOWNDIR) clone https://github.com/rust-lang/rust.git --branch beta
 
 # Rust Core library object
 OBJCORE ?= $(OBJBDIR)libcore.o
