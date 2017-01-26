@@ -1,6 +1,9 @@
 # Source code directory
 SRCDIR ?= ./src/
 
+# Main rust file to start kernel compilation from
+MAINRS ?= $(SRCDIR)main.rs
+
 ##########
 # Operating system architecture.
 # Change if needed. Currently only x86_64 is valid.
@@ -53,6 +56,6 @@ include mk/libcore.mk
 # Build only kernel rust code.
 krust: $(RSRCLIST) $(KERNOBJ)
 
-$(KERNOBJ): $(TARGETSPEC)
+$(KERNOBJ): $(RSRCLIST) $(TARGETSPEC)
 	@mkdir -p $(OBJBDIR)
-	$(RUSTCF) --out-dir=$(OBJBDIR) -C lto --emit=asm,obj $(RSRCLIST)
+	$(RUSTCF) --out-dir=$(OBJBDIR) -C lto --emit=asm,obj --extern core=$(OBJCORE) $(MAINRS)
