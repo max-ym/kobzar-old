@@ -13,17 +13,11 @@ else
 endif
 ##########
 
-# Rust compiler, flags and combination.
-RUSTC ?= rustc
-RUSTF ?= -O --cfg arch__$(ARCH) --target=$(TARGETSPEC)
-RUSTCF := $(RUSTC)
-RUSTCF += $(RUSTF)
-
 # Build directory
-BUILDDIR ?= ./build/
+BUILDDIR ?= ./build/$(ARCH)/
 
-# Object directory
-OBJDIR := $(BUILDDIR)obj/
+# Object build directory
+OBJBDIR := $(BUILDDIR)obj/
 
 # ISO root directory
 ISODIR := $(BUILDDIR)iso/
@@ -39,3 +33,23 @@ CONFIGDIR  ?= ./config/$(ARCH)/
 GRUBCFG    := $(CONFIGDIR)grub.cfg
 LINKSCRIPT := $(CONFIGDIR)link.ld
 TARGETSPEC := $(CONFIGDIR)target.json
+
+# Rust compiler, flags and combination.
+RUSTC ?= rustc
+RUSTF ?= -O --cfg arch__$(ARCH) --target=$(TARGETSPEC)
+RUSTCF := $(RUSTC)
+RUSTCF += $(RUSTF)
+
+# Kernel object file
+KERNOBJ := $(BUILDDIR)kernel.o
+
+# Rules to make libcore (used by rust compiler for kernel sources).
+include mk/libcore.mk
+
+##########
+# Build only kernel rust code.
+krust: $(RSRCLIST) $(KERNOBJ)
+
+$(KERNOBJ):
+	@mkdir -p $(OBJBDIR)
+	$(RUSTCF) --out-dir=$(OBJBDIR) -C lto --emit=asm,obj $(RSRCLIST)
