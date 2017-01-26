@@ -1,5 +1,8 @@
 # Rules to build Rust kernel sources.
 
+# Kernel object file
+KERNOBJ := $(OBJBDIR)kernel.o
+
 krust: $(RSRCLIST) $(KERNOBJ)
 
 $(KERNOBJ): $(RSRCLIST) $(OBJCORE) $(TARGETSPEC)
