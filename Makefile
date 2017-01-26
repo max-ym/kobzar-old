@@ -16,6 +16,9 @@ endif
 # Build directory
 BUILDDIR ?= ./build/$(ARCH)/
 
+# Downloads directory. Any related packages from internet are stored there.
+DOWNDIR ?= ./build/downloads/
+
 # Object build directory
 OBJBDIR := $(BUILDDIR)obj/
 
