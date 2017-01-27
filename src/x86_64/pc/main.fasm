@@ -60,6 +60,46 @@ pd:
     end repeat
 page_end:
 
+
+
+section '.data'
+public gdt
+gdt:
+.null:
+    dq      0x0000000000000000  ; Null Descriptor - should be present.
+.code:
+    dw      0xFFFF              ; limit 0 - 15
+    dw      0                   ; base 0 - 15
+    db      0                   ; base 16 - 23
+    db      10011000b           ; access byte
+    db      10111111b           ; flags + limit
+    db      0                   ; base 24 - 31
+
+.data:
+    dw      0xFFFF              ; limit 0 - 15
+    dw      0                   ; base 0 - 15
+    db      0                   ; base 16 - 23
+    db      10010010b           ; access byte
+    db      10011111b           ; flags
+    db      0                   ; base 24 - 31
+
+.tss:
+    dw      0                   ; limit 0 - 15
+    dw      0                   ; base 0 - 15
+    db      0                   ; base 16 - 23
+    db      10001001b           ; access byte
+    db      00010000b           ; flags
+    db      0                   ; base 24 - 31
+    dd      0                   ; base 32 - 63
+    dd      0                   ; RESERVED
+.end:
+
+.pointer:
+    dw      gdt.end - gdt - 1   ; 16-bit Size (Limit) of GDT.
+    dd      gdt                 ; 32-bit Base Address of GDT.
+                                ; (CPU will zero extend to 64-bit).
+
+
 ; #####
 ; ### Code
 ; #
@@ -116,6 +156,108 @@ _start:
     cpuid
     bt      edx, 29         ; Test LongMode bit
     jnc     .no_long_mode   ; If it is not set, LongMode is not supported
+
+
+
+    ; >>>>> >>>>>
+    ; Now we need to prepare everything to enter LongMode.
+    ; 1. Disable old paging
+    ; 2. Load CR3 with the physical address of the PML4
+    ; 3. Set up paging tables
+    ; 4. (DISABLED) Check PCID support and set it if it is supported
+    ; 5. Enable PAE
+    ; 6. Enable long mode by setting the EFER.LME flag in MSR 0xC0000080
+    ; 7. Enable paging
+    ; 8. Jump to 64-bit world
+    ; >>>>>
+
+    ; Step 1
+    mov     eax, cr0
+    and     eax, not (1 shl 31)    ; Disable PG bit in CR0
+    mov     cr0, eax
+
+    ; Step 2
+    mov     eax, pml4
+    mov     cr3, eax
+
+    ; Step 3
+    xor     eax, eax
+    mov     edi, page_start
+    mov     ecx, (page_end - page_start) / 4
+rep stosd
+    mov            edi ,     pml4
+    mov     dword [edi], 3 + pdpt ; Is present and read/write-able
+    mov            edi ,     pdpt
+    mov     dword [edi], 3 + pd
+    mov            edi ,     pd
+    mov     dword [edi], 3 + 128 + 16 + 8 ; Is also 2MiB and strong uncachable
+
+    ; Step 4
+    ;mov     eax, 1
+    ;cpuid
+    mov     eax, cr4       ; Get %CR4 for following changes
+    ;test    ecx, 1 shl 17  ; Check PCID bit
+    ;jz      @f             ; If it is not set, just skip to the Step 5
+    ;or      eax, 1 shl 17  ; if it is set, set PCID bit
+
+    ; Step 5 (Don't change eax from step 4)
+  @@:
+    or      eax, 1 shl 5
+    mov     cr4, eax          ; Save changes back to %CR4
+
+    ; Step 6
+    mov     ecx, 0xC0000080
+    rdmsr                     ; Read MSR to %EAX
+    or      eax, 1 shl 8      ; set LME bit (Long Mode Enable)
+    wrmsr
+
+    ; Step 7
+    mov     eax, cr0
+    or      eax, 1 shl 31     ; Enable Paging bit
+    mov     cr0, eax
+
+    ; Step 8
+    lgdt    [gdt.pointer]
+    jmp     CODE_SEG:@f
+
+
+
+use64       ; 64 bit world
+  @@:
+    ; Set up data segment registers
+    mov     ax, DATA_SEG
+    mov     ds, ax
+    mov     es, ax
+    mov     fs, ax
+    mov     gs, ax
+    mov     ss, ax
+
+    ; We want to enable SSE. It is ALWAYS supported on CPUs with Long Mode.
+    ; Furthermore, at least SSE2 is supported too (according to AMD64 specs).
+    mov     rax, cr0
+    and      ax, 0xFFFB     ; Clear coprocessor emulation CR0.EM
+    or       ax, 0x2        ; Set coprocessor monitoring CR0.MP
+    mov     cr0, rax
+    mov     rax, cr4
+    or       ax, 3 shl 9    ; Set CR4.OSFXSR and CR4.OSXMMEXCPT
+    mov     cr4, rax
+
+    ; Setup identity paging
+    mov     edi, pdpt + 8
+    mov     eax, 3 + pd
+    mov     ecx, 511
+rep stosq
+    mov     edi, pd + 8
+    mov     eax, 128 + 3
+    mov     ecx, 511
+rep stosq
+
+    ; Pass control to higher level code
+    mov     esi, [esp]     ; This will be passed as argument to highlevel code
+    mov     esp, stack_top
+            extrn main
+    jmp     main
+    ; Kernel asembler booting is done by now
 
 
 ; >>>>> >>>>>
