@@ -13,7 +13,7 @@ $(ISO): $(KERNELBIN) $(GRUBCFG)
 	@ln -f $(GRUBCFG) $(ISOBDIR)boot/grub/grub.cfg
 	@ln -f $(KERNELBIN) $(ISOBDIR)boot/kernel.bin
 	# Remove old image if any
-	@rm -f $(KERNELISO)
+	@rm -f $(ISO)
 	@grub-mkrescue -o $@ $(ISOBDIR)
 	# Clean
 	@rm -r $(ISOBDIR)
