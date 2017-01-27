@@ -18,3 +18,6 @@ include mk/asm.mk
 
 # Rules to build binary executable file with kernel.
 include mk/bin.mk
+
+# Rules to build an ISO image with OS.
+include mk/iso.mk
