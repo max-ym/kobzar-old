@@ -1,7 +1,10 @@
 # Rules to build assembly.
 
+############################################
+########## Rules to download FASM ##########
+
 # Directory where downloaded FASM assembler will be stored.
-FASMDOWNDIR ?= $(BUILDDIR)fasm/
+FASMDOWNDIR ?= $(DOWNDIR)fasm/
 
 # FASM assembler command
 FASM ?= $(FASMDOWNDIR)fasm
@@ -18,6 +21,22 @@ $(FASMDOWNDIR):
 	# Download the archive
 	@wget -P $@ $(FASMDOWNLOADLINK)
 	# Unzip content
-	@tar --directory $(FASMDOWNDIR) zxvf $(FASMARCHIVENAME)
+	@tar zxf $(FASMDOWNDIR)$(FASMARCHIVENAME) --directory $(FASMDOWNDIR)..
 	# Delete source archive
 	@rm $(FASMDOWNDIR)$(FASMARCHIVENAME)
+
+#####################################################
+########## Rules to build the asembly code ##########
+
+# Assembler object file
+ASMOBJ ?= $(OBJBDIR)asm.o
+
+# All assembler sources list
+# TODO: architecture filter
+ASRCLIST := $(shell find $(SRCDIR) -type f -name '*.fasm')
+
+# Command to build all assembly files.
+asm: $(ASMOBJ)
+
+$(ASMOBJ): $(ASRCLIST) $(FASM)
+	$(FASM) $(ASRCLIST) $@
