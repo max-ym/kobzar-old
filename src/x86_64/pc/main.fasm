@@ -41,6 +41,26 @@ stack_bottom:
 stack_top:
 
 ; #####
+; ### Paging table
+; #
+
+section '.page'
+page_start:
+pdpt:
+    repeat 512
+        dq ?
+    end repeat
+pml4:
+    repeat 512
+        dq ?
+    end repeat
+pd:
+    repeat 512
+        dq ?
+    end repeat
+page_end:
+
+; #####
 ; ### Code
 ; #
 
