@@ -30,3 +30,9 @@ $(BINUTILSDIR): $(BINUTILSDIR)../$(BINUTILSDEARCHDIR)
 	@cd $@../$(BINUTILSDEARCHDIR) && ../$(BINUTILSDEARCHDIR)configure --target=$(TRIPLE) --prefix="$(shell pwd)/$@" --with-sysroot --disable-nls --disable-werror && make && make install
 	@rm $@$(BINUTILSARCHIVENAME)
 	@rm -r $@../$(BINUTILSDEARCHDIR)
+
+# Linker
+LD ?= $(BINUTILSDIR)bin/$(TRIPLE)-ld
+
+# If linker is not available, binutils must be uncompiled, so compile.
+$(LD): $(BINUTILSDIR)../$(BINUTILSDEARCHDIR)
