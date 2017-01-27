@@ -17,9 +17,10 @@ $(BINUTILSDIR):
 	@echo 'Binutils archive is being downloaded.'
 	@mkdir -p $@
 	@wget -P $@ $(BINUTILSLINK)
-	@tar zxf $@$(BINUTILSARCHIVENAME) --directory $@..
+	@echo 'Binutils archive is being decompressed...'
+	@tar jxf $@$(BINUTILSARCHIVENAME) --directory $@..
 	@rm $@$(BINUTILSARCHIVENAME)
-	@mkdir $@build/
-	@cd $@build/ && ../$(BINUTILSDEARCHDIR)/configure --target=$(TRIPLE) --prefix="$@" --with-sysroot --disable-nls --disable-werror && make && make install
-	@rm -r $@build/
-	@rm -r $@$(BINUTILSDEARCHDIR)
+	@mkdir $@../$(BINUTILSDEARCHDIR)/build/
+	@echo 'Binutils is being configured and built.'
+	@cd $@../$(BINUTILSDEARCHDIR)/ && ../$(BINUTILSDEARCHDIR)/configure --target=$(TRIPLE) --prefix="$(shell pwd)/$@" --with-sysroot --disable-nls --disable-werror && make && make install
+	@rm -r $@../$(BINUTILSDEARCHDIR)/

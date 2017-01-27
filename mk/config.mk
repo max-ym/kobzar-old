@@ -12,7 +12,7 @@ MAINRS ?= $(SRCDIR)main.rs
 ARCH = x86_64
 
 ifeq ($(ARCH), x86_64)
-	TRIPLE ?= x86_64-elf-
+	TRIPLE ?= x86_64-elf
 else
 	$(error Unsupported architecture: $(ARCH))
 endif
