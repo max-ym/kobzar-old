@@ -35,4 +35,4 @@ $(BINUTILSDIR): $(BINUTILSDIR)../$(BINUTILSDEARCHDIR)
 LD ?= $(BINUTILSDIR)bin/$(TRIPLE)-ld
 
 # If linker is not available, binutils must be uncompiled, so compile.
-$(LD): $(BINUTILSDIR)../$(BINUTILSDEARCHDIR)
+$(LD): $(BINUTILSDIR)
