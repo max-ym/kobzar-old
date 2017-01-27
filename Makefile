@@ -12,3 +12,6 @@ include mk/kernobj.mk
 
 # Rules to build assembly.
 include mk/asm.mk
+
+# Rules to build binary executable file with kernel.
+include mk/bin.mk
