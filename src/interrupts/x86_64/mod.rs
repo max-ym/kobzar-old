@@ -183,4 +183,12 @@ impl TrapGate {
     pub fn ist(&self) -> IST {
         unsafe { ::core::mem::transmute(self.flags & 0b00000000_00000011) }
     }
+
+    pub fn set_ist(&mut self, ist: IST) {
+        // Clear IST bits
+        self.flags &= 0b11111111_11111100;
+
+        // Write new value
+        self.flags |= ist as i16;
+    }
 }
