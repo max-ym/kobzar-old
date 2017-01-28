@@ -46,8 +46,8 @@ struct IDTR;
 #[repr(packed)]
 #[derive(Copy, Clone)]
 struct IDTRValue {
-    base    : i64,
-    limit   : u16,
+    pub base    : i64,
+    pub limit   : u16,
 }
 
 impl IDTRValue {
