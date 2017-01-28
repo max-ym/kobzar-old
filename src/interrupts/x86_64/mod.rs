@@ -140,3 +140,15 @@ impl Into<IDTGate> for TrapGate {
         unsafe { ::core::mem::transmute_copy(&self) }
     }
 }
+
+impl TrapGate {
+
+    pub fn offset(&self) -> u64 {
+        let mut val: u64 = 0;
+
+        val |= (self.offset0 as u64) << 0x00;
+        val |= (self.offset1 as u64) << 0x10;
+        val |= (self.offset2 as u64) << 0x20;
+        val
+    }
+}
