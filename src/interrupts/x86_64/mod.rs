@@ -40,6 +40,7 @@ pub enum InterruptVector {
 /// The register that holds interrupt descriptor table.
 struct IDTR;
 
+/// The value stored in IDTR register.
 #[repr(packed)]
 struct IDTRValue {
     base    : i64,
