@@ -13,7 +13,7 @@ pub struct Info {
 pub enum InfoType {
     VendorString    = 0x00,
     Features        = 0x01,
-    TLB             = 0x02,
+    Tlb             = 0x02,
     Serial          = 0x03,
 
     IntelExtended       = 0x8000_0000,
@@ -78,7 +78,7 @@ macro_rules! derive_info {
 
 derive_info!(VendorString);
 derive_info!(Features);
-derive_info!(TLB);
+derive_info!(Tlb);
 derive_info!(Serial);
 derive_info!(IntelExtended);
 derive_info!(IntelFeatures);
