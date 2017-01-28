@@ -1,5 +1,6 @@
 /// General interrupt descriptor table gate.
 #[repr(packed)]
+#[derive(Copy, Clone)]
 pub struct IDTGate(i64, i64);
 
 /// Interrupt descriptor table
@@ -12,6 +13,7 @@ pub struct IDT {
 
 /// The list of architecture defined interrupt vectors.
 /// For more information see Intel System Programming Guide.
+#[derive(Copy, Clone)]
 pub enum InterruptVector {
 
     DivideError     = 0,
@@ -42,6 +44,7 @@ struct IDTR;
 
 /// The value stored in IDTR register.
 #[repr(packed)]
+#[derive(Copy, Clone)]
 struct IDTRValue {
     base    : i64,
     limit   : u16,
@@ -79,15 +82,15 @@ impl IDTR {
     }
 }
 
-impl<'a> IDT {
+impl IDT {
 
     /// Get architecture defined interrupt gate.
-    pub fn arch_gate(v: InterruptVector) -> &'a IDTGate {
-        Self::idt_gate_at(v as u8)
+    pub fn arch_gate(&self, v: InterruptVector) -> IDTGate {
+        self.idt_gate_at(v as u8)
     }
 
     /// Get interrupt gate at given position.
-    pub fn idt_gate_at(position: u8) -> &'a IDTGate {
-        unimplemented!();
+    pub fn idt_gate_at(&self, position: u8) -> IDTGate {
+        self.gates[position as usize]
     }
 }
