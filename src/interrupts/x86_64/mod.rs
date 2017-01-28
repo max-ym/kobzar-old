@@ -14,6 +14,7 @@ pub struct IDT {
 /// The list of architecture defined interrupt vectors.
 /// For more information see Intel System Programming Guide.
 #[derive(Copy, Clone)]
+#[repr(u8)]
 pub enum InterruptVector {
 
     DivideError     = 0,
