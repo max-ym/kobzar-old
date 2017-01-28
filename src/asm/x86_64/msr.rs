@@ -70,13 +70,41 @@ derive_info!(ApicBase);
 impl ApicBase {
 
     pub fn bsp(&self) -> bool {
-        self.edx & 0b0000_0001_0000_0000 != 0
+        self.edx & 0b0000_0000_0000_0000_0000_0001_0000_0000 != 0
     }
 
     pub fn set_bsp(&mut self, val: bool) {
         match val {
-            true  => self.edx |= 0b0000_0001_0000_0000,
-            false => self.edx &= 0b1111_1110_1111_1111
+            true  => self.edx |= 0b0000_0000_0000_0000_0000_0001_0000_0000,
+            false => self.edx &= 0b1111_1111_1111_1111_1111_1110_1111_1111
         }
     }
+
+    pub fn x2apic_enabled(&self) -> bool {
+        self.edx & 0b0000_0000_0000_0000_0000_0100_0000_0000 != 0
+    }
+
+    pub fn apic_global_enabled(&self) -> bool {
+        self.edx & 0b0000_0000_0000_0000_0000_1000_0000_0000 != 0
+    }
+
+    pub unsafe fn apic_global_enable(&mut self) {
+        self.edx |= 0b0000_0000_0000_0000_0000_1000_0000_0000;
+    }
+
+    pub unsafe fn apic_global_disable(&mut self) {
+        self.edx &= 0b1111_1111_1111_1111_1111_0111_1111_1111;
+    }
+
+//     pub fn apic_base(&self) -> u64 {
+//         let rdx = self.edx as u64;
+//         let rax = self.eax as u64;
+//         ((rdx & 0xFFFFF000) >> 12) | (rax << 32)
+//     }
+//
+//      pub unsafe fn set_apic_base(&mut self, base: u64) {
+//          let d = (base & 0xFFFFF000) as u32;
+//          let a = (base >> 20)        as u32;
+//          unimplemented!();
+//      }
 }
