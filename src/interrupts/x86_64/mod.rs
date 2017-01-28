@@ -143,6 +143,7 @@ impl Into<IDTGate> for TrapGate {
 
 impl TrapGate {
 
+    /// Get offset of the gate.
     pub fn offset(&self) -> u64 {
         let mut val: u64 = 0;
 
