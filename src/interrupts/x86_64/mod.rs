@@ -191,4 +191,15 @@ impl TrapGate {
         // Write new value
         self.flags |= ist as u16;
     }
+
+    pub fn present(&self) -> bool {
+        self.flags & 0b10000000_00000000 != 0
+    }
+
+    pub fn set_present(&mut self, p: bool) {
+        match p {
+            true  => self.flags |= 0b10000000_00000000,
+            false => self.flags &= 0b01111111_11111111
+        }
+    }
 }
