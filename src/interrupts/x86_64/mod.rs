@@ -37,11 +37,41 @@ pub enum InterruptVector {
     VirtualizationException = 20,
 }
 
+/// The register that holds interrupt descriptor table.
+struct IDTR;
+
+#[repr(packed)]
+struct IDTRValue {
+    base    : i64,
+    limit   : u16,
+}
+
+impl IDTRValue {
+
+    pub fn mix(base: i64, limit: u16) -> Self {
+        IDTRValue { base: base, limit: limit }
+    }
+}
+
+impl IDTR {
+
+    pub unsafe fn set(&self, idt_ptr: *const IDT, entry_count: u8) {
+        let address = idt_ptr as i64;
+        let val = IDTRValue::mix(address, entry_count as u16 * 16);
+        asm!(
+            "lidt   [$0]"
+            : // No outputs
+            : "r" (&val as *const IDTRValue as i64)
+            :: "intel"
+        );
+    }
+}
+
 impl<'a> IDT {
 
     /// Get architecture defined interrupt gate.
     pub fn arch_gate(v: InterruptVector) -> &'a IDTGate {
-        Self::get_idt_gate_at(v as u8)
+        Self::idt_gate_at(v as u8)
     }
 
     /// Get interrupt gate at given position.
