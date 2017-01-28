@@ -62,3 +62,10 @@ macro_rules! derive_info {
         }
     );
 }
+
+#[derive(Clone, Copy)]
+pub struct VendorString {
+    info    : Info
+}
+
+derive_info!(VendorString);
