@@ -29,9 +29,8 @@ pub extern fn main() -> ! {
      // Start the very first logger and display driver.
     use early::LoggerTrait;
     let mut logger = start_stupid_logger();
-    logger.print("Kobzar kernel logger greets you!");
-    logger.newline();
-    logger.print("Very first initialization begins! Hold on tight ^-^");
+    logger.println("Kobzar kernel logger greets you!");
+    logger.println("Very first initialization begins! Hold on tight ^-^");
 
     halt_forever();
 }

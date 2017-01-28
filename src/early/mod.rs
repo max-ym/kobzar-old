@@ -3,6 +3,11 @@ pub trait LoggerTrait {
 
     fn print(&mut self, s: &str);
 
+    fn println(&mut self, s: &str) {
+        self.print(s);
+        self.newline();
+    }
+
     fn newline(&mut self);
 }
 
