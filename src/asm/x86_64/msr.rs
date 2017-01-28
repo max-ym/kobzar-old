@@ -64,3 +64,5 @@ macro_rules! derive_info {
         }
     );
 }
+
+derive_info!(ApicBase);
