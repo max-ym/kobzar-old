@@ -328,4 +328,20 @@ impl InterruptGate {
             ::core::mem::transmute_copy::<_, TrapGate>(self)
         }.set_present(p)
     }
+
+    /// Get Descriptor Privilege Level.
+    pub fn dpl(&self) -> DPL {
+        // Use the same method from TrapGate.
+        unsafe {
+            ::core::mem::transmute_copy::<_, TrapGate>(self)
+        }.dpl()
+    }
+
+    /// Set Descriptor Privilege Level.
+    pub fn set_dpl(&mut self, dpl: DPL) {
+        // Use the same method from TrapGate.
+        unsafe {
+            ::core::mem::transmute_copy::<_, TrapGate>(self)
+        }.set_dpl(dpl)
+    }
 }
