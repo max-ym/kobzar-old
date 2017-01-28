@@ -48,7 +48,7 @@ fn start_stupid_logger() -> ::early::Logger {
 /// Setup mechanisms that are controlling the interrupts.
 #[cfg(target_arch = "x86_64")]
 fn setup_interrupts(l: &mut ::early::Logger) {
-
+    ::early::setup_interrupts(l);
 }
 
 
