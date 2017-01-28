@@ -93,15 +93,9 @@ derive_info!(ApicBase);
 
 impl ApicBase {
 
+    /// Whether this processor (core) is a Bootstrap Processor.
     pub fn bsp(&self) -> bool {
         self.edx & 0b0000_0000_0000_0000_0000_0001_0000_0000 != 0
-    }
-
-    pub fn set_bsp(&mut self, val: bool) {
-        match val {
-            true  => self.edx |= 0b0000_0000_0000_0000_0000_0001_0000_0000,
-            false => self.edx &= 0b1111_1111_1111_1111_1111_1110_1111_1111
-        }
     }
 
     pub fn x2apic_enabled(&self) -> bool {
