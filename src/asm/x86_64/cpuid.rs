@@ -124,4 +124,13 @@ impl Features {
     pub fn clflush_line_size(&self) -> u8 {
         (self.info.ebx & 0xFF00 >> 8) as u8
     }
+
+    /// Maximum number of addressable IDs for logical processors in this
+    /// physical package. The nearest power-of-2 integer that is not smaller
+    /// than EBX[23:16] is the number of unique initial APIC IDs reserved
+    /// for addressing different logical processors in a physical package.
+    /// This field is only valid if EDX.HTT (bit 28) is set.
+    pub fn max_addressable_ids(&self) -> u8 {
+        (self.info.ebx & 0xFF0000 >> 16) as u8
+    }
 }
