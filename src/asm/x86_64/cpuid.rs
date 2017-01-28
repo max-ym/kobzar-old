@@ -88,6 +88,7 @@ derive_info!(IntelBrandStringEnd);
 
 impl VendorString {
 
+    /// Write vendor string (null-terminated) into the given array.
     pub fn vendor(&self, s: &mut [char; 13]) {
         s[12] = '\0'; // Null-terminate the string.
 
