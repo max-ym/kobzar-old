@@ -12,8 +12,6 @@ pub struct LocalApic {
     was_disabled    : bool,
 }
 
-// TODO: only once this structure may be created. Make it a singleton.
-
 impl LocalApic {
 
     /// Create new structure to hold information about Local APIC state.
