@@ -1,8 +1,8 @@
 /// Info read from MSR.
 #[derive(Clone, Copy)]
 pub struct Info {
-    pub rax     : u64,
-    pub rdx     : u64,
+    pub eax     : u32,
+    pub edx     : u32,
 }
 
 impl Info {
@@ -15,11 +15,11 @@ impl Info {
         let (a, d);
         asm!(
             "rdmsr"
-            : "={rax}"(a), "={rdx}"(d)
+            : "={eax}"(a), "={edx}"(d)
             : "{ecx}"(id)
         );
 
-        Info { rax:a, rdx:d }
+        Info { eax:a, edx:d }
     }
 
     /// See 'read_by_id'. Note, that this function generally must not be used.
@@ -40,14 +40,14 @@ macro_rules! derive_info {
     ($x:ident) => (
         #[derive(Clone, Copy)]
         pub struct $x {
-            rax     : u64,
-            rdx     : u64,
+            eax     : u32,
+            edx     : u32,
         }
 
         impl Into<Info> for $x {
 
             fn into(self) -> Info {
-                Info { rax: self.rax, rdx: self.rdx }
+                Info { eax: self.eax, edx: self.edx }
             }
         }
 
@@ -66,3 +66,10 @@ macro_rules! derive_info {
 }
 
 derive_info!(ApicBase);
+
+impl ApicBase {
+
+    pub fn bsp(&self) -> bool {
+        self.edx & 0b0000_0001_0000_0000 != 0
+    }
+}
