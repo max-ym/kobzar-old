@@ -126,3 +126,17 @@ pub struct TrapGate {
 
     pub _reserved   : u32,
 }
+
+impl From<IDTGate> for TrapGate {
+
+    fn from(gate: IDTGate) -> Self {
+        unsafe { ::core::mem::transmute_copy(&gate) }
+    }
+}
+
+impl Into<IDTGate> for TrapGate {
+
+    fn into(self) -> IDTGate {
+        unsafe { ::core::mem::transmute_copy(&self) }
+    }
+}
