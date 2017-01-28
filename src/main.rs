@@ -5,6 +5,9 @@
 #![feature(lang_items)]
 #![feature(asm)]
 
+/// All the stuff that is needed at early initialization.
+mod early;
+
 /// The starting point of kernel Rust code execution.
 /// Before this point runs some initial assembly code that initializes
 /// the environment where Rust code can start performing.
@@ -23,8 +26,22 @@ pub extern fn main() -> ! {
      * Start kernel terminal.
      */
 
-    loop {};
+     // Start the very first logger and display driver.
+    use early::LoggerTrait;
+    let mut logger = start_stupid_logger();
+    logger.print("Kobzar kernel logger greets you!");
+    logger.newline();
+    logger.print("Very first initialization begins! Hold on tight ^-^");
+
+    halt_forever();
 }
+
+#[cfg(target_arch = "x86_64")]
+fn start_stupid_logger() -> ::early::Logger {
+    ::early::Logger::new()
+}
+
+
 
 #[lang = "eh_personality"]
 #[no_mangle]
@@ -41,6 +58,5 @@ pub extern fn rust_begin_panic(_msg: core::fmt::Arguments,
 
 #[cfg(target_arch = "x86_64")]
 fn halt_forever() -> ! {
-    unsafe { asm!("cli \n hlt"); }
-    loop {}
+    loop { unsafe { asm!("cli \n hlt"); }}
 }
