@@ -131,7 +131,7 @@ pub struct TrapGate {
 impl From<IDTGate> for TrapGate {
 
     fn from(gate: IDTGate) -> Self {
-        unsafe { ::core::mem::transmute_copy(&gate) }
+        unsafe { ::core::mem::transmute(gate) }
     }
 }
 
