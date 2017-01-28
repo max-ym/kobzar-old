@@ -131,7 +131,11 @@ pub struct TrapGate {
 impl From<IDTGate> for TrapGate {
 
     fn from(gate: IDTGate) -> Self {
-        unsafe { ::core::mem::transmute(gate) }
+        let mut gate: TrapGate = unsafe { ::core::mem::transmute(gate) };
+        // Set trap gate type flags.
+        gate.flags &= 0b1110_0000_0001_1111;
+        gate.flags |= 0b0000_1111_0000_0000;
+        gate
     }
 }
 
