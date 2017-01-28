@@ -106,10 +106,32 @@ impl IDT {
     }
 }
 
-/// The structure of the trap/interrupt gate.
+/// The structure of the trap gate.
 #[repr(packed)]
 #[derive(Clone, Copy)]
 pub struct TrapGate {
+
+    /// First 16 bits of offset.
+    pub offset0     : u16,
+
+    /// Segment selector.
+    pub segsel      : u16,
+
+    pub flags       : u16,
+
+    /// Bits 16-31 of offset.
+    pub offset1     : u16,
+
+    /// Bits 32-63 of offset.
+    pub offset2     : u32,
+
+    pub _reserved   : u32,
+}
+
+/// The structure of the interrupt gate.
+#[repr(packed)]
+#[derive(Clone, Copy)]
+pub struct InterruptGate {
 
     /// First 16 bits of offset.
     pub offset0     : u16,
@@ -140,6 +162,26 @@ impl From<IDTGate> for TrapGate {
 }
 
 impl Into<IDTGate> for TrapGate {
+
+    fn into(self) -> IDTGate {
+        unsafe { ::core::mem::transmute(self) }
+    }
+}
+
+impl From<IDTGate> for InterruptGate {
+
+    fn from(gate: IDTGate) -> Self {
+        let mut gate: InterruptGate = unsafe {
+            ::core::mem::transmute(gate)
+        };
+        // Set interrupt gate type flags.
+        gate.flags &= 0b1110_0000_0001_1111;
+        gate.flags |= 0b0000_1110_0000_0000;
+        gate
+    }
+}
+
+impl Into<IDTGate> for InterruptGate {
 
     fn into(self) -> IDTGate {
         unsafe { ::core::mem::transmute(self) }
