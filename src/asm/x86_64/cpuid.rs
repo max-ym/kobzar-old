@@ -78,9 +78,9 @@ derive_info!(IntelBrandString);
 derive_info!(IntelBrandStringMore);
 derive_info!(IntelBrandStringEnd);
 
-impl<'a> VendorString {
+impl VendorString {
 
-    pub fn vendor(&'a self, s: &mut [char; 13]) {
+    pub fn vendor(&self, s: &mut [char; 13]) {
         s[12] = '\0'; // Null-terminate the string.
 
         s[0x00] = ((self.info.ebx & 0x000000FF) >> 0x00) as u8 as char;
@@ -95,5 +95,10 @@ impl<'a> VendorString {
         s[0x09] = ((self.info.ecx & 0x0000FF00) >> 0x08) as u8 as char;
         s[0x0A] = ((self.info.ecx & 0x00FF0000) >> 0x10) as u8 as char;
         s[0x0B] = ((self.info.ecx & 0xFF000000) >> 0x18) as u8 as char;
+    }
+
+    /// Maximal input value for basic CPUID information.
+    pub fn max_value(&self) -> u32 {
+        self.info.eax
     }
 }
