@@ -3,13 +3,6 @@ pub struct LocalApic {
 
     /// Local APIC MSR access.
     msr     : ::asm::msr::ApicBase,
-
-    /// Once APIC was disabled, due to technical reasons, it may not
-    /// be enabled again to perform properly on some architectures.
-    ///
-    /// TODO: currently there is no architectural check that verifies
-    /// if it could be re-enabled again. It may be programed later when needed.
-    was_disabled    : bool,
 }
 
 impl LocalApic {
@@ -48,31 +41,15 @@ impl LocalApic {
         self.msr.apic_global_enabled()
     }
 
-    pub fn was_disabled(&self) -> bool {
-        self.was_disabled
-    }
-
-    /// Enable APIC. Do not check if APIC can be safely enabled.
-    pub unsafe fn unsafe_enable(&mut self) {
+    /// Enable Local APIC.
+    pub fn global_enable(&mut self) {
         self.msr.apic_global_enable();
         self.msr.write();
     }
 
-    /// Try to enable Local APIC. Check if it is safe to do so.
-    pub fn enable(&mut self) -> Result<(),()> {
-        if self.was_disabled {
-            return Err(());
-        }
-
-        // Seems it is safe to enable it now.
-        unsafe { self.unsafe_enable() }
-        Ok(())
-    }
-
     /// Disable Local APIC if it is enabled.
-    pub fn disable(&mut self) {
+    pub fn global_disable(&mut self) {
         if self.is_global_enabled() {
-            self.was_disabled = true;
             self.msr.apic_global_disable();
             unsafe { self.msr.write(); }
         }
