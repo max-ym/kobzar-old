@@ -65,6 +65,14 @@ macro_rules! derive_info {
                 self.info
             }
         }
+
+        impl $x {
+
+            /// Call CPUID and get this structure.
+            pub fn get() -> $x {
+                Info::get(InfoType::$x).into()
+            }
+        }
     );
 }
 
