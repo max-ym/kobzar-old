@@ -36,3 +36,16 @@ pub enum InterruptVector {
     SIMDException           = 19,
     VirtualizationException = 20,
 }
+
+impl<'a> IDT {
+
+    /// Get architecture defined interrupt gate.
+    pub fn arch_gate(v: InterruptVector) -> &'a IDTGate {
+        Self::get_idt_gate_at(v as u8)
+    }
+
+    /// Get interrupt gate at given position.
+    pub fn idt_gate_at(position: u8) -> &'a IDTGate {
+        unimplemented!();
+    }
+}
