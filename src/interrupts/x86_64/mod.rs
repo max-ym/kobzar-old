@@ -137,7 +137,7 @@ impl From<IDTGate> for TrapGate {
 impl Into<IDTGate> for TrapGate {
 
     fn into(self) -> IDTGate {
-        unsafe { ::core::mem::transmute_copy(&self) }
+        unsafe { ::core::mem::transmute(self) }
     }
 }
 
