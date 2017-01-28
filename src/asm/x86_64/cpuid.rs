@@ -77,3 +77,23 @@ derive_info!(IntelFeatures);
 derive_info!(IntelBrandString);
 derive_info!(IntelBrandStringMore);
 derive_info!(IntelBrandStringEnd);
+
+impl<'a> VendorString {
+
+    pub fn vendor(&'a self, s: &mut [char; 13]) {
+        s[12] = '\0'; // Null-terminate the string.
+
+        s[0x00] = ((self.info.ebx & 0x000000FF) >> 0x00) as u8 as char;
+        s[0x01] = ((self.info.ebx & 0x0000FF00) >> 0x08) as u8 as char;
+        s[0x02] = ((self.info.ebx & 0x00FF0000) >> 0x10) as u8 as char;
+        s[0x03] = ((self.info.ebx & 0xFF000000) >> 0x18) as u8 as char;
+        s[0x04] = ((self.info.edx & 0x000000FF) >> 0x00) as u8 as char;
+        s[0x05] = ((self.info.edx & 0x0000FF00) >> 0x08) as u8 as char;
+        s[0x06] = ((self.info.edx & 0x00FF0000) >> 0x10) as u8 as char;
+        s[0x07] = ((self.info.edx & 0xFF000000) >> 0x18) as u8 as char;
+        s[0x08] = ((self.info.ecx & 0x000000FF) >> 0x00) as u8 as char;
+        s[0x09] = ((self.info.ecx & 0x0000FF00) >> 0x08) as u8 as char;
+        s[0x0A] = ((self.info.ecx & 0x00FF0000) >> 0x10) as u8 as char;
+        s[0x0B] = ((self.info.ecx & 0xFF000000) >> 0x18) as u8 as char;
+    }
+}
