@@ -8,6 +8,9 @@
 /// All the stuff that is needed at early initialization.
 mod early;
 
+/// Interrupt handling.
+mod interrupts;
+
 /// The starting point of kernel Rust code execution.
 /// Before this point runs some initial assembly code that initializes
 /// the environment where Rust code can start performing.
@@ -32,12 +35,20 @@ pub extern fn main() -> ! {
     logger.println("Kobzar kernel logger greets you!");
     logger.println("Very first initialization begins! Hold on tight ^-^");
 
+    setup_interrupts(&mut logger);
+
     halt_forever();
 }
 
 #[cfg(target_arch = "x86_64")]
 fn start_stupid_logger() -> ::early::Logger {
     ::early::Logger::new()
+}
+
+/// Setup mechanisms that are controlling the interrupts.
+#[cfg(target_arch = "x86_64")]
+fn setup_interrupts(l: &mut ::early::Logger) {
+
 }
 
 
