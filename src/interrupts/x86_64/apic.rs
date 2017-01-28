@@ -9,7 +9,10 @@ impl LocalApic {
 
     /// Create new structure to hold information about Local APIC state.
     /// Note that this will read MSR that may be unimplemented which will
-    /// cause General Protection fault.
+    /// cause General Protection fault. It is expected that only one
+    /// instance of Local APIC structure is used at once per processor.
+    /// Function calls between multiple instances may result in
+    /// invalid APIC settings and/or outdated data yielding.
     ///
     /// You can use 'new' that will check if APIC is actually available
     /// before any read to MSR.
@@ -22,8 +25,8 @@ impl LocalApic {
         }
     }
 
-    /// Check if Local APIC exists. If this device is there, create
-    /// a structure to represent it.
+    /// Check if Local APIC exists. If the device is present, create
+    /// a structure to represent it. See 'unsafe_new'.
     pub fn new() -> Option<LocalApic> {
         if !Self::is_present() {
             None
@@ -37,6 +40,7 @@ impl LocalApic {
         ::asm::cpuid::Features::get().check_local_apic_presence()
     }
 
+    /// Check if Local APIC is global enabled.
     pub fn is_global_enabled(&self) -> bool {
         self.msr.apic_global_enabled()
     }
@@ -47,11 +51,9 @@ impl LocalApic {
         self.msr.write();
     }
 
-    /// Disable Local APIC if it is enabled.
+    /// Disable Local APIC.
     pub fn global_disable(&mut self) {
-        if self.is_global_enabled() {
-            self.msr.apic_global_disable();
-            unsafe { self.msr.write(); }
-        }
+        self.msr.apic_global_disable();
+        unsafe { self.msr.write(); }
     }
 }
