@@ -104,3 +104,25 @@ impl IDT {
         self.overwrite_idt_gate_at(v as u8, gate)
     }
 }
+
+/// The structure of the trap/interrupt gate.
+#[repr(packed)]
+#[derive(Clone, Copy)]
+pub struct TrapGate {
+
+    /// First 16 bits of offset.
+    pub offset0     : u16,
+
+    /// Segment selector.
+    pub segsel      : u16,
+
+    pub flags       : u16,
+
+    /// Bits 16-31 of offset.
+    pub offset1     : u16,
+
+    /// Bits 32-63 of offset.
+    pub offset2     : u32,
+
+    pub _reserved   : u32,
+}
