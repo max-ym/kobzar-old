@@ -44,3 +44,21 @@ impl Info {
         Info { eax:a, ebx:b, ecx:c, edx:d }
     }
 }
+
+macro_rules! derive_info {
+    ($x:path) => (
+        impl From<Info> for $x {
+
+            fn from(i: Info) -> Self {
+                $x { info:i }
+            }
+        }
+
+        impl Into<Info> for $x {
+
+            fn into(self) -> Info {
+                self.info
+            }
+        }
+    );
+}
