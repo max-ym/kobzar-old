@@ -249,3 +249,60 @@ impl TrapGate {
         }
     }
 }
+
+impl InterruptGate {
+
+    /// Get offset of the gate.
+    pub fn offset(&self) -> u64 {
+        // Use the same method from TrapGate.
+        unsafe {
+            ::core::mem::transmute_copy::<_, TrapGate>(self)
+        }.offset()
+    }
+
+    /// Set offset of the gate.
+    pub fn set_offset(&mut self, offset: u64) {
+        // Use the same method from TrapGate.
+        unsafe {
+            ::core::mem::transmute_copy::<_, TrapGate>(self)
+        }.set_offset(offset)
+    }
+
+    /// Get segment selector of the gate.
+    pub fn segment_selector(&self) -> u16 {
+        self.segsel
+    }
+
+    /// Set the segment selector of the gate.
+    pub fn set_segment_selector(&mut self, segsel: u16) {
+        self.segsel = segsel;
+    }
+
+    pub fn ist(&self) -> IST {
+        // Use the same method from TrapGate.
+        unsafe {
+            ::core::mem::transmute_copy::<_, TrapGate>(self)
+        }.ist()
+    }
+
+    pub fn set_ist(&mut self, ist: IST) {
+        // Use the same method from TrapGate.
+        unsafe {
+            ::core::mem::transmute_copy::<_, TrapGate>(self)
+        }.set_ist(ist)
+    }
+
+    pub fn present(&self) -> bool {
+        // Use the same method from TrapGate.
+        unsafe {
+            ::core::mem::transmute_copy::<_, TrapGate>(self)
+        }.present()
+    }
+
+    pub fn set_present(&mut self, p: bool) {
+        // Use the same method from TrapGate.
+        unsafe {
+            ::core::mem::transmute_copy::<_, TrapGate>(self)
+        }.set_present(p)
+    }
+}
