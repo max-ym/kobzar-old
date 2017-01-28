@@ -57,6 +57,7 @@ impl LocalApic {
     /// Enable APIC. Do not check if APIC can be safely enabled.
     pub unsafe fn unsafe_enable(&mut self) {
         self.msr.apic_global_enable();
+        self.msr.write();
     }
 
     /// Try to enable Local APIC. Check if it is safe to do so.
@@ -68,5 +69,13 @@ impl LocalApic {
         // Seems it is safe to enable it now.
         unsafe { self.unsafe_enable() }
         Ok(())
+    }
+
+    pub fn disable(&mut self) {
+        if self.is_global_enabled() {
+            self.was_disabled();
+            self.msr.apic_global_disable();
+            unsafe { self.msr.write(); }
+        }
     }
 }
