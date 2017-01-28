@@ -93,4 +93,14 @@ impl IDT {
     pub fn idt_gate_at(&self, position: u8) -> IDTGate {
         self.gates[position as usize]
     }
+
+    pub unsafe fn overwrite_idt_gate_at
+            (&mut self, position: u8, gate: IDTGate) {
+        self.gates[position as usize] = gate;
+    }
+
+    pub unsafe fn overwrite_arch_gate_at
+            (&mut self, v: InterruptVector, gate: IDTGate) {
+        self.overwrite_idt_gate_at(v as u8, gate)
+    }
 }
