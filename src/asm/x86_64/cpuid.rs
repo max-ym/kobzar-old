@@ -118,4 +118,10 @@ impl Features {
     pub fn brand_index(&self) -> u8 {
         (self.info.ebx & 0xFF) as u8
     }
+
+    /// CLFLUSH line size. Value * 8 = cache line size in bytes.
+    /// Used also by CLFLUSHOPT.
+    pub fn clflush_line_size(&self) -> u8 {
+        (self.info.ebx & 0xFF00 >> 8) as u8
+    }
 }
