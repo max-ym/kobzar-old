@@ -96,15 +96,21 @@ impl ApicBase {
         self.edx &= 0b1111_1111_1111_1111_1111_0111_1111_1111;
     }
 
-//     pub fn apic_base(&self) -> u64 {
-//         let rdx = self.edx as u64;
-//         let rax = self.eax as u64;
-//         ((rdx & 0xFFFFF000) >> 12) | (rax << 32)
-//     }
-//
-//      pub unsafe fn set_apic_base(&mut self, base: u64) {
-//          let d = (base & 0xFFFFF000) as u32;
-//          let a = (base >> 20)        as u32;
-//          unimplemented!();
-//      }
+    pub fn apic_base(&self) -> u64 {
+        let rdx = self.edx as u64;
+        let rax = self.eax as u64;
+        ((rdx & 0xFFFFF000) >> 12) | (rax << 20)
+    }
+
+     pub unsafe fn set_apic_base(&mut self, base: u64) {
+         let d = (base & 0xFFFFF000) as u32;
+         let a = (base >> 20)        as u32;
+
+         // Clean corresponding bits before assigning them new values.
+         self.eax = 0;
+         self.edx &= 0x00000FFF;
+
+         self.eax = a;
+         self.edx = d;
+     }
 }
