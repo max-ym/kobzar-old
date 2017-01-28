@@ -26,15 +26,19 @@ pub enum InfoType {
 impl Info {
 
     /// Run CPUID instruction to query information.
+    #[inline(always)]
     pub fn get(info: InfoType) -> Self {
-        use self::InfoType::*;
+        Self::get_by_code(info as u32)
+    }
+
+    #[inline(always)]
+    pub fn get_by_code(request: u32) -> Self {
         let (a, b, c, d);
 
-        let i = info as u32;
         unsafe { asm!(
             "cpuid"
             : "={eax}"(a), "={ebx}"(b), "={ecx}"(c), "={edx}"(d)
-            : "{eax}"(i)
+            : "{eax}"(request)
         ); }
 
         Info { eax:a, ebx:b, ecx:c, edx:d }
