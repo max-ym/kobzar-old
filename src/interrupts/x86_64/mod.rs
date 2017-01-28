@@ -65,6 +65,17 @@ impl IDTR {
             :: "intel"
         );
     }
+
+    pub fn get(&self) -> IDTRValue {
+        let mut val: IDTRValue;
+        unsafe { asm!(
+            "sidt   [$0]"
+            : "=r" (val)
+            :: // No inputs
+            : "intel"
+        ); }
+        val
+    }
 }
 
 impl<'a> IDT {
