@@ -197,6 +197,15 @@ pub enum IST {
     IST3 = 3,
 }
 
+/// Descriptor Privilege Level.
+#[repr(u16)]
+pub enum DPL {
+    DPL0 = 0,
+    DPL1 = 1,
+    DPL2 = 2,
+    DPL3 = 3,
+}
+
 impl TrapGate {
 
     /// Get offset of the gate.
@@ -247,6 +256,20 @@ impl TrapGate {
             true  => self.flags |= 0b10000000_00000000,
             false => self.flags &= 0b01111111_11111111
         }
+    }
+
+    /// Get Descriptor Privilege Level.
+    pub fn dpl(&self) -> DPL {
+        unsafe { ::core::mem::transmute(self.flags & 0b01100000_00000000) }
+    }
+
+    /// Set Descriptor Privilege Level.
+    pub fn set_dpl(&mut self, dpl: DPL) {
+        // Clear old dpl bits.
+        self.flags &= 0b10011_1111_1111_1111;
+
+        // Set new dpl.
+        self.flags |= (dpl as u16) << 13;
     }
 }
 
