@@ -141,6 +141,15 @@ impl Into<IDTGate> for TrapGate {
     }
 }
 
+/// Interrupt Stack Table.
+#[repr(u16)]
+pub enum IST {
+    IST0 = 0,
+    IST1 = 1,
+    IST2 = 2,
+    IST3 = 3,
+}
+
 impl TrapGate {
 
     /// Get offset of the gate.
@@ -168,5 +177,9 @@ impl TrapGate {
     /// Set the segment selector of the gate.
     pub fn set_segment_selector(&mut self, segsel: i16) {
         self.segsel = segsel;
+    }
+
+    pub fn ist(&self) -> IST {
+        unsafe { ::core::mem::transmute(self.flags & 0b00000000_00000011) }
     }
 }
