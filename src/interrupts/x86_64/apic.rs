@@ -71,6 +71,7 @@ impl LocalApic {
         Ok(())
     }
 
+    /// Disable Local APIC if it is enabled.
     pub fn disable(&mut self) {
         if self.is_global_enabled() {
             self.was_disabled = true;
