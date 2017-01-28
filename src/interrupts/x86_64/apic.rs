@@ -3,7 +3,16 @@ pub struct LocalApic {
 
     /// Local APIC MSR access.
     msr     : ::asm::msr::ApicBase,
+
+    /// Once APIC was disabled, due to technical reasons, it may not
+    /// be enabled again to perform properly on some architectures.
+    ///
+    /// TODO: currently there is no architectural check that verifies
+    /// if it could be re-enabled again. It may be programed later when needed.
+    was_disabled    : bool,
 }
+
+// TODO: only once this structure may be created. Make it a singleton.
 
 impl LocalApic {
 
@@ -16,7 +25,10 @@ impl LocalApic {
     pub unsafe fn unsafe_new() -> LocalApic {
         let msr = ::asm::msr::ApicBase::read();
 
-        LocalApic { msr:msr }
+        LocalApic {
+            msr:msr,
+            was_disabled: false
+        }
     }
 
     /// Check if Local APIC exists. If this device is there, create
@@ -32,5 +44,13 @@ impl LocalApic {
     /// Check if Local APIC is present by calling CPUID instruction.
     pub fn is_present() -> bool {
         ::asm::cpuid::Features::get().check_local_apic_presence()
+    }
+
+    pub fn is_global_enabled(&self) -> bool {
+        self.msr.apic_global_enabled()
+    }
+
+    pub fn was_disabled(&self) -> bool {
+        self.was_disabled
     }
 }
