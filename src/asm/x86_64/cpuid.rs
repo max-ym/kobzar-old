@@ -164,7 +164,7 @@ impl Features {
     }
 
     /// Check if Local APIC is present.
-    pub fn local_apic_is_present(&self) -> bool {
+    pub fn check_local_apic_presence(&self) -> bool {
         self.info.edx & 0b0000_0000_0000_0000_0000_0001_0000_0000 != 0
     }
 }

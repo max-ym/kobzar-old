@@ -6,6 +6,6 @@ pub struct LocalApic {
 impl LocalApic {
 
     pub fn is_present() -> bool {
-        ::asm::cpuid::Features::get().local_apic_is_present()
+        ::asm::cpuid::Features::get().check_local_apic_presence()
     }
 }
