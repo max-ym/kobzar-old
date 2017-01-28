@@ -69,3 +69,11 @@ macro_rules! derive_info {
 }
 
 derive_info!(VendorString);
+derive_info!(Features);
+derive_info!(TLB);
+derive_info!(Serial);
+derive_info!(IntelExtended);
+derive_info!(IntelFeatures);
+derive_info!(IntelBrandString);
+derive_info!(IntelBrandStringMore);
+derive_info!(IntelBrandStringEnd);
