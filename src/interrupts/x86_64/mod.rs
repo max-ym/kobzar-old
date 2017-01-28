@@ -1,3 +1,6 @@
+/// Code related to using I/O APIC and Local APIC.
+pub mod apic;
+
 /// General interrupt descriptor table gate.
 #[repr(packed)]
 #[derive(Copy, Clone)]
