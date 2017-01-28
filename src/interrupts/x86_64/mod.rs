@@ -152,4 +152,11 @@ impl TrapGate {
         val |= (self.offset2 as u64) << 0x20;
         val
     }
+
+    /// Set offset of the gate.
+    pub fn set_offset(&mut self, offset: u64) {
+        self.offset0 = (offset >> 0x00) as u16;
+        self.offset1 = (offset >> 0x10) as u16;
+        self.offset2 = (offset >> 0x20) as u32;
+    }
 }
