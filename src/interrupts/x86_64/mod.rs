@@ -160,10 +160,12 @@ impl TrapGate {
         self.offset2 = (offset >> 0x20) as i32;
     }
 
+    /// Get segment selector of the gate.
     pub fn segment_selector(&self) -> i16 {
         self.segsel
     }
 
+    /// Set the segment selector of the gate.
     pub fn set_segment_selector(&mut self, segsel: i16) {
         self.segsel = segsel;
     }
