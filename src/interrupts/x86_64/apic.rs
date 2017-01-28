@@ -73,7 +73,7 @@ impl LocalApic {
 
     pub fn disable(&mut self) {
         if self.is_global_enabled() {
-            self.was_disabled();
+            self.was_disabled = true;
             self.msr.apic_global_disable();
             unsafe { self.msr.write(); }
         }
