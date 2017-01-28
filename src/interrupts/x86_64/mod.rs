@@ -112,20 +112,20 @@ impl IDT {
 pub struct TrapGate {
 
     /// First 16 bits of offset.
-    pub offset0     : i16,
+    pub offset0     : u16,
 
     /// Segment selector.
-    pub segsel      : i16,
+    pub segsel      : u16,
 
-    pub flags       : i16,
+    pub flags       : u16,
 
     /// Bits 16-31 of offset.
-    pub offset1     : i16,
+    pub offset1     : u16,
 
     /// Bits 32-63 of offset.
-    pub offset2     : i32,
+    pub offset2     : u32,
 
-    pub _reserved   : i32,
+    pub _reserved   : u32,
 }
 
 impl From<IDTGate> for TrapGate {
@@ -154,29 +154,29 @@ pub enum IST {
 impl TrapGate {
 
     /// Get offset of the gate.
-    pub fn offset(&self) -> i64 {
-        let mut val: i64 = 0;
+    pub fn offset(&self) -> u64 {
+        let mut val: u64 = 0;
 
-        val |= (self.offset0 as i64) << 0x00;
-        val |= (self.offset1 as i64) << 0x10;
-        val |= (self.offset2 as i64) << 0x20;
+        val |= (self.offset0 as u64) << 0x00;
+        val |= (self.offset1 as u64) << 0x10;
+        val |= (self.offset2 as u64) << 0x20;
         val
     }
 
     /// Set offset of the gate.
-    pub fn set_offset(&mut self, offset: i64) {
-        self.offset0 = (offset >> 0x00) as i16;
-        self.offset1 = (offset >> 0x10) as i16;
-        self.offset2 = (offset >> 0x20) as i32;
+    pub fn set_offset(&mut self, offset: u64) {
+        self.offset0 = (offset >> 0x00) as u16;
+        self.offset1 = (offset >> 0x10) as u16;
+        self.offset2 = (offset >> 0x20) as u32;
     }
 
     /// Get segment selector of the gate.
-    pub fn segment_selector(&self) -> i16 {
+    pub fn segment_selector(&self) -> u16 {
         self.segsel
     }
 
     /// Set the segment selector of the gate.
-    pub fn set_segment_selector(&mut self, segsel: i16) {
+    pub fn set_segment_selector(&mut self, segsel: u16) {
         self.segsel = segsel;
     }
 
@@ -189,6 +189,6 @@ impl TrapGate {
         self.flags &= 0b11111111_11111100;
 
         // Write new value
-        self.flags |= ist as i16;
+        self.flags |= ist as u16;
     }
 }
