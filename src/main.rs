@@ -11,6 +11,10 @@ mod early;
 /// Interrupt handling.
 mod interrupts;
 
+/// Some functions that perform same operations that otherwise would
+/// require using asm! macro.
+mod asm;
+
 /// The starting point of kernel Rust code execution.
 /// Before this point runs some initial assembly code that initializes
 /// the environment where Rust code can start performing.
