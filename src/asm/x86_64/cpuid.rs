@@ -138,4 +138,28 @@ impl Features {
     pub fn initial_apic_id(&self) -> u8 {
         (self.info.ebx & 0xFF000000 >> 24) as u8
     }
+
+    pub fn extended_family_id(&self) -> u8 {
+        (self.info.eax & 0b0000_1111_1111_0000_0000_0000_0000_0000 >> 20) as u8
+    }
+
+    pub fn extended_model_id(&self) -> u8 {
+        (self.info.eax & 0b0000_0000_0000_1111_0000_0000_0000_0000 >> 16) as u8
+    }
+
+    pub fn processor_type(&self) -> u8 {
+        (self.info.eax & 0b0000_0000_0000_0000_0011_0000_0000_0000 >> 12) as u8
+    }
+
+    pub fn family_id(&self) -> u8 {
+        (self.info.eax & 0b0000_0000_0000_0000_0000_1111_0000_0000 >> 8) as u8
+    }
+
+    pub fn model(&self) -> u8 {
+        (self.info.eax & 0b0000_0000_0000_0000_0000_0000_1111_0000 >> 4) as u8
+    }
+
+    pub fn stepping_id(&self) -> u8 {
+        (self.info.eax & 0b0000_0000_0000_0000_0000_0000_0000_1111) as u8
+    }
 }
