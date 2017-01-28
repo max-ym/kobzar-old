@@ -111,3 +111,11 @@ impl VendorString {
         self.info.eax
     }
 }
+
+impl Features {
+
+    /// Get brand index.
+    pub fn brand_index(&self) -> u8 {
+        (self.info.ebx & 0xFF) as u8
+    }
+}
