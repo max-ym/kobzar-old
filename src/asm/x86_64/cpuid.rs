@@ -133,4 +133,9 @@ impl Features {
     pub fn max_addressable_ids(&self) -> u8 {
         (self.info.ebx & 0xFF0000 >> 16) as u8
     }
+
+    /// Get initial APIC ID.
+    pub fn initial_apic_id(&self) -> u8 {
+        (self.info.ebx & 0xFF000000 >> 24) as u8
+    }
 }
