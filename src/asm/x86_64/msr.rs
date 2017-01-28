@@ -22,11 +22,23 @@ impl Info {
         Info { eax:a, edx:d }
     }
 
+    pub unsafe fn write_by_id(&self, id: u32) {
+        asm!(
+            "wrmsr"
+            : // No output
+            : "{eax}"(self.eax), "{edx}"(self.edx), "{ecx}"(id)
+        );
+    }
+
     /// See 'read_by_id'. Note, that this function generally must not be used.
     /// It is more appropriate to use relevant 'read' function in the structure
     /// that represents the desired MSR.
     pub unsafe fn read(msr: Msr) -> Info {
         Self::read_by_id(msr as u32)
+    }
+
+    pub unsafe fn write(&self, msr: Msr) {
+        Self::write_by_id(self, msr as u32)
     }
 }
 
@@ -51,6 +63,13 @@ macro_rules! derive_info {
             }
         }
 
+        impl AsRef<Info> for $x {
+
+            fn as_ref(&self) -> &Info {
+                unsafe { ::core::mem::transmute_copy(self) }
+            }
+        }
+
         impl $x {
 
             /// Read this given MSR. Note that if it is not defined
@@ -60,6 +79,11 @@ macro_rules! derive_info {
                 let info = Info::read(Msr::$x);
                 // Convert the Info structure to correspond to given MSR.
                 ::core::mem::transmute(info)
+            }
+
+            pub unsafe fn write(&self)  {
+                let info: &Info = self.as_ref();
+                info.write(Msr::$x);
             }
         }
     );
@@ -88,11 +112,11 @@ impl ApicBase {
         self.edx & 0b0000_0000_0000_0000_0000_1000_0000_0000 != 0
     }
 
-    pub unsafe fn apic_global_enable(&mut self) {
+    pub fn apic_global_enable(&mut self) {
         self.edx |= 0b0000_0000_0000_0000_0000_1000_0000_0000;
     }
 
-    pub unsafe fn apic_global_disable(&mut self) {
+    pub fn apic_global_disable(&mut self) {
         self.edx &= 0b1111_1111_1111_1111_1111_0111_1111_1111;
     }
 
@@ -102,7 +126,7 @@ impl ApicBase {
         ((rdx & 0xFFFFF000) >> 12) | (rax << 20)
     }
 
-     pub unsafe fn set_apic_base(&mut self, base: u64) {
+     pub fn set_apic_base(&mut self, base: u64) {
          let d = (base & 0xFFFFF000) as u32;
          let a = (base >> 20)        as u32;
 
