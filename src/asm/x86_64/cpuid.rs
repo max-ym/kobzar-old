@@ -46,7 +46,12 @@ impl Info {
 }
 
 macro_rules! derive_info {
-    ($x:path) => (
+    ($x:ident) => (
+        #[derive(Clone, Copy)]
+        pub struct $x {
+            info    : Info
+        }
+
         impl From<Info> for $x {
 
             fn from(i: Info) -> Self {
@@ -61,11 +66,6 @@ macro_rules! derive_info {
             }
         }
     );
-}
-
-#[derive(Clone, Copy)]
-pub struct VendorString {
-    info    : Info
 }
 
 derive_info!(VendorString);
