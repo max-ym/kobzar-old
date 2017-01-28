@@ -16,9 +16,19 @@ impl Info {
         asm!(
             "rdmsr"
             : "={rax}"(a), "={rdx}"(d)
-            : "{ecx}"(code)
+            : "{ecx}"(id)
         );
 
         Info { eax:a, edx:d }
     }
+
+    pub unsafe fn read(msr: Msr) -> Info {
+        Self::read_by_id(msr as u32)
+    }
+}
+
+/// Model Specific Register ID list.
+#[repr(u32)]
+pub enum Msr {
+    ApicBase        = 27,
 }
