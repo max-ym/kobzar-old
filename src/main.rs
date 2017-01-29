@@ -42,8 +42,9 @@ pub extern fn main() -> ! {
     use early::LoggerTrait;
     let mut logger = start_stupid_logger();
     logger.println("Kobzar kernel logger greets you!");
-    logger.println("Very first initialization begins! Hold on tight ^-^");
+    logger.println("Very first initialization begins! Hold on tight ^-^\n");
 
+    ::early::load_cpuids(&mut logger);
     setup_interrupts(&mut logger);
 
     halt_forever();
