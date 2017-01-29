@@ -56,4 +56,55 @@ impl Port {
     pub fn out_i32(&self, data: i32) {
         self.out_u32(data as u32)
     }
+
+    #[inline(always)]
+    pub fn in_u8(&self) -> u8 {
+        let result;
+        unsafe { asm!(
+            "in     al, dx"
+            : "={al}"(result)
+            : "{dx}"(self.p)
+            :: "intel"
+        ); }
+        result
+    }
+
+    #[inline(always)]
+    pub fn in_i8(&self) -> i8 {
+        self.in_u8() as i8
+    }
+
+    #[inline(always)]
+    pub fn in_u16(&self) -> u16 {
+        let result;
+        unsafe { asm!(
+            "in     ax, dx"
+            : "={ax}"(result)
+            : "{dx}"(self.p)
+            :: "intel"
+        ); }
+        result
+    }
+
+    #[inline(always)]
+    pub fn in_i16(&self) -> i16 {
+        self.in_u16() as i16
+    }
+
+    #[inline(always)]
+    pub fn in_u32(&self) -> u32 {
+        let result;
+        unsafe { asm!(
+            "in     eax, dx"
+            : "={eax}"(result)
+            : "{dx}"(self.p)
+            :: "intel"
+        ); }
+        result
+    }
+
+    #[inline(always)]
+    pub fn in_i32(&self) -> i32 {
+        self.in_u32() as i32
+    }
 }
