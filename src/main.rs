@@ -15,6 +15,11 @@ mod interrupts;
 /// require using asm! macro.
 mod asm;
 
+/// The capabilities of given system. To avoid calling CPUID or RDMSR
+/// instructions use system data and state interface presented in this
+/// module.
+mod features;
+
 /// The starting point of kernel Rust code execution.
 /// Before this point runs some initial assembly code that initializes
 /// the environment where Rust code can start performing.
