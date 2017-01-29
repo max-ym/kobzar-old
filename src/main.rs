@@ -44,7 +44,7 @@ pub extern fn main() -> ! {
     logger.println("Kobzar kernel logger greets you!");
     logger.println("Very first initialization begins! Hold on tight ^-^\n");
 
-    ::early::load_cpuids(&mut logger);
+    ::early::load_feature_lists(&mut logger);
     setup_interrupts(&mut logger);
 
     halt_forever();

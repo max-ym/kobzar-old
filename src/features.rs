@@ -52,7 +52,7 @@ pub mod setup {
     use ::early::{Logger, LoggerTrait};
 
     /// Load list with features that are received from CPUID.
-    pub fn load_cpuids(logger: &mut Logger) {
+    pub fn load_feature_lists(logger: &mut Logger) {
         logger.println("Buffering basic CPUID feature list:");
 
         logger.println(" * Vendor String");
