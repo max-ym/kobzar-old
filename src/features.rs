@@ -10,6 +10,7 @@ static mut CPUID_SERIAL         : Option<cpuid::Serial>         = None;
 
 static mut MSR_APIC_BASE        : Option<msr::ApicBase>         = None;
 
+#[allow(non_upper_case_globals)]
 pub static mut apic_base        : fn() -> &'static msr::ApicBase
                                 = init_apic_base;
 
