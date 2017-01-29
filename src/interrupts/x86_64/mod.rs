@@ -77,7 +77,7 @@ impl IDTR {
     }
 
     pub fn get(&self) -> IDTRValue {
-        let mut val: IDTRValue;
+        let val: IDTRValue;
         unsafe { asm!(
             "sidt   [$0]"
             : "=r" (val)
