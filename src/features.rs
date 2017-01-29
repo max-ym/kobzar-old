@@ -61,7 +61,9 @@ pub mod setup {
         logger.println(" * Serial");
         load_serial();
 
+        // Start loading MSRs:
         logger.println("\nBuffering basic MSR feature list:");
+
         // Check is APIC_BASE MSR is present.
         if features().local_apic_is_present() {
             logger.println(" * APIC Base");
