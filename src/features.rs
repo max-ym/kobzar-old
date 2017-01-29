@@ -10,10 +10,6 @@ static mut CPUID_SERIAL         : Option<cpuid::Serial>         = None;
 
 static mut MSR_APIC_BASE        : Option<msr::ApicBase>         = None;
 
-#[allow(non_upper_case_globals)]
-pub static mut apic_base        : fn() -> &'static msr::ApicBase
-                                = init_apic_base;
-
 fn get_apic_base() -> &'static msr::ApicBase {
     unsafe { &MSR_APIC_BASE.as_ref().unwrap() }
 }
@@ -32,6 +28,15 @@ fn load_tlb() {
 
 fn load_serial() {
     unsafe { CPUID_SERIAL = Some(cpuid::Serial::get()) }
+}
+
+// Do not run this unless you ensured that this MSR is present.
+fn load_apic_base() {
+    unsafe { MSR_APIC_BASE = Some(msr::ApicBase::read()) }
+}
+
+pub fn features() -> cpuid::Features {
+    unsafe { CPUID_FEATURES.unwrap() }
 }
 
 /// Early setup of feature lists.
@@ -55,5 +60,14 @@ pub mod setup {
 
         logger.println(" * Serial");
         load_serial();
+
+        logger.println("\nBuffering basic MSR feature list:");
+        // Check is APIC_BASE MSR is present.
+        if features().local_apic_is_present() {
+            logger.println(" * APIC Base");
+            load_apic_base();
+        } else {
+            logger.println(" - Didn't load APIC Base (not present)");
+        }
     }
 }
