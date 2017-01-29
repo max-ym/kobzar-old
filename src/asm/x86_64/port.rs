@@ -10,7 +10,15 @@ impl From<u16> for Port {
     fn from(p: u16) -> Port { Port { p:p } }
 }
 
+impl From<i16> for Port {
+
+    fn from(p: i16) -> Port { Port { p:p as u16 } }
+}
+
 impl Port {
+
+    /// Create port with given ID.
+    pub fn number(p: u16) -> Self { Port { p:p } }
 
     #[inline(always)]
     pub fn out_u8(&self, data: u8) {
