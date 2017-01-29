@@ -4,6 +4,7 @@
 
 #![feature(lang_items)]
 #![feature(asm)]
+#![feature(const_fn)]
 
 /// All the stuff that is needed at early initialization.
 mod early;
