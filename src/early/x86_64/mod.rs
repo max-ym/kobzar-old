@@ -7,3 +7,7 @@ pub use self::logger::*;
 /// Interrupts setup.
 mod interrupts;
 pub use self::interrupts::*;
+
+/// Load features list.
+mod features;
+pub use self::features::*;
