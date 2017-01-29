@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 /// Information stored by CPUID instruction in appropriate registers.
 #[derive(Clone, Copy)]
 pub struct Info {

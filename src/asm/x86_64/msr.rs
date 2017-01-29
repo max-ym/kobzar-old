@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 /// Info read from MSR.
 #[derive(Clone, Copy)]
 pub struct Info {

@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 /// Code related to using I/O APIC and Local APIC.
 pub mod apic;
 
