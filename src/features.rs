@@ -35,6 +35,12 @@ fn load_apic_base() {
     unsafe { MSR_APIC_BASE = Some(msr::ApicBase::read()) }
 }
 
+/// Get CPUID Features.
+///
+/// # Safety
+/// The function will fail only if this function gets runned before feature
+/// list is loaded. Do not run the function before its corresponding
+/// static variable is set to some value.
 pub fn features() -> cpuid::Features {
     unsafe { CPUID_FEATURES.unwrap() }
 }
