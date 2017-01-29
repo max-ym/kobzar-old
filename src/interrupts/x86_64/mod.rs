@@ -271,7 +271,7 @@ impl TrapGate {
     /// Set Descriptor Privilege Level.
     pub fn set_dpl(&mut self, dpl: DPL) {
         // Clear old dpl bits.
-        self.flags &= 0b10011_1111_1111_1111;
+        self.flags &= 0b1001_1111_1111_1111;
 
         // Set new dpl.
         self.flags |= (dpl as u16) << 13;
