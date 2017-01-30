@@ -6,3 +6,6 @@ pub mod msr;
 
 /// Functions to send data through the processor ports.
 pub mod port;
+
+/// Low Memory addresses that are used by the kernel.
+pub mod lowmem;
