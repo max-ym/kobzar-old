@@ -6,14 +6,14 @@ pub mod apic;
 /// General interrupt descriptor table gate.
 #[repr(packed)]
 #[derive(Copy, Clone)]
-pub struct IDTGate(i64, i64);
+pub struct IdtGate(i64, i64);
 
 /// Interrupt descriptor table
 #[repr(packed)]
-pub struct IDT {
+pub struct Idt {
 
     /// The array of all 256 gates of the IDT.
-    pub gates:  [IDTGate; 256],
+    pub gates:  [IdtGate; 256],
 }
 
 /// The list of architecture defined interrupt vectors.
@@ -24,15 +24,15 @@ pub enum InterruptVector {
 
     DivideError     = 0,
     DebugException  = 1,
-    NMI             = 2,
+    Nmi             = 2,
     Breakpoint      = 3,
     Overflow        = 4,
-    BOUNDRange      = 5,
+    BoundRange      = 5,
     InvalidOpcode   = 6,
     NoMath          = 7,
     DoubleFault     = 8,
 
-    InvalidTSS          = 10,
+    InvalidTss          = 10,
     SegmentNotPresent   = 11,
     StackSegmentFault   = 12,
     GeneralProtection   = 13,
@@ -41,43 +41,43 @@ pub enum InterruptVector {
     MathFault               = 16,
     AlignmentCheck          = 17,
     MachineCheck            = 18,
-    SIMDException           = 19,
+    SimdException           = 19,
     VirtualizationException = 20,
 }
 
 /// The register that holds interrupt descriptor table.
-struct IDTR;
+struct Idtr;
 
 /// The value stored in IDTR register.
 #[repr(packed)]
 #[derive(Copy, Clone)]
-struct IDTRValue {
+struct IdtrValue {
     pub base    : i64,
     pub limit   : u16,
 }
 
-impl IDTRValue {
+impl IdtrValue {
 
     pub fn mix(base: i64, limit: u16) -> Self {
-        IDTRValue { base: base, limit: limit }
+        IdtrValue { base: base, limit: limit }
     }
 }
 
-impl IDTR {
+impl Idtr {
 
-    pub unsafe fn set(&self, idt_ptr: *const IDT, entry_count: u8) {
+    pub unsafe fn set(&self, idt_ptr: *const Idt, entry_count: u8) {
         let address = idt_ptr as i64;
-        let val = IDTRValue::mix(address, entry_count as u16 * 16);
+        let val = IdtrValue::mix(address, entry_count as u16 * 16);
         asm!(
             "lidt   [$0]"
             : // No outputs
-            : "r" (&val as *const IDTRValue as i64)
+            : "r" (&val as *const IdtrValue as i64)
             :: "intel"
         );
     }
 
-    pub fn get(&self) -> IDTRValue {
-        let val: IDTRValue;
+    pub fn get(&self) -> IdtrValue {
+        let val: IdtrValue;
         unsafe { asm!(
             "sidt   [$0]"
             : "=r" (val)
@@ -88,25 +88,25 @@ impl IDTR {
     }
 }
 
-impl IDT {
+impl Idt {
 
     /// Get architecture defined interrupt gate.
-    pub fn arch_gate(&self, v: InterruptVector) -> IDTGate {
+    pub fn arch_gate(&self, v: InterruptVector) -> IdtGate {
         self.idt_gate_at(v as u8)
     }
 
     /// Get interrupt gate at given position.
-    pub fn idt_gate_at(&self, position: u8) -> IDTGate {
+    pub fn idt_gate_at(&self, position: u8) -> IdtGate {
         self.gates[position as usize]
     }
 
     pub unsafe fn overwrite_idt_gate_at
-            (&mut self, position: u8, gate: IDTGate) {
+            (&mut self, position: u8, gate: IdtGate) {
         self.gates[position as usize] = gate;
     }
 
     pub unsafe fn overwrite_arch_gate_at
-            (&mut self, v: InterruptVector, gate: IDTGate) {
+            (&mut self, v: InterruptVector, gate: IdtGate) {
         self.overwrite_idt_gate_at(v as u8, gate)
     }
 }
@@ -155,9 +155,9 @@ pub struct InterruptGate {
     pub _reserved   : u32,
 }
 
-impl From<IDTGate> for TrapGate {
+impl From<IdtGate> for TrapGate {
 
-    fn from(gate: IDTGate) -> Self {
+    fn from(gate: IdtGate) -> Self {
         let mut gate: TrapGate = unsafe { ::core::mem::transmute(gate) };
         // Set trap gate type flags.
         gate.flags &= 0b1110_0000_0001_1111;
@@ -166,16 +166,16 @@ impl From<IDTGate> for TrapGate {
     }
 }
 
-impl Into<IDTGate> for TrapGate {
+impl Into<IdtGate> for TrapGate {
 
-    fn into(self) -> IDTGate {
+    fn into(self) -> IdtGate {
         unsafe { ::core::mem::transmute(self) }
     }
 }
 
-impl From<IDTGate> for InterruptGate {
+impl From<IdtGate> for InterruptGate {
 
-    fn from(gate: IDTGate) -> Self {
+    fn from(gate: IdtGate) -> Self {
         let mut gate: InterruptGate = unsafe {
             ::core::mem::transmute(gate)
         };
@@ -186,29 +186,29 @@ impl From<IDTGate> for InterruptGate {
     }
 }
 
-impl Into<IDTGate> for InterruptGate {
+impl Into<IdtGate> for InterruptGate {
 
-    fn into(self) -> IDTGate {
+    fn into(self) -> IdtGate {
         unsafe { ::core::mem::transmute(self) }
     }
 }
 
 /// Interrupt Stack Table.
 #[repr(u16)]
-pub enum IST {
-    IST0 = 0,
-    IST1 = 1,
-    IST2 = 2,
-    IST3 = 3,
+pub enum Ist {
+    Ist0 = 0,
+    Ist1 = 1,
+    Ist2 = 2,
+    Ist3 = 3,
 }
 
 /// Descriptor Privilege Level.
 #[repr(u16)]
-pub enum DPL {
-    DPL0 = 0,
-    DPL1 = 1,
-    DPL2 = 2,
-    DPL3 = 3,
+pub enum Dpl {
+    Dpl0 = 0,
+    Dpl1 = 1,
+    Dpl2 = 2,
+    Dpl3 = 3,
 }
 
 impl TrapGate {
@@ -240,11 +240,11 @@ impl TrapGate {
         self.segsel = segsel;
     }
 
-    pub fn ist(&self) -> IST {
+    pub fn ist(&self) -> Ist {
         unsafe { ::core::mem::transmute(self.flags & 0b00000000_00000011) }
     }
 
-    pub fn set_ist(&mut self, ist: IST) {
+    pub fn set_ist(&mut self, ist: Ist) {
         // Clear IST bits
         self.flags &= 0b11111111_11111100;
 
@@ -264,12 +264,12 @@ impl TrapGate {
     }
 
     /// Get Descriptor Privilege Level.
-    pub fn dpl(&self) -> DPL {
+    pub fn dpl(&self) -> Dpl {
         unsafe { ::core::mem::transmute(self.flags & 0b01100000_00000000) }
     }
 
     /// Set Descriptor Privilege Level.
-    pub fn set_dpl(&mut self, dpl: DPL) {
+    pub fn set_dpl(&mut self, dpl: Dpl) {
         // Clear old dpl bits.
         self.flags &= 0b1001_1111_1111_1111;
 
@@ -306,14 +306,14 @@ impl InterruptGate {
         self.segsel = segsel;
     }
 
-    pub fn ist(&self) -> IST {
+    pub fn ist(&self) -> Ist {
         // Use the same method from TrapGate.
         unsafe {
             ::core::mem::transmute_copy::<_, TrapGate>(self)
         }.ist()
     }
 
-    pub fn set_ist(&mut self, ist: IST) {
+    pub fn set_ist(&mut self, ist: Ist) {
         // Use the same method from TrapGate.
         unsafe {
             ::core::mem::transmute_copy::<_, TrapGate>(self)
@@ -335,7 +335,7 @@ impl InterruptGate {
     }
 
     /// Get Descriptor Privilege Level.
-    pub fn dpl(&self) -> DPL {
+    pub fn dpl(&self) -> Dpl {
         // Use the same method from TrapGate.
         unsafe {
             ::core::mem::transmute_copy::<_, TrapGate>(self)
@@ -343,7 +343,7 @@ impl InterruptGate {
     }
 
     /// Set Descriptor Privilege Level.
-    pub fn set_dpl(&mut self, dpl: DPL) {
+    pub fn set_dpl(&mut self, dpl: Dpl) {
         // Use the same method from TrapGate.
         unsafe {
             ::core::mem::transmute_copy::<_, TrapGate>(self)
