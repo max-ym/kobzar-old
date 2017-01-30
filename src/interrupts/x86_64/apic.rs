@@ -95,6 +95,25 @@ enum LocalApicReg {
     DivideConfiguration     = 0x3E0, // RW
 }
 
+// Macro to create basic getter functions for local APIC registers.
+macro_rules! ro {
+    ($x:tt, $y:tt) => {
+        pub fn $y(&self) -> u32 {
+            Self::val(LocalApicReg::$x)
+        }
+    };
+}
+
+// Macro to create basic setter functions for local APIC registers.
+macro_rules! wo {
+    ($x:tt, $y:tt) => {
+        pub fn $y(&self, val: u32) {
+            Self::sval(LocalApicReg::$x, val)
+        }
+    };
+}
+
+#[allow(dead_code)]
 impl LocalApic {
 
     /// Get Local APIC access.
@@ -105,5 +124,24 @@ impl LocalApic {
         } else {
             None
         }
+    }
+
+    /// Get a pointer to a local APIC register.
+    #[inline(always)]
+    fn ptr(reg: LocalApicReg) -> *mut u32 {
+        let offset = reg as u64;
+        let address = APIC_BASE_ADDRESS + offset;
+        address as *mut u32
+    }
+
+    /// Get a value of a local APIC register.
+    #[inline(always)]
+    fn val(reg: LocalApicReg) -> u32 {
+        unsafe { *Self::ptr(reg) }
+    }
+
+    #[inline(always)]
+    fn sval(reg: LocalApicReg, val: u32) {
+        unsafe { *Self::ptr(reg) = val }
     }
 }
