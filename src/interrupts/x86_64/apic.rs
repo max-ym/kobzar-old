@@ -28,3 +28,27 @@ pub fn init() {
     // Save the MSR changes.
     unsafe { msr.write() };
 }
+
+/// Get Local APIC present bit state. This bit is set to correct
+/// value after module initialization.
+pub fn local_apic_present() -> bool {
+    unsafe { APIC_PRESENT }
+}
+
+/// Local APIC registers representation.
+pub struct LocalApic {
+    // The registers are accessed by other functions and are not listed.
+}
+
+impl LocalApic {
+
+    /// Get Local APIC access.
+    pub fn get() -> Option<&'static LocalApic> {
+        if local_apic_present() {
+            let ptr = APIC_BASE_ADDRESS as *mut LocalApic;
+            unsafe { Some(&(*ptr)) }
+        } else {
+            None
+        }
+    }
+}
