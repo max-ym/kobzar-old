@@ -1,5 +1,11 @@
 /// The early basic logger for the system initialization process.
-pub static LOGGER: Logger = Logger::new();
+static mut LOGGER: Logger = Logger::new();
+
+/// Get system early logger.
+#[inline(always)]
+pub fn logger() -> &'static mut Logger {
+    unsafe { &mut LOGGER }
+}
 
 /// Very simple logger that is capable of logging early startup info.
 pub trait LoggerTrait {

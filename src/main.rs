@@ -35,25 +35,19 @@ pub extern fn main() -> ! {
      */
 
      // Start the very first logger and display driver.
-    use early::LoggerTrait;
-    let mut logger = start_stupid_logger();
-    logger.println("Kobzar kernel logger greets you!");
-    logger.println("Very first initialization begins! Hold on tight ^-^\n");
+    use early::{LoggerTrait, logger};
+    logger().println("Kobzar kernel logger greets you!");
+    logger().println("Very first initialization begins! Hold on tight ^-^\n");
 
-    setup_interrupts(&mut logger);
+    setup_interrupts();
 
     halt_forever();
 }
 
-#[cfg(target_arch = "x86_64")]
-fn start_stupid_logger() -> ::early::Logger {
-    ::early::Logger::new()
-}
-
 /// Setup mechanisms that are controlling the interrupts.
 #[cfg(target_arch = "x86_64")]
-fn setup_interrupts(l: &mut ::early::Logger) {
-    ::early::setup_interrupts(l);
+fn setup_interrupts() {
+    ::early::setup_interrupts();
 }
 
 
