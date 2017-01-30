@@ -156,5 +156,18 @@ impl LocalApic {
     }
 
     ro!(Id,                         id                      );
-    ro!(Version,                    version                 );
+
+    #[inline(always)]
+    pub fn eoi_broadcast_suppression_supported(&self) -> bool {
+        Self::val(LocalApicReg::Version) & 0x1000000 != 0
+    }
+
+    #[inline(always)]
+    pub fn max_lvt_entry(&self) -> u8 {
+        (Self::val(LocalApicReg::Version) >> 16) as u8
+    }
+
+    pub fn version(&self) -> u8 {
+        Self::val(LocalApicReg::Version) as u8
+    }
 }
