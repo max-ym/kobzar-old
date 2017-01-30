@@ -93,6 +93,16 @@ enum LocalApicReg {
     CurrentCount            = 0x390, // RO
 
     DivideConfiguration     = 0x3E0, // RW
+
+    // 1  - Not supported on Pentium 4 and Xeon.
+    //
+    // 2  - Introduced in Pentium 4 and Xeon. This APIC registers and its
+    //      associated functions are implementation-dependent and may not be
+    //      present in future IA-32 or Intel 64 processors.
+    //
+    // 3 - Introduced in Pentium Pro. This APIC register and its
+    //      associated function are implementation-dependent and may not be
+    //      present in future IA-32 or Intel 64 processors.
 }
 
 // Macro to create basic getter functions for local APIC registers.
