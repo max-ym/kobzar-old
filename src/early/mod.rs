@@ -1,3 +1,6 @@
+/// The early basic logger for the system initialization process.
+pub static LOGGER: Logger = Logger::new();
+
 /// Very simple logger that is capable of logging early startup info.
 pub trait LoggerTrait {
 

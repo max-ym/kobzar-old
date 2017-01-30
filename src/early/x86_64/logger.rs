@@ -7,7 +7,7 @@ pub struct Logger {
 
 impl Logger {
 
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Logger { index: 0 }
     }
 
