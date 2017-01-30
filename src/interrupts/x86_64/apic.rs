@@ -144,4 +144,7 @@ impl LocalApic {
     fn sval(reg: LocalApicReg, val: u32) {
         unsafe { *Self::ptr(reg) = val }
     }
+
+    ro!(Id,                         id                      );
+    ro!(Version,                    version                 );
 }
