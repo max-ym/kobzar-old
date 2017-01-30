@@ -16,6 +16,10 @@ mod interrupts;
 /// require using asm! macro.
 mod asm;
 
+/// Module to work with physical memory: memory protection mechanisms, paging
+/// and other related stuff is located here.
+mod mem;
+
 /// The starting point of kernel Rust code execution.
 /// Before this point runs some initial assembly code that initializes
 /// the environment where Rust code can start performing.
