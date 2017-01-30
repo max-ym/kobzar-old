@@ -100,7 +100,7 @@ enum LocalApicReg {
     //      associated functions are implementation-dependent and may not be
     //      present in future IA-32 or Intel 64 processors.
     //
-    // 3 - Introduced in Pentium Pro. This APIC register and its
+    // 3  - Introduced in Pentium Pro. This APIC register and its
     //      associated function are implementation-dependent and may not be
     //      present in future IA-32 or Intel 64 processors.
 }
