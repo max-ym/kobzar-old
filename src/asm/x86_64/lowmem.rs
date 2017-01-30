@@ -12,4 +12,4 @@
 
 /// Local APIC base registers address. They are moved from their default
 /// location here. Note that the registers are 4 KiB in size.
-pub const APIC_BASE_ADDR: u64 = 0x00500;
+pub const APIC_BASE_ADDRESS: u64 = 0x00500;
