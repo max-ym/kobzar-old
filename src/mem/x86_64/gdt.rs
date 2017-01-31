@@ -19,6 +19,10 @@ pub struct CodeSegmentDescriptor {
 #[repr(u32)]
 enum CsdFlag {
 
+    Accessed        = 1 << 8,
+    Readable        = 1 << 9,
+    Conforming      = 1 << 10,
+
     Present         = 1 << 15,
 
     Available       = 1 << 20,
@@ -26,7 +30,7 @@ enum CsdFlag {
     DefaultBit      = 1 << 22,
     Granularity     = 1 << 23,
 
-    Dpl             = (1 << 13) | (1 << 14)
+    Dpl             = (1 << 13) | (1 << 14),
 }
 
 /// Use this macro to create a getter for CSD bit.
