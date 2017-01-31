@@ -25,6 +25,8 @@ enum CsdFlag {
     LongMode        = 1 << 21,
     DefaultBit      = 1 << 22,
     Granularity     = 1 << 23,
+
+    Dpl             = (1 << 13) | (1 << 14)
 }
 
 /// Use this macro to create a getter for CSD bit.
@@ -44,5 +46,10 @@ impl CodeSegmentDescriptor {
     getter!(long_mode       , LongMode);
     getter!(default         , DefaultBit);
     getter!(granularity     , Granularity);
+
+    pub fn dpl(&self) -> Dpl {
+        let val = self.a & (CsdFlag::Dpl as u32) >> 13;
+        unsafe { ::core::mem::transmute(val) }
+    }
 }
 
