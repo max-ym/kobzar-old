@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 /// Descriptor Privilege Level.
-#[repr(u16)]
+#[repr(u32)]
 pub enum Dpl {
     Dpl0 = 0,
     Dpl1 = 1,
