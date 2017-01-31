@@ -45,6 +45,9 @@ macro_rules! getter {
 
 impl CodeSegmentDescriptor {
 
+    getter!(accessed        , Accessed);
+    getter!(readable        , Readable);
+    getter!(conforming      , Conforming);
     getter!(present         , Present);
     getter!(available       , Available);
     getter!(long_mode       , LongMode);
