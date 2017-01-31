@@ -9,3 +9,6 @@ pub mod port;
 
 /// Low Memory addresses that are used by the kernel.
 pub mod lowmem;
+
+/// Segment registers.
+pub mod seg;
