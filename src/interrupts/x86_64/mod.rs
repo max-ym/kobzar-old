@@ -259,7 +259,7 @@ impl TrapGate {
     /// Get Descriptor Privilege Level.
     pub fn dpl(&self) -> Dpl {
         unsafe {
-            ::core::mem::transmute((self.flags & 0b01100000_00000000) as u8)
+            ::core::mem::transmute((self.flags & 0b01100000_00000000) as u32)
         }
     }
 
