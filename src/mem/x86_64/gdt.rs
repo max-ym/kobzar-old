@@ -10,6 +10,7 @@ pub enum Dpl {
 }
 
 /// The Code Segment Descriptor.
+#[repr(packed)]
 pub struct CodeSegmentDescriptor {
     a   : u32,
     _b  : u32, // This one is unused.
