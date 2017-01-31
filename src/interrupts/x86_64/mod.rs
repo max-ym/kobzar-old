@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+use ::mem::gdt::Dpl;
+
 /// Code related to using I/O APIC and Local APIC.
 pub mod apic;
 
@@ -200,15 +202,6 @@ pub enum Ist {
     Ist1 = 1,
     Ist2 = 2,
     Ist3 = 3,
-}
-
-/// Descriptor Privilege Level.
-#[repr(u16)]
-pub enum Dpl {
-    Dpl0 = 0,
-    Dpl1 = 1,
-    Dpl2 = 2,
-    Dpl3 = 3,
 }
 
 impl TrapGate {

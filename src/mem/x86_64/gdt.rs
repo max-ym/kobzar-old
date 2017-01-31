@@ -1,5 +1,14 @@
 #![allow(dead_code)]
 
+/// Descriptor Privilege Level.
+#[repr(u16)]
+pub enum Dpl {
+    Dpl0 = 0,
+    Dpl1 = 1,
+    Dpl2 = 2,
+    Dpl3 = 3,
+}
+
 /// The Code Segment Descriptor.
 pub struct CodeSegmentDescriptor {
     a   : u32,
