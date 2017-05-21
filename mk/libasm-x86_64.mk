@@ -1,5 +1,7 @@
 # Rules to download and build asm-x86_64 library for kernel.
 
+# TODO fix naming conventions
+
 # Git repository name
 ASM-X86_64-GITNAME := rust-asm-x86_64
 

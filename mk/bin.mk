@@ -1,7 +1,7 @@
 # Rules to build binary executable file with kernel.
 
 # All object files list.
-OBJS := $(ASMOBJ) $(KERNOBJ)
+OBJS := $(ASMOBJ) $(KERNOBJ) $(OBJASM-X86_64)
 
 # Kernel executable binary file.
 KERNELBIN := $(BUILDDIR)kernel.bin
