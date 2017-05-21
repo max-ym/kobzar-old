@@ -12,7 +12,7 @@ ASM-X86_64-GITREPO := https://github.com/max-ym/$(ASM-X86_64-GITNAME).git
 
 OBJASM-X86_64-DOWNDIR := $(DOWNDIR)$(ASM-X86_64-NAME)/
 
-OBJASM-X86_64 := $(OBJBDIR)libasm-x86_64.rlib
+OBJASM-X86_64 := $(OBJBDIR)libasm_x86_64.rlib
 
 # Rule to download asm-x86_64 library. This library is used in kernel
 # source code.
