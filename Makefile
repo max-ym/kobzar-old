@@ -10,6 +10,9 @@ include mk/rustrepo.mk
 # Rules to make libcore (used by rust compiler for kernel sources).
 include mk/libcore.mk
 
+# Rules to build asm-x86_64 library for kernel.
+include mk/libasm-x86_64.mk
+
 # Rules to build Rust kernel sources.
 include mk/kernobj.mk
 
