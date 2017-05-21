@@ -20,6 +20,9 @@ mod asm;
 /// and other related stuff is located here.
 mod mem;
 
+/// Module to handle CCS networking of local objects (programs and threads).
+mod ccs;
+
 /// The starting point of kernel Rust code execution.
 /// Before this point runs some initial assembly code that initializes
 /// the environment where Rust code can start performing.
@@ -43,7 +46,7 @@ pub extern fn main() -> ! {
     logger().println("Kobzar kernel logger greets you!");
     logger().println("Very first initialization begins! Hold on tight ^-^\n");
 
-    setup_interrupts();
+    //setup_interrupts();
 
     halt_forever();
 }
