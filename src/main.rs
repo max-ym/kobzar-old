@@ -6,15 +6,19 @@
 #![feature(asm)]
 #![feature(const_fn)]
 
+// Contains some functions that perform same operations that otherwise would
+// require using asm! macro.
+#[cfg(target_arch = "x86_64")]
+extern crate asm_x86_64;
+
+#[cfg(target_arch = "x86_64")]
+use asm_x86_64 as asm;
+
 /// All the stuff that is needed at early initialization.
 mod early;
 
 /// Interrupt handling.
 mod interrupts;
-
-/// Some functions that perform same operations that otherwise would
-/// require using asm! macro.
-mod asm;
 
 /// Module to work with physical memory: memory protection mechanisms, paging
 /// and other related stuff is located here.

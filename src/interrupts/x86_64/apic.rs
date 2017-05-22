@@ -1,6 +1,6 @@
 use ::asm::msr::ApicBase;
 use ::asm::cpuid;
-use ::asm::lowmem::APIC_BASE_ADDRESS;
+use ::mem::map::APIC_BASE_ADDRESS;
 
 /// Shows if Local APIC is available on current machine.
 /// The initial value is not correct before module initialization.
