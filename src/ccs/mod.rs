@@ -114,14 +114,14 @@ impl<'a> ServiceHandle<'a> {
 impl<'a> Object<'a> {
 
     /// Find a service with a given name.
-    pub fn service_with_name(name: &str) -> Option<ServiceHandle<'a>> {
+    pub fn service_with_name(&self, name: &str) -> Option<ServiceHandle<'a>> {
         unimplemented!();
     }
 
     /// Add new service to a given object. The name of the service
     /// must be unique for this object. Otherwise, service will not be
     /// added.
-    pub fn add_service(service: &Service) -> Result<ServiceHandle<'a>, ()> {
+    pub fn add_service(&mut self, service: &Service) -> Result<(), ()> {
         unimplemented!();
     }
 }
