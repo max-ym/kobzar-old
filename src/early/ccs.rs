@@ -1,14 +1,14 @@
 /// Kobzar root object name.
-pub static KOBZAR_SERVICES_OBJECT   : &'static str = "kobzar";
+pub static KOBZAR_ROOT_OBJECT       : &'static str = "kobzar";
 
 /// Kobzar kernel object name.
-pub static KERNEL_SERVICES_OBJECT   : &'static str = "kernel";
+pub static KERNEL_OBJECT            : &'static str = "kernel";
 
 /// Memory manager object name.
-pub static KOBZAR_MEMORY_MANAGER    : &'static str = "ram";
+pub static RAM_MANAGER_OBJECT       : &'static str = "ram";
 
 /// Service to allocate RAM.
-pub static KOBZAR_RAM_ALLOCATE      : &'static str = "allocate";
+pub static RAM_ALLOCATE_SERVICE     : &'static str = "allocate";
 
 /// Service to release allocated RAM.
-pub static KOBZAR_RAM_RELEASE       : &'static str = "release";
+pub static RAM_RELEASE_SERVICE      : &'static str = "release";
