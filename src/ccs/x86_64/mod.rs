@@ -95,6 +95,11 @@ pub fn setup() {
     let kobzar_objlist_ptr  = memptr.next_object_node_ptr();
     let machine_objlist_ptr = memptr.next_object_node_ptr();
 
+    // Ensure pointer does not break expected bounds.
+    if memptr.value() >= CCS_BASIC_SETUP_ADDRESS_END {
+        panic!("CCS table violates memory limits");
+    }
+
     unsafe {
         // Save object and service handles in CCS table.
         *machine_ptr            = machine;
