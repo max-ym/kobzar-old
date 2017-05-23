@@ -80,7 +80,7 @@ pub fn setup<'a>() -> *mut ccs::Object<'a> {
     let allocate = ccs::Service::new(RAM_ALLOCATE_SERVICE, 0 /* TODO */);
     let release  = ccs::Service::new(RAM_RELEASE_SERVICE, 0 /* TODO */);
 
-    // Generate list nodes
+    // Create list nodes.
     let mut ram_service_0   = ccs::ServiceListNode::new(allocate);
     let mut ram_service_1   = ccs::ServiceListNode::new(release);
 
