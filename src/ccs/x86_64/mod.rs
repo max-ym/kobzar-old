@@ -71,17 +71,17 @@ pub fn setup() {
     let mut memptr = Ptr::new(CCS_BASIC_SETUP_ADDRESS);
 
     // Create objects and services.
-    let machine = ccs::Object::new(MACHINE_ROOT_OBJECT);
-    let kobzar  = ccs::Object::new(KOBZAR_ROOT_OBJECT);
-    let kernel  = ccs::Object::new(KERNEL_OBJECT);
-    let ram     = ccs::Object::new(RAM_MANAGER_OBJECT);
+    let mut machine = ccs::Object::new(MACHINE_ROOT_OBJECT);
+    let mut kobzar  = ccs::Object::new(KOBZAR_ROOT_OBJECT);
+    let mut kernel  = ccs::Object::new(KERNEL_OBJECT);
+    let mut ram     = ccs::Object::new(RAM_MANAGER_OBJECT);
 
     let allocate = ccs::Service::new(RAM_ALLOCATE_SERVICE, 0 /* TODO */);
     let release  = ccs::Service::new(RAM_RELEASE_SERVICE, 0 /* TODO */);
 
     // Generate list nodes
-    let ram_service_0   = ccs::ServiceListNode::new(allocate);
-    let ram_service_1   = ccs::ServiceListNode::new(release);
+    let mut ram_service_0   = ccs::ServiceListNode::new(allocate);
+    let mut ram_service_1   = ccs::ServiceListNode::new(release);
 
     let kernel_objlist  = ccs::ObjectListNode::new(ram);
     let kobzar_objlist  = ccs::ObjectListNode::new(kernel);
@@ -101,6 +101,14 @@ pub fn setup() {
     }
 
     unsafe {
+        // Set to objects their lists.
+        machine .sub_list.top = Some(&*machine_objlist_ptr);
+        kobzar  .sub_list.top = Some(&*kobzar_objlist_ptr);
+        kernel  .sub_list.top = Some(&*kernel_objlist_ptr);
+
+        ram.service_list.top  = Some(&*ram_service_0_ptr);
+        ram_service_0.next    = Some(&*ram_service_1_ptr);
+
         // Save object and service handles in CCS table.
         *machine_ptr            = machine;
         *ram_service_0_ptr      = ram_service_0;
@@ -108,7 +116,7 @@ pub fn setup() {
         *kernel_objlist_ptr     = kernel_objlist;
         *kobzar_objlist_ptr     = kobzar_objlist;
         *machine_objlist_ptr    = machine_objlist;
-
-        unimplemented!();
     }
+
+    unimplemented!();
 }
