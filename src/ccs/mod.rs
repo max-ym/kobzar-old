@@ -117,8 +117,8 @@ impl<'a> Object<'a> {
     pub fn service_with_name(&'a mut self, name: &str) ->
             Option<ServiceHandle<'a>> {
         // Create an iteration pointer.
-        let i = self.service_list.top;
-        let prev_i = None;
+        let mut i       = self.service_list.top;
+        let mut prev_i  = None;
 
         loop {
             // List has finished. No service with given name.
@@ -132,9 +132,17 @@ impl<'a> Object<'a> {
                 return Some(ServiceHandle {
                     object      : self,
                     node        : node as *const _ as *mut _,
-                    prev_node   : prev_i
+                    prev_node   : {
+                        match prev_i {
+                            Some(v) => Some(v as *const _ as *mut _),
+                            None    => None
+                        }
+                    }
                 });
             }
+
+            prev_i = i;
+            i = node.next;
         }
         unreachable!();
     }
