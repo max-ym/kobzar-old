@@ -1,5 +1,8 @@
-/// Kobzar Kernel object name.
+/// Kobzar root object name.
 pub static KOBZAR_SERVICES_OBJECT   : &'static str = "kobzar";
+
+/// Kobzar kernel object name.
+pub static KERNEL_SERVICES_OBJECT   : &'static str = "kernel";
 
 /// Memory manager object name.
 pub static KOBZAR_MEMORY_MANAGER    : &'static str = "ram";
