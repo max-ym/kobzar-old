@@ -64,7 +64,8 @@ impl Ptr {
 }
 
 /// Create new service and object lists so that CCS could work with them.
-pub fn setup() {
+/// Returns root object pointer.
+pub fn setup<'a>() -> *mut ccs::Object<'a> {
     use core::mem::{size_of, transmute};
 
     // Current used memory pointer.
@@ -118,5 +119,5 @@ pub fn setup() {
         *machine_objlist_ptr    = machine_objlist;
     }
 
-    unimplemented!();
+    machine_ptr
 }
