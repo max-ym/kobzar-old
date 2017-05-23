@@ -1,3 +1,6 @@
+/// The root object of the machine.
+pub static MACHINE_ROOT_OBJECT      : &'static str = "root";
+
 /// Kobzar root object name.
 pub static KOBZAR_ROOT_OBJECT       : &'static str = "kobzar";
 

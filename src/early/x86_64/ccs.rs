@@ -10,10 +10,16 @@ pub fn setup() {
         let mut memptr = CCS_BASIC_SETUP_ADDRESS;
 
         // Create Kobzar object.
+        let machine: *mut ccs::Object = transmute(memptr);
+        *machine = ccs::Object::new(MACHINE_ROOT_OBJECT);
+
+        // Skip created object.
+        memptr += size_of::<ccs::Object>();
+
+        // Create Kobzar object.
         let kobzar: *mut ccs::Object = transmute(memptr);
         *kobzar = ccs::Object::new(KOBZAR_ROOT_OBJECT);
 
-        // Skip created object.
         memptr += size_of::<ccs::Object>();
 
         // Create kernel object.
