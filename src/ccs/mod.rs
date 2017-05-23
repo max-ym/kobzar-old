@@ -23,8 +23,15 @@ pub struct Object<'a> {
     sub_list : ObjectList<'a>,
 }
 
-struct ServiceList<'a> {
+pub struct ServiceList<'a> {
     top : Option<&'a ServiceListNode<'a>>,
+}
+
+impl<'a> Default for ServiceList<'a> {
+
+    fn default() -> Self {
+        ServiceList { top : None }
+    }
 }
 
 struct ServiceListNode<'a> {
@@ -36,8 +43,15 @@ struct ServiceListNode<'a> {
     next : Option<&'a ServiceListNode<'a>>,
 }
 
-struct ObjectList<'a> {
+pub struct ObjectList<'a> {
     top: Option<&'a ObjectListNode<'a>>,
+}
+
+impl<'a> Default for ObjectList<'a> {
+
+    fn default() -> Self {
+        ObjectList { top : None }
+    }
 }
 
 struct ObjectListNode<'a> {
@@ -112,6 +126,15 @@ impl<'a> ServiceHandle<'a> {
 }
 
 impl<'a> Object<'a> {
+
+    /// Create new object with given name and empty lists.
+    pub fn new(name: &'a str) -> Self {
+        Object {
+            name            : name,
+            service_list    : ServiceList::default(),
+            sub_list        : ObjectList::default(),
+        }
+    }
 
     /// Find a service with a given name.
     pub fn service_with_name(&'a mut self, name: &str) ->
