@@ -45,5 +45,23 @@ struct ObjectListNode<'a> {
     object : Object<'a>,
 
     /// Next node, if any.
-    next : Option<&'a ServiceListNode<'a>>,
+    next : Option<&'a ObjectListNode<'a>>,
+}
+
+impl<'a> Iterator for ServiceListNode<'a> {
+
+    type Item = &'a ServiceListNode<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next
+    }
+}
+
+impl<'a> Iterator for ObjectListNode<'a> {
+
+    type Item = &'a ObjectListNode<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next
+    }
 }
