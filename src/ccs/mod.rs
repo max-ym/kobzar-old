@@ -54,6 +54,16 @@ struct ServiceListNode<'a> {
     next : Option<&'a ServiceListNode<'a>>,
 }
 
+impl<'a> ServiceListNode<'a> {
+
+    pub fn new(service: Service<'a>) -> Self {
+        ServiceListNode {
+            service : service,
+            next    : None,
+        }
+    }
+}
+
 struct ObjectList<'a> {
     top: Option<&'a ObjectListNode<'a>>,
 }
@@ -72,6 +82,16 @@ struct ObjectListNode<'a> {
 
     /// Next node, if any.
     next : Option<&'a ObjectListNode<'a>>,
+}
+
+impl<'a> ObjectListNode<'a> {
+
+    pub fn new(object: Object<'a>) -> Self {
+        ObjectListNode {
+            object : object,
+            next   : None,
+        }
+    }
 }
 
 impl<'a> Iterator for ServiceListNode<'a> {
