@@ -10,6 +10,17 @@ pub struct Service<'a> {
     func : u32,
 }
 
+impl<'a> Service<'a> {
+
+    /// Create new service metadata with given fields.
+    pub fn new(name: &'a str, func: u32) -> Self {
+        Service {
+            name : name,
+            func : func,
+        }
+    }
+}
+
 /// CCS Object handle.
 pub struct Object<'a> {
 
