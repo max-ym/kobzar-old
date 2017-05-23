@@ -34,7 +34,7 @@ pub struct Object<'a> {
     sub_list : ObjectList<'a>,
 }
 
-pub struct ServiceList<'a> {
+struct ServiceList<'a> {
     top : Option<&'a ServiceListNode<'a>>,
 }
 
@@ -54,7 +54,7 @@ struct ServiceListNode<'a> {
     next : Option<&'a ServiceListNode<'a>>,
 }
 
-pub struct ObjectList<'a> {
+struct ObjectList<'a> {
     top: Option<&'a ObjectListNode<'a>>,
 }
 
