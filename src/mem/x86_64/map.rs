@@ -17,7 +17,7 @@ pub const APIC_BASE_ADDRESS: u64 = 0x00500;
 
 /// The memory used to store information about basic kernel CCS objects and
 /// services when kernel starts up.
-pub const CCS_BASIC_SETUP_ADDRESS: u64 = 0x01500;
+pub const CCS_BASIC_SETUP_ADDRESS: usize = 0x01500;
 
 /// The bound of the memory that can be used by CCS basic setup data.
-pub const CCS_BASIC_SETUP_ADDRESS_END: u64 = 0x01600;
+pub const CCS_BASIC_SETUP_ADDRESS_END: usize = 0x01600;
