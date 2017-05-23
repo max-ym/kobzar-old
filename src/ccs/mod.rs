@@ -120,8 +120,11 @@ impl<'a> Object<'a> {
 
     /// Add new service to a given object. The name of the service
     /// must be unique for this object. Otherwise, service will not be
-    /// added.
-    pub fn add_service(&mut self, service: &Service) -> Result<(), ()> {
+    /// added but a ServiceHandle will be returned for that service.
+    /// If it succeeds to add a service then it's ServiceHandle will be
+    /// returned.
+    pub fn add_service(self, service: &Service) ->
+            Result<ServiceHandle<'a>, ServiceHandle<'a>> {
         unimplemented!();
     }
 }
