@@ -114,8 +114,29 @@ impl<'a> ServiceHandle<'a> {
 impl<'a> Object<'a> {
 
     /// Find a service with a given name.
-    pub fn service_with_name(&self, name: &str) -> Option<ServiceHandle<'a>> {
-        unimplemented!();
+    pub fn service_with_name(&'a mut self, name: &str) ->
+            Option<ServiceHandle<'a>> {
+        // Create an iteration pointer.
+        let i = self.service_list.top;
+        let prev_i = None;
+
+        loop {
+            // List has finished. No service with given name.
+            if i.is_none() {
+                return None;
+            }
+            // Otherwise get node.
+            let node = i.unwrap();
+
+            if node.service.name == name {
+                return Some(ServiceHandle {
+                    object      : self,
+                    node        : node as *const _ as *mut _,
+                    prev_node   : prev_i
+                });
+            }
+        }
+        unreachable!();
     }
 
     /// Add new service to a given object. The name of the service
@@ -123,7 +144,7 @@ impl<'a> Object<'a> {
     /// added but a ServiceHandle will be returned for that service.
     /// If it succeeds to add a service then it's ServiceHandle will be
     /// returned.
-    pub fn add_service(self, service: &Service) ->
+    pub fn add_service(&'a mut self, service: &Service) ->
             Result<ServiceHandle<'a>, ServiceHandle<'a>> {
         unimplemented!();
     }
