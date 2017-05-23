@@ -1,5 +1,5 @@
 /// CCS Service handle.
-struct Service {
+pub struct Service {
 
     /// The name of the service. Used to find a service to link to.
     name : * const str,
@@ -10,7 +10,7 @@ struct Service {
 }
 
 /// CCS Object handle.
-struct Object<'a> {
+pub struct Object<'a> {
 
     /// The name of the object. Used to find a service to link to.
     name : &'a str,
