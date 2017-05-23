@@ -1,3 +1,4 @@
+#[derive(Clone, Copy)]
 /// CCS Service handle.
 pub struct Service {
 
@@ -70,17 +71,44 @@ impl<'a> Iterator for ObjectListNode<'a> {
 /// with service in this object.
 pub struct ServiceHandle<'a> {
 
-    /// A service that is handled.
-    service: &'a Service,
-
     /// An object that owns this service.
-    object: &'a Object<'a>,
+    object: &'a mut Object<'a>,
 
     /// Node of service list that holds this service.
-    node: &'a ServiceListNode<'a>,
+    node: *mut ServiceListNode<'a>,
 
     /// The previous node of the list if any.
-    prev_node: Option<&'a ServiceListNode<'a>>,
+    prev_node: Option<*mut ServiceListNode<'a>>,
+}
+
+impl<'a> ServiceHandle<'a> {
+
+    /// A service that is handled.
+    pub fn service(&self) -> &'a Service {
+        unsafe { &(*self.node).service }
+    }
+
+    /// Get an object from which a service handle was created.
+    pub fn into_object(self) -> &'a Object<'a> {
+        self.object
+    }
+
+    /// Remove a service from the object lists.
+    pub fn remove(self) -> &'a Object<'a> {
+        unsafe {
+            if self.prev_node.is_some() {
+                let prev_node = self.prev_node.unwrap();
+                // Remove this service list node from the list.
+                (*prev_node).next = (*self.node).next;
+            } else {
+                // This node is a top of the list.
+                // Move the top of the list to a next node after this one.
+                self.object.service_list.top = (*self.node).next;
+            }
+        }
+
+        self.into_object()
+    }
 }
 
 impl<'a> Object<'a> {
