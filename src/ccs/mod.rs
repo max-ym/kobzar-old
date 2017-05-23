@@ -1,9 +1,9 @@
 #[derive(Clone, Copy)]
 /// CCS Service handle.
-pub struct Service {
+pub struct Service<'a> {
 
     /// The name of the service. Used to find a service to link to.
-    name : * const str,
+    name : &'a str,
 
     /// Function address in object memory to run when service is requested.
     /// The code pointer is 32-bit wide.
@@ -30,7 +30,7 @@ struct ServiceList<'a> {
 struct ServiceListNode<'a> {
 
     /// The actual service.
-    service : Service,
+    service : Service<'a>,
 
     /// Next node, if any.
     next : Option<&'a ServiceListNode<'a>>,
@@ -154,6 +154,14 @@ impl<'a> Object<'a> {
     /// returned.
     pub fn add_service(&'a mut self, service: &Service) ->
             Result<ServiceHandle<'a>, ServiceHandle<'a>> {
+        // Check if name for service is free.
+        let option = self.service_with_name(service.name);
+        match option {
+            // It is not so return a handle to conflicting service.
+            Some(handle) => return Err(handle),
+            None         => {}
+        }
+
         unimplemented!();
     }
 }
