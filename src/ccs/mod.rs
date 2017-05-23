@@ -65,3 +65,20 @@ impl<'a> Iterator for ObjectListNode<'a> {
         self.next
     }
 }
+
+/// A handle of the service in a particular object. Used to manipulate
+/// with service in this object.
+pub struct ServiceHandle<'a> {
+
+    /// A service that is handled.
+    service: &'a Service,
+
+    /// An object that owns this service.
+    object: &'a Object<'a>,
+
+    /// Node of service list that holds this service.
+    node: &'a ServiceListNode<'a>,
+
+    /// The previous node of the list if any.
+    prev_node: Option<&'a ServiceListNode<'a>>,
+}
