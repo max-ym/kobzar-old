@@ -50,6 +50,9 @@ pub extern fn main() -> ! {
     logger().println("Kobzar kernel logger greets you!");
     logger().println("Very first initialization begins! Hold on tight ^-^\n");
 
+    logger().println("Setting up basic CCS table.");
+    ::ccs::setup();
+
     //setup_interrupts();
 
     halt_forever();
