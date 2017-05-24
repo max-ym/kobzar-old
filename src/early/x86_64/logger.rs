@@ -1,4 +1,5 @@
 use super::LoggerTrait;
+use core::fmt::{Write, Error};
 
 pub struct Logger {
     /// Index of a cell being updated.
@@ -60,5 +61,13 @@ impl LoggerTrait for Logger {
                 }
             }
         }
+    }
+}
+
+impl Write for Logger {
+
+    fn write_str(&mut self, s: &str) -> Result<(), Error> {
+        self.print(s);
+        Ok(())
     }
 }

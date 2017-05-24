@@ -8,7 +8,7 @@ pub fn logger() -> &'static mut Logger {
 }
 
 /// Very simple logger that is capable of logging early startup info.
-pub trait LoggerTrait {
+pub trait LoggerTrait : ::core::fmt::Write {
 
     fn print(&mut self, s: &str);
 
