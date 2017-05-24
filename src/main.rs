@@ -73,9 +73,15 @@ pub extern fn rust_eh_personality() {
 
 #[lang = "panic_fmt"]
 #[no_mangle]
-pub extern fn rust_begin_panic(_msg: core::fmt::Arguments,
-                               _file: &'static str,
-                               _line: u32) -> ! {
+pub extern fn rust_begin_panic(msg: core::fmt::Arguments,
+                               file: &'static str,
+                               line: u32) -> ! {
+    use early::{logger};
+    use core::fmt::Write;
+
+    write!(logger(), "PANIC! in file '{}', line '{}'", file, line).unwrap();
+    logger().write_fmt(msg).unwrap();
+
     halt_forever();
 }
 
