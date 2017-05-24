@@ -34,10 +34,22 @@ pub struct Object<'a> {
     name : &'a str,
 
     /// List of all services that this object provides to external network.
-    service_list : ServiceList<'a>,
+    pub_service_list    : ServiceList<'a>,
 
-    // List of all sub-objects.
-    sub_list : ObjectList<'a>,
+    // List of all sub-objects that are accessible from the external network.
+    pub_obj_list        : ObjectList<'a>,
+
+    /// List of all private services.
+    priv_service_list   : ServiceList<'a>,
+
+    /// List of all private sub-objects.
+    priv_obj_list       : ObjectList<'a>,
+
+    /// List of all accessible external networks.
+    external_network    : ObjectList<'a>,
+
+    // TODO unique service list
+
 }
 
 struct ServiceList<'a> {
