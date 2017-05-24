@@ -45,8 +45,27 @@ pub struct Object<'a> {
     /// List of all private sub-objects.
     priv_obj_list       : ObjectList<'a>,
 
-    /// List of all accessible external networks.
-    external_network    : ObjectList<'a>,
+    /// Whether parent object parent network is visible for this child.
+    ///
+    /// When enabled, the parent object parent network is visible
+    /// only if it is visible for the parent object too. External network
+    /// visibility is limited to the last object that has this option turned
+    /// on.
+    ///
+    /// Example. There is a tree of object: Root->Foo->Bar->Baz.
+    /// Baz and Bar has this option turned on. Baz can access all public
+    /// services of Bar and Foo, but does not see Root object because
+    /// Foo has this option turned off.
+    ///
+    /// This option does affect the visibility of the parent public
+    /// objects and services. However, it does not affect the visibility of the
+    /// private objects and services. It is affected by
+    /// `is_parent_network_visible' option instead.
+    is_external_network_visible : bool,
+
+    /// Whether parent private and public object services and objects are
+    /// visible for this child.
+    is_parent_network_visible   : bool,
 
     // TODO unique service list
 
