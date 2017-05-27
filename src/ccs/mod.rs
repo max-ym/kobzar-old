@@ -91,6 +91,7 @@ impl<'a> Object<'a> {
     pub fn new(name: &'a str) -> Self {
         Object {
             name                : name,
+
             pub_service_list    : Default::default(),
             priv_service_list   : Default::default(),
             pub_obj_list        : Default::default(),
