@@ -51,22 +51,23 @@ pub trait Handle<'a> : Sized {
             }
         }
     }
+}
 
-    fn remove_from_list(mut self);
-//     {
-//         if let Some(val) = *self.get_mut_prev_node_ptr() {
-//             unsafe {
-//                 // Link previous node to the next list node instead of current.
-//                 *(*val).next_mut() = self.next_node_ref();
-//             }
-//         } else {
-//             // This element is the first in the list because there are
-//             // no previous elements.
-//
-//             // Move next element (if any) to the top of the list.
-//             *self.get_mut_prev_node_ptr() = self.next_node_ptr();
-//         }
-//     }
+trait HandleRemovable<'a> : Handle<'a> {
+
+    fn is_in_list_top(&'a self) -> bool;
+
+    fn set_next_node_as_list_top(&'a self);
+
+    fn link_next_node_to_prev(&'a self);
+
+    fn remove_from_list(&'a mut self) {
+        if self.is_in_list_top() {
+            self.set_next_node_as_list_top();
+        } else {
+            self.link_next_node_to_prev();
+        }
+    }
 }
 
 pub struct ServiceList<'a> {
@@ -209,6 +210,9 @@ pub struct ServiceHandle<'a> {
     /// An object that owns this service.
     object: &'a mut Object<'a>,
 
+    /// A list of services that contains this service.
+    list: &'a mut ServiceList<'a>,
+
     /// Node of service list that holds this service.
     node: *mut ServiceListNode<'a>,
 
@@ -255,8 +259,24 @@ impl<'a> Handle<'a> for ServiceHandle<'a> {
             }
         }
     }
+}
 
-    fn remove_from_list(mut self) {
-        unimplemented!()
+impl<'a> HandleRemovable<'a> for ServiceHandle<'a> {
+
+    fn is_in_list_top(&'a self) -> bool {
+        self.prev_node.is_none()
+    }
+
+    fn set_next_node_as_list_top(&'a self) {
+        unsafe {
+            let top         = &(*self.list).top as *const _ as *mut _;
+            let next_node   = (*self.node_ptr()).next();
+
+            *top = next_node;
+        }
+    }
+
+    fn link_next_node_to_prev(&'a self) {
+        unimplemented!();
     }
 }
