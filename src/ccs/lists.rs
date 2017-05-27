@@ -90,14 +90,14 @@ pub trait Handle<'a> : Sized {
 trait HandleRemovable<'a> : Handle<'a> {
 
     /// Check if item is on the top of the list.
-    fn is_in_list_top(&'a self) -> bool;
+    fn is_on_list_top(&'a self) -> bool;
 
     fn set_next_node_as_list_top(&'a self);
 
     fn link_next_node_to_prev(&'a self);
 
     fn remove_from_list(&'a mut self) {
-        if self.is_in_list_top() {
+        if self.is_on_list_top() {
             self.set_next_node_as_list_top();
         } else {
             self.link_next_node_to_prev();
@@ -298,7 +298,7 @@ impl<'a> Handle<'a> for ServiceHandle<'a> {
 
 impl<'a> HandleRemovable<'a> for ServiceHandle<'a> {
 
-    fn is_in_list_top(&'a self) -> bool {
+    fn is_on_list_top(&'a self) -> bool {
         self.prev_node.is_none()
     }
 
