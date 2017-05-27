@@ -91,10 +91,10 @@ impl<'a> Object<'a> {
     pub fn new(name: &'a str) -> Self {
         Object {
             name                : name,
-            pub_service_list    : ServiceList::default(),
-            priv_service_list   : ServiceList::default(),
-            pub_obj_list        : ObjectList::default(),
-            priv_obj_list       : ObjectList::default(),
+            pub_service_list    : Default::default(),
+            priv_service_list   : Default::default(),
+            pub_obj_list        : Default::default(),
+            priv_obj_list       : Default::default(),
 
             is_external_network_visible : false,
             is_parent_network_visible   : false,
