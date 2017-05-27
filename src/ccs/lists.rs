@@ -39,27 +39,43 @@ pub trait ListNode<'a> {
     fn next_ref(&self) -> &Option<&'a Self>;
 }
 
+/// Handle to edit the item of the object or service lists in any object
+/// of the CCS network. It stores information about a list in which the
+/// item is stored, the object that contains the list with item and other
+/// data that is needed to edit the item list or item itself.
 pub trait Handle<'a> : Sized {
 
+    /// Type of the element that can be edited.
     type Item;
 
+    /// Type of the list node that can store Item type.
     type ListNode : ListNode<'a>;
 
+    /// Reference to the item.
     fn item_ref(&'a self) -> &'a Self::Item;
 
+    /// Mutable reference to the item.
     fn item_mut(&'a mut self) -> &'a mut Self::Item;
 
+    /// Mutable reference of the mutable list node that stores
+    /// the item.
     fn node_ptr_mut(&'a mut self) -> &'a mut *mut Self::ListNode;
 
+    /// Pointer to the mutable list node that stores the current item.
     fn node_ptr(&'a self) -> *mut Self::ListNode;
 
+    /// Get a mutable reference to the mutable list node pointer of the
+    /// previous item if any.
     fn get_mut_prev_node_ptr(&'a mut self)
             -> &'a mut Option<*mut Self::ListNode>;
 
+    /// Get a pointer to the mutable list node of the previous item if any.
     fn get_prev_node_ptr(&'a self) -> Option<*mut Self::ListNode>;
 
+    /// Pointer to mutable list node of the next item if any.
     fn next_node_ptr(&'a self) -> Option<*mut Self::ListNode>;
 
+    /// Reference of the list node of the next item if any.
     fn next_node_ref(&'a self) -> Option<&'a Self::ListNode> {
         unsafe {
             match self.next_node_ptr() {
