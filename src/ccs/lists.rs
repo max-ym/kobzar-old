@@ -4,11 +4,11 @@ use super::*;
 pub trait List {
 
     /// Node type of the list that is used to store listed items.
-    type Item;
+    type Node;
 
     /// Top of the list. The first entry of it. It can be None if list
     /// is empty or a first node of the list.
-    fn top(&self) -> Option<Self::Item>;
+    fn top(&self) -> Option<Self::Node>;
 
     /// Set the first node of the list. Note that each node has a pointer
     /// to next one. If you change the first node and it is pointing
@@ -16,7 +16,7 @@ pub trait List {
     /// old nodes that were connected by pointers to the old top one.
     /// If you just need to replace the first node without changing other
     /// part of the list you need another way.
-    fn set_top(&mut self, top: Option<Self::Item>);
+    fn set_top(&mut self, top: Option<Self::Node>);
 }
 
 pub trait ListNode<'a> {
@@ -93,13 +93,13 @@ impl<'a> Default for ServiceList<'a> {
 
 impl<'a> List for ServiceList<'a> {
 
-    type Item = &'a ServiceListNode<'a>;
+    type Node = &'a ServiceListNode<'a>;
 
-    fn top(&self) -> Option<Self::Item> {
+    fn top(&self) -> Option<Self::Node> {
         self.top
     }
 
-    fn set_top(&mut self, top: Option<Self::Item>) {
+    fn set_top(&mut self, top: Option<Self::Node>) {
         self.top = top;
     }
 }
