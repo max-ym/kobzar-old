@@ -63,61 +63,6 @@ impl Ptr {
     }
 }
 
-/// Create new service and object lists so that CCS could work with them.
-/// Returns root object pointer.
-pub fn setup<'a>() -> *mut ccs::Object<'a> {
-    use core::mem::{size_of, transmute};
-
-    // Current used memory pointer.
-    let mut memptr = Ptr::new(CCS_BASIC_SETUP_ADDRESS);
-
-    // Create objects and services.
-    let mut machine = ccs::Object::new(MACHINE_ROOT_OBJECT);
-    let mut kobzar  = ccs::Object::new(KOBZAR_ROOT_OBJECT);
-    let mut kernel  = ccs::Object::new(KERNEL_OBJECT);
-    let mut ram     = ccs::Object::new(RAM_MANAGER_OBJECT);
-
-    let allocate = ccs::Service::new(RAM_ALLOCATE_SERVICE, 0 /* TODO */);
-    let release  = ccs::Service::new(RAM_RELEASE_SERVICE, 0 /* TODO */);
-
-    // Create list nodes.
-    let mut ram_service_0   = ccs::ServiceListNode::new(allocate);
-    let mut ram_service_1   = ccs::ServiceListNode::new(release);
-
-    let kernel_objlist  = ccs::ObjectListNode::new(ram);
-    let kobzar_objlist  = ccs::ObjectListNode::new(kernel);
-    let machine_objlist = ccs::ObjectListNode::new(kobzar);
-
-    // Create pointer list.
-    let machine_ptr         = memptr.next_object_ptr();
-    let ram_service_0_ptr   = memptr.next_service_node_ptr();
-    let ram_service_1_ptr   = memptr.next_service_node_ptr();
-    let kernel_objlist_ptr  = memptr.next_object_node_ptr();
-    let kobzar_objlist_ptr  = memptr.next_object_node_ptr();
-    let machine_objlist_ptr = memptr.next_object_node_ptr();
-
-    // Ensure pointer does not break expected bounds.
-    if memptr.value() >= CCS_BASIC_SETUP_ADDRESS_END {
-        panic!("CCS table violates memory limits");
-    }
-
-    unsafe {
-        // Set to objects their lists.
-        machine .sub_list.top = Some(&*machine_objlist_ptr);
-        kobzar  .sub_list.top = Some(&*kobzar_objlist_ptr);
-        kernel  .sub_list.top = Some(&*kernel_objlist_ptr);
-
-        ram.service_list.top  = Some(&*ram_service_0_ptr);
-        ram_service_0.next    = Some(&*ram_service_1_ptr);
-
-        // Save object and service handles in CCS table.
-        *machine_ptr            = machine;
-        *ram_service_0_ptr      = ram_service_0;
-        *ram_service_1_ptr      = ram_service_1;
-        *kernel_objlist_ptr     = kernel_objlist;
-        *kobzar_objlist_ptr     = kobzar_objlist;
-        *machine_objlist_ptr    = machine_objlist;
-    }
-
-    machine_ptr
+pub fn setup() {
+    unimplemented!()
 }

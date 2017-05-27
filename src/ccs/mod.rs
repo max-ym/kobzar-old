@@ -4,6 +4,9 @@ mod x86_64;
 #[cfg(target_arch = "x86_64")]
 pub use self::x86_64::setup;
 
+mod lists;
+use self::lists::*;
+
 #[derive(Clone, Copy)]
 /// CCS Service handle.
 pub struct Service<'a> {
@@ -66,87 +69,6 @@ pub struct Object<'a> {
     /// Whether parent private and public object services and objects are
     /// visible for this child.
     is_parent_network_visible   : bool,
-
-    // TODO unique service list
-
-}
-
-struct ServiceList<'a> {
-    top : Option<&'a ServiceListNode<'a>>,
-}
-
-impl<'a> Default for ServiceList<'a> {
-
-    fn default() -> Self {
-        ServiceList { top : None }
-    }
-}
-
-struct ServiceListNode<'a> {
-
-    /// The actual service.
-    service : Service<'a>,
-
-    /// Next node, if any.
-    next : Option<&'a ServiceListNode<'a>>,
-}
-
-impl<'a> ServiceListNode<'a> {
-
-    pub fn new(service: Service<'a>) -> Self {
-        ServiceListNode {
-            service : service,
-            next    : None,
-        }
-    }
-}
-
-struct ObjectList<'a> {
-    top: Option<&'a ObjectListNode<'a>>,
-}
-
-impl<'a> Default for ObjectList<'a> {
-
-    fn default() -> Self {
-        ObjectList { top : None }
-    }
-}
-
-struct ObjectListNode<'a> {
-
-    /// The actual service.
-    object : Object<'a>,
-
-    /// Next node, if any.
-    next : Option<&'a ObjectListNode<'a>>,
-}
-
-impl<'a> ObjectListNode<'a> {
-
-    pub fn new(object: Object<'a>) -> Self {
-        ObjectListNode {
-            object : object,
-            next   : None,
-        }
-    }
-}
-
-impl<'a> Iterator for ServiceListNode<'a> {
-
-    type Item = &'a ServiceListNode<'a>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.next
-    }
-}
-
-impl<'a> Iterator for ObjectListNode<'a> {
-
-    type Item = &'a ObjectListNode<'a>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.next
-    }
 }
 
 /// A handle of the service in a particular object. Used to manipulate
@@ -163,96 +85,19 @@ pub struct ServiceHandle<'a> {
     prev_node: Option<*mut ServiceListNode<'a>>,
 }
 
-impl<'a> ServiceHandle<'a> {
-
-    /// A service that is handled.
-    pub fn service(&self) -> &'a Service {
-        unsafe { &(*self.node).service }
-    }
-
-    /// Get an object from which a service handle was created.
-    pub fn into_object(self) -> &'a Object<'a> {
-        self.object
-    }
-
-    /// Remove a service from the object lists.
-    pub fn remove(self) -> &'a Object<'a> {
-        unsafe {
-            if self.prev_node.is_some() {
-                let prev_node = self.prev_node.unwrap();
-                // Remove this service list node from the list.
-                (*prev_node).next = (*self.node).next;
-            } else {
-                // This node is a top of the list.
-                // Move the top of the list to a next node after this one.
-                self.object.service_list.top = (*self.node).next;
-            }
-        }
-
-        self.into_object()
-    }
-}
-
 impl<'a> Object<'a> {
 
     /// Create new object with given name and empty lists.
     pub fn new(name: &'a str) -> Self {
         Object {
-            name            : name,
-            service_list    : ServiceList::default(),
-            sub_list        : ObjectList::default(),
+            name                : name,
+            pub_service_list    : ServiceList::default(),
+            priv_service_list   : ServiceList::default(),
+            pub_obj_list        : ObjectList::default(),
+            priv_obj_list       : ObjectList::default(),
+
+            is_external_network_visible : false,
+            is_parent_network_visible   : false,
         }
-    }
-
-    /// Find a service with a given name.
-    pub fn service_with_name(&'a mut self, name: &str) ->
-            Option<ServiceHandle<'a>> {
-        // Create an iteration pointer.
-        let mut i       = self.service_list.top;
-        let mut prev_i  = None;
-
-        loop {
-            // List has finished. No service with given name.
-            if i.is_none() {
-                return None;
-            }
-            // Otherwise get node.
-            let node = i.unwrap();
-
-            if node.service.name == name {
-                return Some(ServiceHandle {
-                    object      : self,
-                    node        : node as *const _ as *mut _,
-                    prev_node   : {
-                        match prev_i {
-                            Some(v) => Some(v as *const _ as *mut _),
-                            None    => None
-                        }
-                    }
-                });
-            }
-
-            prev_i = i;
-            i = node.next;
-        }
-        unreachable!();
-    }
-
-    /// Add new service to a given object. The name of the service
-    /// must be unique for this object. Otherwise, service will not be
-    /// added but a ServiceHandle will be returned for that service.
-    /// If it succeeds to add a service then it's ServiceHandle will be
-    /// returned.
-    pub fn add_service(&'a mut self, service: &Service) ->
-            Result<ServiceHandle<'a>, ServiceHandle<'a>> {
-        // Check if name for service is free.
-        let option = self.service_with_name(service.name);
-        match option {
-            // It is not so return a handle to conflicting service.
-            Some(handle) => return Err(handle),
-            None         => {}
-        }
-
-        unimplemented!();
     }
 }
