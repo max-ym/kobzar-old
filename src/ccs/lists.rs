@@ -92,10 +92,15 @@ trait HandleRemovable<'a> : Handle<'a> {
     /// Check if item is on the top of the list.
     fn is_on_list_top(&'a self) -> bool;
 
+    /// Set next node of the list as a top of the list. All previous nodes
+    /// are discarded.
     fn set_next_node_as_list_top(&'a self);
 
+    /// Set the previous node to point to the next node avoiding current.
+    /// This deletes current item from the list.
     fn link_next_node_to_prev(&'a self);
 
+    /// Remove the item (and it's node) from the list.
     fn remove_from_list(&'a mut self) {
         if self.is_on_list_top() {
             self.set_next_node_as_list_top();
