@@ -19,16 +19,23 @@ pub trait List {
     fn set_top(&mut self, top: Option<Self::Node>);
 }
 
+/// The node of the list. Stores only one element of the list and a
+/// pointer to the next node if any.
 pub trait ListNode<'a> {
 
+    /// The type of the item that is stored in the list.
     type Item;
 
+    /// Reference to the item in this node.
     fn elem_ref(&self) -> &Self::Item;
 
+    /// Set the item in this node.
     fn set_elem(&mut self, top: Self::Item);
 
+    /// Get mutable reference to the next node option.
     fn next_mut(&'a mut self) -> &'a mut Option<&'a Self>;
 
+    /// Get a reference to the next node option.
     fn next_ref(&self) -> &Option<&'a Self>;
 }
 
