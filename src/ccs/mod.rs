@@ -71,20 +71,6 @@ pub struct Object<'a> {
     is_parent_network_visible   : bool,
 }
 
-/// A handle of the service in a particular object. Used to manipulate
-/// with service in this object.
-pub struct ServiceHandle<'a> {
-
-    /// An object that owns this service.
-    object: &'a mut Object<'a>,
-
-    /// Node of service list that holds this service.
-    node: *mut ServiceListNode<'a>,
-
-    /// The previous node of the list if any.
-    prev_node: Option<*mut ServiceListNode<'a>>,
-}
-
 impl<'a> Object<'a> {
 
     /// Create new object with given name and empty lists.

@@ -20,6 +20,26 @@ pub trait ListNode<'a> {
     fn next_mut(&'a mut self) -> &'a mut Option<&'a Self>;
 }
 
+pub trait Handle<'a> {
+
+    type Item;
+
+    type ListNode : ListNode<'a>;
+
+    fn item_ref(&self) -> &Self::Item;
+
+    fn item_mut(&'a mut self) -> &'a mut Self::Item;
+
+    fn node_ptr_mut(&mut self) -> &mut *mut Self::ListNode;
+
+    fn node_ptr(&self) -> *mut Self::ListNode;
+
+    fn get_mut_prev_node_ptr(&mut self) -> &mut Option<*mut Self::ListNode>;
+
+    fn get_prev_node_ptr(&self) -> Option<*mut Self::ListNode>;
+
+}
+
 pub struct ServiceList<'a> {
     top : Option<&'a ServiceListNode<'a>>,
 }
@@ -142,5 +162,50 @@ impl<'a> Iterator for ObjectListNode<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         self.next
+    }
+}
+
+/// A handle of the service in a particular object. Used to manipulate
+/// with service in this object.
+pub struct ServiceHandle<'a> {
+
+    /// An object that owns this service.
+    object: &'a mut Object<'a>,
+
+    /// Node of service list that holds this service.
+    node: *mut ServiceListNode<'a>,
+
+    /// The previous node of the list if any.
+    prev_node: Option<*mut ServiceListNode<'a>>,
+}
+
+impl<'a> Handle<'a> for ServiceHandle<'a> {
+
+    type Item = Object<'a>;
+
+    type ListNode = ServiceListNode<'a>;
+
+    fn item_ref(&self) -> &Self::Item {
+        &self.object
+    }
+
+    fn item_mut(&'a mut self) -> &'a mut Self::Item {
+        &mut self.object
+    }
+
+    fn node_ptr_mut(&mut self) -> &mut *mut Self::ListNode {
+        &mut self.node
+    }
+
+    fn node_ptr(&self) -> *mut Self::ListNode {
+        self.node
+    }
+
+    fn get_mut_prev_node_ptr(&mut self) -> &mut Option<*mut Self::ListNode> {
+        &mut self.prev_node
+    }
+
+    fn get_prev_node_ptr(&self) -> Option<*mut Self::ListNode> {
+        self.prev_node
     }
 }
