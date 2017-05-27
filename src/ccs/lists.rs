@@ -86,8 +86,10 @@ pub trait Handle<'a> : Sized {
     }
 }
 
+/// Handle that allows removing the item from the object list entirely.
 trait HandleRemovable<'a> : Handle<'a> {
 
+    /// Check if item is on the top of the list.
     fn is_in_list_top(&'a self) -> bool;
 
     fn set_next_node_as_list_top(&'a self);
