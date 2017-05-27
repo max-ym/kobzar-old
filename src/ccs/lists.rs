@@ -277,6 +277,11 @@ impl<'a> HandleRemovable<'a> for ServiceHandle<'a> {
     }
 
     fn link_next_node_to_prev(&'a self) {
-        unimplemented!();
+        unsafe {
+            let prev = &self.prev_node as *const _ as *mut _;
+            let next = (*self.node_ptr()).next();
+
+            *prev = next;
+        }
     }
 }
