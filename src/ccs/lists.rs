@@ -1,11 +1,21 @@
 use super::*;
 
+/// List of items.
 pub trait List {
 
+    /// Node type of the list that is used to store listed items.
     type Item;
 
+    /// Top of the list. The first entry of it. It can be None if list
+    /// is empty or a first node of the list.
     fn top(&self) -> Option<Self::Item>;
 
+    /// Set the first node of the list. Note that each node has a pointer
+    /// to next one. If you change the first node and it is pointing
+    /// to another node than it was in the old node you may loose all
+    /// old nodes that were connected by pointers to the old top one.
+    /// If you just need to replace the first node without changing other
+    /// part of the list you need another way.
     fn set_top(&mut self, top: Option<Self::Item>);
 }
 
