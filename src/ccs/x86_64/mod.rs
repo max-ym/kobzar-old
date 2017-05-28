@@ -134,5 +134,39 @@ impl Allocate for ccs::ObjectListNode {
 }
 
 pub fn setup() {
-    unimplemented!()
+    use super::lists::{List, ListNode};
+
+    let mut heap = Ptr::new_heap
+            (CCS_BASIC_SETUP_ADDRESS, CCS_BASIC_SETUP_ADDRESS_END);
+
+    let mut root_obj    = ccs::Object::new(MACHINE_ROOT_OBJECT);
+    let mut kobzar_obj  = ccs::Object::new(KOBZAR_ROOT_OBJECT);
+    let mut kernel_obj  = ccs::Object::new(KERNEL_OBJECT);
+    let mut ram_mgr_obj = ccs::Object::new(RAM_MANAGER_OBJECT);
+
+    // TODO: set valid service fn pointers.
+    let allocate_serv   = ccs::Service::new(RAM_ALLOCATE_SERVICE, 0);
+    let release_serv    = ccs::Service::new(RAM_RELEASE_SERVICE, 0);
+
+    unsafe {
+        let mut list_node = ccs::ObjectListNode::new(kobzar_obj);
+        let kobzar_obj = list_node.elem_mut_ptr();
+        root_obj.pub_obj_list.append(list_node.allocate_and_move(&heap));
+
+        let mut list_node = ccs::ObjectListNode::new(kernel_obj);
+        let kernel_obj = list_node.elem_mut_ptr();
+        (*kobzar_obj).pub_obj_list.append(list_node.allocate_and_move(&heap));
+
+        let mut list_node = ccs::ObjectListNode::new(ram_mgr_obj);
+        let ram_mgr_obj = list_node.elem_mut_ptr();
+        (*kernel_obj).pub_obj_list.append(list_node.allocate_and_move(&heap));
+
+        let list_node = ccs::ServiceListNode::new(allocate_serv);
+        (*ram_mgr_obj).pub_serv_list.append(list_node.allocate_and_move(&heap));
+
+        let list_node = ccs::ServiceListNode::new(release_serv);
+        (*ram_mgr_obj).pub_serv_list.append(list_node.allocate_and_move(&heap));
+    }
+
+    root_obj.allocate_and_move(&heap);
 }
