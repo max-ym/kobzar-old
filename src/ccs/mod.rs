@@ -37,13 +37,13 @@ pub struct Object<'a> {
     name : &'a str,
 
     /// List of all services that this object provides to external network.
-    pub_service_list    : ServiceList<'a>,
+    pub_serv_list       : ServiceList<'a>,
 
     // List of all sub-objects that are accessible from the external network.
     pub_obj_list        : ObjectList<'a>,
 
     /// List of all private services.
-    priv_service_list   : ServiceList<'a>,
+    priv_serv_list      : ServiceList<'a>,
 
     /// List of all private sub-objects.
     priv_obj_list       : ObjectList<'a>,
@@ -76,12 +76,12 @@ impl<'a> Object<'a> {
     /// Create new object with given name and empty lists.
     pub fn new(name: &'a str) -> Self {
         Object {
-            name                : name,
+            name            : name,
 
-            pub_service_list    : Default::default(),
-            priv_service_list   : Default::default(),
-            pub_obj_list        : Default::default(),
-            priv_obj_list       : Default::default(),
+            pub_serv_list   : Default::default(),
+            priv_serv_list  : Default::default(),
+            pub_obj_list    : Default::default(),
+            priv_obj_list   : Default::default(),
 
             is_external_network_visible : false,
             is_parent_network_visible   : false,
