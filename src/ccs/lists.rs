@@ -185,6 +185,19 @@ impl<'a> Default for ObjectList<'a> {
     }
 }
 
+impl<'a> List for ObjectList<'a> {
+
+    type Node = &'a ObjectListNode<'a>;
+
+    fn top(&self) -> Option<Self::Node> {
+        self.top
+    }
+
+    fn set_top(&mut self, top: Option<Self::Node>) {
+        self.top = top;
+    }
+}
+
 pub struct ObjectListNode<'a> {
 
     /// The actual service.
