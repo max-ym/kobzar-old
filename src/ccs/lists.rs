@@ -23,7 +23,7 @@ pub trait List {
     fn set_top(&mut self, top: Option<*mut Self::Node>);
 
     /// Append new nodes to the list top.
-    fn append(&mut self, node: *mut Self::Node) {
+    fn append(&mut self, node: *const Self::Node) {
         unsafe {
             let link_node = &mut (*node).last_node()
                     as *const _ as *mut Self::Node;
@@ -46,6 +46,11 @@ pub trait ListNode {
 
     /// Reference to mutable item.
     fn elem_mut(&mut self) -> &mut Self::Item;
+
+    /// Pointer to mutable item in this node.
+    unsafe fn elem_mut_ptr(&mut self) -> *mut Self::Item {
+        self.elem_mut() as *const _ as *mut _
+    }
 
     /// Set the item in this node.
     fn set_elem(&mut self, top: Self::Item);
