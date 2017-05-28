@@ -20,10 +20,7 @@ pub trait List<'a> {
 
     /// Append new nodes to the list top.
     fn append(&'a mut self, node: &'a mut Self::Node) {
-        let link_node = &mut match node.last_node() {
-            Some(val) => val,
-            None      => node,
-        } as *const _ as *mut Self::Node;
+        let link_node = &mut node.last_node() as *const _ as *mut Self::Node;
 
         unsafe {
             *(*link_node).next_mut() = self.top();
@@ -51,15 +48,16 @@ pub trait ListNode<'a> {
     /// Get a reference to the next node option.
     fn next_ref(&self) -> &Option<&'a Self>;
 
-    fn last_node(&self) -> Option<&'a Self> {
-        let mut prev = None;
+    /// Get the last node of the list.
+    fn last_node(&'a self) -> &'a Self {
+        let mut prev = self;
         loop {
             let node = *self.next_ref();
-            if node.is_none() {
+            if let Some(node) = node {
+                prev = node;
+            } else {
                 return prev;
             }
-
-            prev = node;
         }
     }
 }
