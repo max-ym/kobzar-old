@@ -8,7 +8,11 @@ pub trait List<'a> {
 
     /// Top of the list. The first entry of it. It can be None if list
     /// is empty or a first node of the list.
-    fn top(&self) -> Option<&'a Self::Node>;
+    fn top(&self) -> Option<*const Self::Node>;
+
+    /// Mutable top of the list. The first entry of it. It can be None if list
+    /// is empty or a pointer to a mutable first node of the list.
+    fn top_mut(&mut self) -> Option<*mut Self::Node>;
 
     /// Set the first node of the list. Note that each node has a pointer
     /// to next one. If you change the first node and it is pointing
@@ -16,15 +20,16 @@ pub trait List<'a> {
     /// old nodes that were connected by pointers to the old top one.
     /// If you just need to replace the first node without changing other
     /// part of the list you need another way.
-    fn set_top(&mut self, top: Option<&'a Self::Node>);
+    fn set_top(&mut self, top: Option<*mut Self::Node>);
 
     /// Append new nodes to the list top.
-    fn append(&'a mut self, node: &'a mut Self::Node) {
-        let link_node = &mut node.last_node() as *const _ as *mut Self::Node;
-
+    fn append(&'a mut self, node: *mut Self::Node) {
         unsafe {
-            *(*link_node).next_mut() = self.top();
-            self.set_top(Some(&*link_node));
+            let link_node = &mut (*node).last_node()
+                    as *const _ as *mut Self::Node;
+
+            *(*link_node).next_mut() = self.top_mut();
+            self.set_top(Some(link_node));
         }
     }
 }
@@ -46,10 +51,10 @@ pub trait ListNode<'a> {
     fn set_elem(&mut self, top: Self::Item);
 
     /// Get mutable reference to the next node option.
-    fn next_mut(&'a mut self) -> &'a mut Option<&'a Self>;
+    fn next_mut(&'a mut self) -> &'a mut Option<*mut Self>;
 
     /// Get a reference to the next node option.
-    fn next_ref(&self) -> &Option<&'a Self>;
+    fn next_ref(&self) -> &Option<*mut Self>;
 
     /// Get the last node of the list.
     fn last_node(&'a self) -> &'a Self {
@@ -57,7 +62,7 @@ pub trait ListNode<'a> {
         loop {
             let node = *self.next_ref();
             if let Some(node) = node {
-                prev = node;
+                unsafe { prev = &*node; }
             } else {
                 return prev;
             }
@@ -137,7 +142,7 @@ trait HandleRemovable<'a> : Handle<'a> {
 }
 
 pub struct ServiceList<'a> {
-    top : Option<&'a ServiceListNode<'a>>,
+    top : Option<*mut ServiceListNode<'a>>,
 }
 
 impl<'a> Default for ServiceList<'a> {
@@ -151,11 +156,18 @@ impl<'a> List<'a> for ServiceList<'a> {
 
     type Node = ServiceListNode<'a>;
 
-    fn top(&self) -> Option<&'a Self::Node> {
+    fn top(&self) -> Option<*const Self::Node> {
+        match self.top {
+            Some(val) => Some(val as *const _),
+            None      => None
+        }
+    }
+
+    fn top_mut(&mut self) -> Option<*mut Self::Node> {
         self.top
     }
 
-    fn set_top(&mut self, top: Option<&'a Self::Node>) {
+    fn set_top(&mut self, top: Option<*mut Self::Node>) {
         self.top = top;
     }
 }
@@ -166,7 +178,7 @@ pub struct ServiceListNode<'a> {
     service : Service<'a>,
 
     /// Next node, if any.
-    next : Option<&'a ServiceListNode<'a>>,
+    next : Option<*mut ServiceListNode<'a>>,
 }
 
 impl<'a> ServiceListNode<'a> {
@@ -191,11 +203,11 @@ impl<'a> ListNode<'a> for ServiceListNode<'a> {
         self.service = elem;
     }
 
-    fn next_mut(&'a mut self) -> &'a mut Option<&'a Self> {
+    fn next_mut(&'a mut self) -> &'a mut Option<*mut Self> {
         &mut self.next
     }
 
-    fn next_ref(&self) -> &Option<&'a Self> {
+    fn next_ref(&self) -> &Option<*mut Self> {
         &self.next
     }
 
@@ -205,7 +217,7 @@ impl<'a> ListNode<'a> for ServiceListNode<'a> {
 }
 
 pub struct ObjectList<'a> {
-    top: Option<&'a ObjectListNode<'a>>,
+    top: Option<*mut ObjectListNode<'a>>,
 }
 
 impl<'a> Default for ObjectList<'a> {
@@ -219,11 +231,18 @@ impl<'a> List<'a> for ObjectList<'a> {
 
     type Node = ObjectListNode<'a>;
 
-    fn top(&self) -> Option<&'a Self::Node> {
+    fn top(&self) -> Option<*const Self::Node> {
+        match self.top {
+            Some(val) => Some(val as *const _),
+            None      => None
+        }
+    }
+
+    fn top_mut(&mut self) -> Option<*mut Self::Node> {
         self.top
     }
 
-    fn set_top(&mut self, top: Option<&'a Self::Node>) {
+    fn set_top(&mut self, top: Option<*mut Self::Node>) {
         self.top = top;
     }
 }
@@ -234,7 +253,7 @@ pub struct ObjectListNode<'a> {
     object : Object<'a>,
 
     /// Next node, if any.
-    next : Option<&'a ObjectListNode<'a>>,
+    next : Option<*mut ObjectListNode<'a>>,
 }
 
 impl<'a> ObjectListNode<'a> {
@@ -263,18 +282,18 @@ impl<'a> ListNode<'a> for ObjectListNode<'a> {
         self.object = elem;
     }
 
-    fn next_mut(&'a mut self) -> &'a mut Option<&'a Self> {
+    fn next_mut(&'a mut self) -> &'a mut Option<*mut Self> {
         &mut self.next
     }
 
-    fn next_ref(&self) -> &Option<&'a Self> {
+    fn next_ref(&self) -> &Option<*mut Self> {
         &self.next
     }
 }
 
 impl<'a> Iterator for ServiceListNode<'a> {
 
-    type Item = &'a ServiceListNode<'a>;
+    type Item = *mut ServiceListNode<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.next
@@ -283,10 +302,10 @@ impl<'a> Iterator for ServiceListNode<'a> {
 
 impl<'a> Iterator for ObjectListNode<'a> {
 
-    type Item = &'a ObjectListNode<'a>;
+    type Item = *mut ObjectListNode<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.next
+        (*self).next
     }
 }
 
