@@ -1,14 +1,14 @@
 use super::*;
 
 /// List of items.
-pub trait List {
+pub trait List<'a> {
 
     /// Node type of the list that is used to store listed items.
-    type Node;
+    type Node : ListNode<'a>;
 
     /// Top of the list. The first entry of it. It can be None if list
     /// is empty or a first node of the list.
-    fn top(&self) -> Option<Self::Node>;
+    fn top(&self) -> Option<&'a Self::Node>;
 
     /// Set the first node of the list. Note that each node has a pointer
     /// to next one. If you change the first node and it is pointing
@@ -16,7 +16,7 @@ pub trait List {
     /// old nodes that were connected by pointers to the old top one.
     /// If you just need to replace the first node without changing other
     /// part of the list you need another way.
-    fn set_top(&mut self, top: Option<Self::Node>);
+    fn set_top(&mut self, top: Option<&'a Self::Node>);
 }
 
 /// The node of the list. Stores only one element of the list and a
@@ -121,15 +121,15 @@ impl<'a> Default for ServiceList<'a> {
     }
 }
 
-impl<'a> List for ServiceList<'a> {
+impl<'a> List<'a> for ServiceList<'a> {
 
-    type Node = &'a ServiceListNode<'a>;
+    type Node = ServiceListNode<'a>;
 
-    fn top(&self) -> Option<Self::Node> {
+    fn top(&self) -> Option<&'a Self::Node> {
         self.top
     }
 
-    fn set_top(&mut self, top: Option<Self::Node>) {
+    fn set_top(&mut self, top: Option<&'a Self::Node>) {
         self.top = top;
     }
 }
@@ -185,15 +185,15 @@ impl<'a> Default for ObjectList<'a> {
     }
 }
 
-impl<'a> List for ObjectList<'a> {
+impl<'a> List<'a> for ObjectList<'a> {
 
-    type Node = &'a ObjectListNode<'a>;
+    type Node = ObjectListNode<'a>;
 
-    fn top(&self) -> Option<Self::Node> {
+    fn top(&self) -> Option<&'a Self::Node> {
         self.top
     }
 
-    fn set_top(&mut self, top: Option<Self::Node>) {
+    fn set_top(&mut self, top: Option<&'a Self::Node>) {
         self.top = top;
     }
 }
