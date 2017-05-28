@@ -170,8 +170,12 @@ pub fn setup() {
     let save_to_pub_serv_list = |parent: &mut ccs::Object, serv: ccs::Service|
             -> *mut ccs::Service {
         unsafe {
+            // Allocate (uninitialized) node on the heap.
             let list_node_ptr = ccs::ServiceListNode::allocate_ptr(&heap);
+
+            // Initialize node and set data.
             *list_node_ptr = ccs::ServiceListNode::new(serv);
+
             let allocated_item_ptr = (*list_node_ptr).elem_mut_ptr();
             parent.pub_serv_list.append(list_node_ptr);
 
