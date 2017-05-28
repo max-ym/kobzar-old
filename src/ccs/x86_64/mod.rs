@@ -11,7 +11,7 @@ struct Ptr {
 impl Ptr {
 
     /// Create new pointer struct for given address.
-    pub fn new(addr: usize, limit: usize) -> Self {
+    pub fn new_heap(addr: usize, limit: usize) -> Self {
         Ptr {
             addr    : addr,
             limit   : limit,
@@ -75,7 +75,7 @@ impl Ptr {
     }
 }
 
-trait GetAllocated : Sized {
+trait Allocate : Sized {
 
     fn get_allocated(ptr: &mut Ptr) -> Option<*mut Self> {
         let size = ::core::mem::size_of::<Self>();
@@ -88,11 +88,8 @@ trait GetAllocated : Sized {
     }
 
     unsafe fn alloc_next_ptr(ptr: &mut Ptr) -> *mut Self;
-}
 
-trait Allocate : GetAllocated {
-
-    fn allocate(ptr: &mut Ptr) -> *mut Self {
+    fn allocate_ptr(ptr: &mut Ptr) -> *mut Self {
         let option = Self::get_allocated(ptr);
 
         if let Some(val) = option {
@@ -101,16 +98,37 @@ trait Allocate : GetAllocated {
             panic!("CCS table violates memory limits");
         }
     }
+
+    fn allocate_mut(ptr: &mut Ptr) -> &mut Self {
+        unsafe { &mut *Self::allocate_ptr(ptr) }
+    }
+
+    fn allocate_and_move(mut self, ptr: &mut Ptr) -> &mut Self {
+        let reference = Self::allocate_mut(ptr);
+        *reference = self;
+        reference
+    }
 }
 
-impl<'a> GetAllocated for ccs::Object<'a> {
+impl<'a> Allocate for ccs::Object<'a> {
 
     unsafe fn alloc_next_ptr(ptr: &mut Ptr) -> *mut Self {
         ptr.next_object_ptr()
     }
 }
 
-impl<'a> Allocate for ccs::Object<'a> {
+impl<'a> Allocate for ccs::ServiceListNode<'a> {
+
+    unsafe fn alloc_next_ptr(ptr: &mut Ptr) -> *mut Self {
+        ptr.next_service_node_ptr()
+    }
+}
+
+impl<'a> Allocate for ccs::ObjectListNode<'a> {
+
+    unsafe fn alloc_next_ptr(ptr: &mut Ptr) -> *mut Self {
+        ptr.next_object_node_ptr()
+    }
 }
 
 pub fn setup() {
