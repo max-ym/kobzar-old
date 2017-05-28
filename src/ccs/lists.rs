@@ -1,10 +1,10 @@
 use super::*;
 
 /// List of items.
-pub trait List<'a> {
+pub trait List {
 
     /// Node type of the list that is used to store listed items.
-    type Node : ListNode<'a>;
+    type Node : ListNode;
 
     /// Top of the list. The first entry of it. It can be None if list
     /// is empty or a first node of the list.
@@ -23,7 +23,7 @@ pub trait List<'a> {
     fn set_top(&mut self, top: Option<*mut Self::Node>);
 
     /// Append new nodes to the list top.
-    fn append(&'a mut self, node: *mut Self::Node) {
+    fn append(&mut self, node: *mut Self::Node) {
         unsafe {
             let link_node = &mut (*node).last_node()
                     as *const _ as *mut Self::Node;
@@ -36,7 +36,7 @@ pub trait List<'a> {
 
 /// The node of the list. Stores only one element of the list and a
 /// pointer to the next node if any.
-pub trait ListNode<'a> {
+pub trait ListNode {
 
     /// The type of the item that is stored in the list.
     type Item;
@@ -51,13 +51,13 @@ pub trait ListNode<'a> {
     fn set_elem(&mut self, top: Self::Item);
 
     /// Get mutable reference to the next node option.
-    fn next_mut(&'a mut self) -> &'a mut Option<*mut Self>;
+    fn next_mut(&mut self) -> &mut Option<*mut Self>;
 
     /// Get a reference to the next node option.
     fn next_ref(&self) -> &Option<*mut Self>;
 
     /// Get the last node of the list.
-    fn last_node(&'a self) -> &'a Self {
+    fn last_node(&self) -> &Self {
         let mut prev = self;
         loop {
             let node = *self.next_ref();
@@ -74,40 +74,39 @@ pub trait ListNode<'a> {
 /// of the CCS network. It stores information about a list in which the
 /// item is stored, the object that contains the list with item and other
 /// data that is needed to edit the item list or item itself.
-pub trait Handle<'a> : Sized {
+pub trait Handle : Sized {
 
     /// Type of the element that can be edited.
     type Item;
 
     /// Type of the list node that can store Item type.
-    type ListNode : ListNode<'a>;
+    type ListNode : ListNode;
 
     /// Reference to the item.
-    fn item_ref(&'a self) -> &'a Self::Item;
+    fn item_ref(&self) -> &Self::Item;
 
     /// Mutable reference to the item.
-    fn item_mut(&'a mut self) -> &'a mut Self::Item;
+    fn item_mut(&mut self) -> &mut Self::Item;
 
     /// Mutable reference of the mutable list node that stores
     /// the item.
-    fn node_ptr_mut(&'a mut self) -> &'a mut *mut Self::ListNode;
+    fn node_ptr_mut(&mut self) -> &mut *mut Self::ListNode;
 
     /// Pointer to the mutable list node that stores the current item.
-    fn node_ptr(&'a self) -> *mut Self::ListNode;
+    fn node_ptr(&self) -> *mut Self::ListNode;
 
     /// Get a mutable reference to the mutable list node pointer of the
     /// previous item if any.
-    fn get_mut_prev_node_ptr(&'a mut self)
-            -> &'a mut Option<*mut Self::ListNode>;
+    fn get_mut_prev_node_ptr(&mut self) -> &mut Option<*mut Self::ListNode>;
 
     /// Get a pointer to the mutable list node of the previous item if any.
-    fn get_prev_node_ptr(&'a self) -> Option<*mut Self::ListNode>;
+    fn get_prev_node_ptr(&self) -> Option<*mut Self::ListNode>;
 
     /// Pointer to mutable list node of the next item if any.
-    fn next_node_ptr(&'a self) -> Option<*mut Self::ListNode>;
+    fn next_node_ptr(&self) -> Option<*mut Self::ListNode>;
 
     /// Reference of the list node of the next item if any.
-    fn next_node_ref(&'a self) -> Option<&'a Self::ListNode> {
+    fn next_node_ref(&self) -> Option<&Self::ListNode> {
         unsafe {
             match self.next_node_ptr() {
                 Some(val) => Some(&*val),
@@ -118,21 +117,21 @@ pub trait Handle<'a> : Sized {
 }
 
 /// Handle that allows removing the item from the object list entirely.
-trait HandleRemovable<'a> : Handle<'a> {
+trait HandleRemovable : Handle {
 
     /// Check if item is on the top of the list.
-    fn is_on_list_top(&'a self) -> bool;
+    fn is_on_list_top(&self) -> bool;
 
     /// Set next node of the list as a top of the list. All previous nodes
     /// are discarded.
-    fn set_next_node_as_list_top(&'a self);
+    fn set_next_node_as_list_top(&self);
 
     /// Set the previous node to point to the next node avoiding current.
     /// This deletes current item from the list.
-    fn link_next_node_to_prev(&'a self);
+    fn link_next_node_to_prev(&self);
 
     /// Remove the item (and it's node) from the list.
-    fn remove_from_list(&'a mut self) {
+    fn remove_from_list(&mut self) {
         if self.is_on_list_top() {
             self.set_next_node_as_list_top();
         } else {
@@ -141,20 +140,20 @@ trait HandleRemovable<'a> : Handle<'a> {
     }
 }
 
-pub struct ServiceList<'a> {
-    top : Option<*mut ServiceListNode<'a>>,
+pub struct ServiceList {
+    top : Option<*mut ServiceListNode>,
 }
 
-impl<'a> Default for ServiceList<'a> {
+impl Default for ServiceList {
 
     fn default() -> Self {
         ServiceList { top : None }
     }
 }
 
-impl<'a> List<'a> for ServiceList<'a> {
+impl List for ServiceList {
 
-    type Node = ServiceListNode<'a>;
+    type Node = ServiceListNode;
 
     fn top(&self) -> Option<*const Self::Node> {
         match self.top {
@@ -172,18 +171,18 @@ impl<'a> List<'a> for ServiceList<'a> {
     }
 }
 
-pub struct ServiceListNode<'a> {
+pub struct ServiceListNode {
 
     /// The actual service.
-    service : Service<'a>,
+    service : Service,
 
     /// Next node, if any.
-    next : Option<*mut ServiceListNode<'a>>,
+    next : Option<*mut ServiceListNode>,
 }
 
-impl<'a> ServiceListNode<'a> {
+impl ServiceListNode {
 
-    pub fn new(service: Service<'a>) -> Self {
+    pub fn new(service: Service) -> Self {
         ServiceListNode {
             service : service,
             next    : None,
@@ -191,9 +190,9 @@ impl<'a> ServiceListNode<'a> {
     }
 }
 
-impl<'a> ListNode<'a> for ServiceListNode<'a> {
+impl ListNode for ServiceListNode {
 
-    type Item = Service<'a>;
+    type Item = Service;
 
     fn elem_ref(&self) -> &Self::Item {
         &self.service
@@ -203,7 +202,7 @@ impl<'a> ListNode<'a> for ServiceListNode<'a> {
         self.service = elem;
     }
 
-    fn next_mut(&'a mut self) -> &'a mut Option<*mut Self> {
+    fn next_mut(&mut self) -> &mut Option<*mut Self> {
         &mut self.next
     }
 
@@ -216,20 +215,20 @@ impl<'a> ListNode<'a> for ServiceListNode<'a> {
     }
 }
 
-pub struct ObjectList<'a> {
-    top: Option<*mut ObjectListNode<'a>>,
+pub struct ObjectList {
+    top: Option<*mut ObjectListNode>,
 }
 
-impl<'a> Default for ObjectList<'a> {
+impl Default for ObjectList {
 
     fn default() -> Self {
         ObjectList { top : None }
     }
 }
 
-impl<'a> List<'a> for ObjectList<'a> {
+impl List for ObjectList {
 
-    type Node = ObjectListNode<'a>;
+    type Node = ObjectListNode;
 
     fn top(&self) -> Option<*const Self::Node> {
         match self.top {
@@ -247,18 +246,18 @@ impl<'a> List<'a> for ObjectList<'a> {
     }
 }
 
-pub struct ObjectListNode<'a> {
+pub struct ObjectListNode {
 
     /// The actual service.
-    object : Object<'a>,
+    object : Object,
 
     /// Next node, if any.
-    next : Option<*mut ObjectListNode<'a>>,
+    next : Option<*mut ObjectListNode>,
 }
 
-impl<'a> ObjectListNode<'a> {
+impl ObjectListNode {
 
-    pub fn new(object: Object<'a>) -> Self {
+    pub fn new(object: Object) -> Self {
         ObjectListNode {
             object : object,
             next   : None,
@@ -266,9 +265,9 @@ impl<'a> ObjectListNode<'a> {
     }
 }
 
-impl<'a> ListNode<'a> for ObjectListNode<'a> {
+impl ListNode for ObjectListNode {
 
-    type Item = Object<'a>;
+    type Item = Object;
 
     fn elem_ref(&self) -> &Self::Item {
         &self.object
@@ -282,7 +281,7 @@ impl<'a> ListNode<'a> for ObjectListNode<'a> {
         self.object = elem;
     }
 
-    fn next_mut(&'a mut self) -> &'a mut Option<*mut Self> {
+    fn next_mut(&mut self) -> &mut Option<*mut Self> {
         &mut self.next
     }
 
@@ -291,18 +290,18 @@ impl<'a> ListNode<'a> for ObjectListNode<'a> {
     }
 }
 
-impl<'a> Iterator for ServiceListNode<'a> {
+impl Iterator for ServiceListNode {
 
-    type Item = *mut ServiceListNode<'a>;
+    type Item = *mut ServiceListNode;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.next
     }
 }
 
-impl<'a> Iterator for ObjectListNode<'a> {
+impl Iterator for ObjectListNode {
 
-    type Item = *mut ObjectListNode<'a>;
+    type Item = *mut ObjectListNode;
 
     fn next(&mut self) -> Option<Self::Item> {
         (*self).next
@@ -314,50 +313,50 @@ impl<'a> Iterator for ObjectListNode<'a> {
 pub struct ServiceHandle<'a> {
 
     /// An object that owns this service.
-    object: &'a mut Object<'a>,
+    object: &'a mut Object,
 
     /// A list of services that contains this service.
-    list: &'a mut ServiceList<'a>,
+    list: &'a mut ServiceList,
 
     /// Node of service list that holds this service.
-    node: *mut ServiceListNode<'a>,
+    node: *mut ServiceListNode,
 
     /// The previous node of the list if any.
-    prev_node: Option<*mut ServiceListNode<'a>>,
+    prev_node: Option<*mut ServiceListNode>,
 }
 
-impl<'a> Handle<'a> for ServiceHandle<'a> {
+impl<'a> Handle for ServiceHandle<'a> {
 
-    type Item = Object<'a>;
+    type Item = Object;
 
-    type ListNode = ServiceListNode<'a>;
+    type ListNode = ServiceListNode;
 
-    fn item_ref(&'a self) -> &'a Self::Item {
+    fn item_ref(&self) -> &Self::Item {
         &self.object
     }
 
-    fn item_mut(&'a mut self) -> &'a mut Self::Item {
+    fn item_mut(&mut self) -> &mut Self::Item {
         &mut self.object
     }
 
-    fn node_ptr_mut(&'a mut self) -> &'a mut *mut Self::ListNode {
+    fn node_ptr_mut(&mut self) -> &mut *mut Self::ListNode {
         &mut self.node
     }
 
-    fn node_ptr(&'a self) -> *mut Self::ListNode {
+    fn node_ptr(&self) -> *mut Self::ListNode {
         self.node
     }
 
-    fn get_mut_prev_node_ptr(&'a mut self)
-            -> &'a mut Option<*mut Self::ListNode> {
+    fn get_mut_prev_node_ptr(&mut self)
+            -> &mut Option<*mut Self::ListNode> {
         &mut self.prev_node
     }
 
-    fn get_prev_node_ptr(&'a self) -> Option<*mut Self::ListNode> {
+    fn get_prev_node_ptr(&self) -> Option<*mut Self::ListNode> {
         self.prev_node
     }
 
-    fn next_node_ptr(&'a self) -> Option<*mut Self::ListNode> {
+    fn next_node_ptr(&self) -> Option<*mut Self::ListNode> {
         unsafe {
             match *(*self.node_ptr()).next_ref() {
                 Some(val) => Some(val as *const _ as *mut _),
@@ -367,13 +366,13 @@ impl<'a> Handle<'a> for ServiceHandle<'a> {
     }
 }
 
-impl<'a> HandleRemovable<'a> for ServiceHandle<'a> {
+impl<'a> HandleRemovable for ServiceHandle<'a> {
 
-    fn is_on_list_top(&'a self) -> bool {
+    fn is_on_list_top(&self) -> bool {
         self.prev_node.is_none()
     }
 
-    fn set_next_node_as_list_top(&'a self) {
+    fn set_next_node_as_list_top(&self) {
         unsafe {
             let top         = &(*self.list).top as *const _ as *mut _;
             let next_node   = (*self.node_ptr()).next();
@@ -382,7 +381,7 @@ impl<'a> HandleRemovable<'a> for ServiceHandle<'a> {
         }
     }
 
-    fn link_next_node_to_prev(&'a self) {
+    fn link_next_node_to_prev(&self) {
         unsafe {
             let prev = &self.prev_node as *const _ as *mut _;
             let next = (*self.node_ptr()).next();

@@ -9,44 +9,44 @@ use self::lists::*;
 
 #[derive(Clone, Copy)]
 /// CCS Service handle.
-pub struct Service<'a> {
+pub struct Service {
 
     /// The name of the service. Used to find a service to link to.
-    name : &'a str,
+    name : *const str,
 
     /// Function address in object memory to run when service is requested.
     /// The code pointer is 32-bit wide.
     func : u32,
 }
 
-impl<'a> Service<'a> {
+impl Service {
 
     /// Create new service metadata with given fields.
-    pub fn new(name: &'a str, func: u32) -> Self {
+    pub fn new(name: &str, func: u32) -> Self {
         Service {
-            name : name,
+            name : name as *const _,
             func : func,
         }
     }
 }
 
 /// CCS Object handle.
-pub struct Object<'a> {
+pub struct Object {
 
     /// The name of the object. Used to find a service to link to.
-    name : &'a str,
+    name : *const str,
 
     /// List of all services that this object provides to external network.
-    pub_serv_list       : ServiceList<'a>,
+    pub_serv_list       : ServiceList,
 
     // List of all sub-objects that are accessible from the external network.
-    pub_obj_list        : ObjectList<'a>,
+    pub_obj_list        : ObjectList,
 
     /// List of all private services.
-    priv_serv_list      : ServiceList<'a>,
+    priv_serv_list      : ServiceList,
 
     /// List of all private sub-objects.
-    priv_obj_list       : ObjectList<'a>,
+    priv_obj_list       : ObjectList,
 
     /// Whether parent object parent network is visible for this child.
     ///
@@ -71,12 +71,12 @@ pub struct Object<'a> {
     is_parent_network_visible   : bool,
 }
 
-impl<'a> Object<'a> {
+impl Object {
 
     /// Create new object with given name and empty lists.
-    pub fn new(name: &'a str) -> Self {
+    pub fn new(name: &str) -> Self {
         Object {
-            name            : name,
+            name            : name as *const _,
 
             pub_serv_list   : Default::default(),
             priv_serv_list  : Default::default(),

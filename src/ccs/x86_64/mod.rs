@@ -19,15 +19,15 @@ impl Ptr {
         }
     }
 
-    pub fn as_object_ptr<'a>(&self) -> *mut ccs::Object<'a> {
+    pub fn as_object_ptr(&self) -> *mut ccs::Object {
         unsafe { ::core::mem::transmute(self.addr.get()) }
     }
 
-    pub fn as_service_node_ptr<'a>(&self) -> *mut ccs::ServiceListNode<'a> {
+    pub fn as_service_node_ptr(&self) -> *mut ccs::ServiceListNode {
         unsafe { ::core::mem::transmute(self.addr.get()) }
     }
 
-    pub fn as_object_node_ptr<'a>(&self) -> *mut ccs::ObjectListNode<'a> {
+    pub fn as_object_node_ptr(&self) -> *mut ccs::ObjectListNode {
         unsafe { ::core::mem::transmute(self.addr.get()) }
     }
 
@@ -54,21 +54,19 @@ impl Ptr {
         self.limit
     }
 
-    pub fn next_object_ptr<'a>(&self) -> *mut ccs::Object<'a> {
+    pub fn next_object_ptr(&self) -> *mut ccs::Object {
         let object_ptr = self.as_object_ptr();
         self.skip_object();
         object_ptr
     }
 
-    pub fn next_object_node_ptr<'a>(&self)
-            -> *mut ccs::ObjectListNode<'a> {
+    pub fn next_object_node_ptr(&self) -> *mut ccs::ObjectListNode {
         let list_node_ptr = self.as_object_node_ptr();
         self.skip_object_node();
         list_node_ptr
     }
 
-    pub fn next_service_node_ptr<'a>(&self)
-            -> *mut ccs::ServiceListNode<'a> {
+    pub fn next_service_node_ptr(&self) -> *mut ccs::ServiceListNode {
         let list_node_ptr = self.as_service_node_ptr();
         self.skip_service_node();
         list_node_ptr
@@ -114,21 +112,21 @@ trait Allocate : Sized {
     }
 }
 
-impl<'a> Allocate for ccs::Object<'a> {
+impl Allocate for ccs::Object {
 
     unsafe fn alloc_next_ptr(ptr: &Ptr) -> *mut Self {
         ptr.next_object_ptr()
     }
 }
 
-impl<'a> Allocate for ccs::ServiceListNode<'a> {
+impl Allocate for ccs::ServiceListNode {
 
     unsafe fn alloc_next_ptr(ptr: &Ptr) -> *mut Self {
         ptr.next_service_node_ptr()
     }
 }
 
-impl<'a> Allocate for ccs::ObjectListNode<'a> {
+impl Allocate for ccs::ObjectListNode {
 
     unsafe fn alloc_next_ptr(ptr: &Ptr) -> *mut Self {
         ptr.next_object_node_ptr()
