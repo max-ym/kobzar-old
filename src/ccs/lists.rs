@@ -17,6 +17,19 @@ pub trait List<'a> {
     /// If you just need to replace the first node without changing other
     /// part of the list you need another way.
     fn set_top(&mut self, top: Option<&'a Self::Node>);
+
+    /// Append new nodes to the list top.
+    fn append(&'a mut self, node: &'a mut Self::Node) {
+        let link_node = &mut match node.last_node() {
+            Some(val) => val,
+            None      => node,
+        } as *const _ as *mut Self::Node;
+
+        unsafe {
+            *(*link_node).next_mut() = self.top();
+            self.set_top(Some(&*link_node));
+        }
+    }
 }
 
 /// The node of the list. Stores only one element of the list and a
@@ -37,6 +50,18 @@ pub trait ListNode<'a> {
 
     /// Get a reference to the next node option.
     fn next_ref(&self) -> &Option<&'a Self>;
+
+    fn last_node(&self) -> Option<&'a Self> {
+        let mut prev = None;
+        loop {
+            let node = *self.next_ref();
+            if node.is_none() {
+                return prev;
+            }
+
+            prev = node;
+        }
+    }
 }
 
 /// Handle to edit the item of the object or service lists in any object
