@@ -39,6 +39,7 @@ pub trait ListNode<'a> {
     /// Reference to the item in this node.
     fn elem_ref(&self) -> &Self::Item;
 
+    /// Reference to mutable item.
     fn elem_mut(&mut self) -> &mut Self::Item;
 
     /// Set the item in this node.
