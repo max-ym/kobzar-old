@@ -4,14 +4,18 @@ use ::mem::map::{CCS_BASIC_SETUP_ADDRESS, CCS_BASIC_SETUP_ADDRESS_END};
 
 #[derive(Clone, Copy)]
 struct Ptr {
-    addr: usize
+    addr    : usize,
+    limit   : usize,
 }
 
 impl Ptr {
 
     /// Create new pointer struct for given address.
-    pub fn new(addr: usize) -> Self {
-        Ptr { addr : addr }
+    pub fn new(addr: usize, limit: usize) -> Self {
+        Ptr {
+            addr    : addr,
+            limit   : limit,
+        }
     }
 
     pub fn as_object_ptr<'a>(&self) -> *mut ccs::Object<'a> {
@@ -38,8 +42,12 @@ impl Ptr {
         self.addr += ::core::mem::size_of::<ccs::ObjectListNode>();
     }
 
-    pub fn value(&self) -> usize {
+    pub fn addr(&self) -> usize {
         self.addr
+    }
+
+    pub fn limit(&self) -> usize {
+        self.limit
     }
 
     pub fn next_object_ptr<'a>(&mut self) -> *mut ccs::Object<'a> {
@@ -61,6 +69,48 @@ impl Ptr {
         self.skip_service_node();
         list_node_ptr
     }
+
+    pub fn exceeds(&self, addr: usize) -> bool {
+        self.addr >= addr
+    }
+}
+
+trait GetAllocated : Sized {
+
+    fn get_allocated(ptr: &mut Ptr) -> Option<*mut Self> {
+        let size = ::core::mem::size_of::<Self>();
+
+        if ptr.addr() + size > ptr.limit() {
+            None
+        } else {
+            unsafe { Some(Self::alloc_next_ptr(ptr)) }
+        }
+    }
+
+    unsafe fn alloc_next_ptr(ptr: &mut Ptr) -> *mut Self;
+}
+
+trait Allocate : GetAllocated {
+
+    fn allocate(ptr: &mut Ptr) -> *mut Self {
+        let option = Self::get_allocated(ptr);
+
+        if let Some(val) = option {
+            val
+        } else {
+            panic!("CCS table violates memory limits");
+        }
+    }
+}
+
+impl<'a> GetAllocated for ccs::Object<'a> {
+
+    unsafe fn alloc_next_ptr(ptr: &mut Ptr) -> *mut Self {
+        ptr.next_object_ptr()
+    }
+}
+
+impl<'a> Allocate for ccs::Object<'a> {
 }
 
 pub fn setup() {
