@@ -167,16 +167,25 @@ pub fn setup() {
         }
     };
 
+    let save_to_pub_serv_list = |parent: &mut ccs::Object, serv: ccs::Service|
+            -> *mut ccs::Service {
+        unsafe {
+            let list_node_ptr = ccs::ServiceListNode::allocate_ptr(&heap);
+            *list_node_ptr = ccs::ServiceListNode::new(serv);
+            let allocated_item_ptr = (*list_node_ptr).elem_mut_ptr();
+            parent.pub_serv_list.append(list_node_ptr);
+
+            allocated_item_ptr
+        }
+    };
+
     unsafe {
         let kobzar_obj  = save_to_pub_obj_list(&mut root_obj    , kobzar_obj);
         let kernel_obj  = save_to_pub_obj_list(&mut *kobzar_obj , kernel_obj);
         let ram_mgr_obj = save_to_pub_obj_list(&mut *kernel_obj , ram_mgr_obj);
 
-        let list_node = ccs::ServiceListNode::new(allocate_serv);
-        (*ram_mgr_obj).pub_serv_list.append(list_node.allocate_and_move(&heap));
-
-        let list_node = ccs::ServiceListNode::new(release_serv);
-        (*ram_mgr_obj).pub_serv_list.append(list_node.allocate_and_move(&heap));
+        save_to_pub_serv_list(&mut *ram_mgr_obj, allocate_serv);
+        save_to_pub_serv_list(&mut *ram_mgr_obj, release_serv);
     }
 
     root_obj.allocate_and_move(&heap);
