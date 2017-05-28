@@ -39,6 +39,8 @@ pub trait ListNode<'a> {
     /// Reference to the item in this node.
     fn elem_ref(&self) -> &Self::Item;
 
+    fn elem_mut(&mut self) -> &mut Self::Item;
+
     /// Set the item in this node.
     fn set_elem(&mut self, top: Self::Item);
 
@@ -195,6 +197,10 @@ impl<'a> ListNode<'a> for ServiceListNode<'a> {
     fn next_ref(&self) -> &Option<&'a Self> {
         &self.next
     }
+
+    fn elem_mut(&mut self) -> &mut Self::Item {
+        &mut self.service
+    }
 }
 
 pub struct ObjectList<'a> {
@@ -246,6 +252,10 @@ impl<'a> ListNode<'a> for ObjectListNode<'a> {
 
     fn elem_ref(&self) -> &Self::Item {
         &self.object
+    }
+
+    fn elem_mut(&mut self) -> &mut Self::Item {
+        &mut self.object
     }
 
     fn set_elem(&mut self, elem: Self::Item) {
