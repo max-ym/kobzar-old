@@ -148,18 +148,29 @@ pub fn setup() {
     let allocate_serv   = ccs::Service::new(RAM_ALLOCATE_SERVICE, 0);
     let release_serv    = ccs::Service::new(RAM_RELEASE_SERVICE, 0);
 
+    // Save given child object in parent public object list and get a
+    // pointer to that object. This closure automatically allocates
+    // the data on the 'heap'.
+    let save_to_pub_obj_list = |parent: &mut ccs::Object, child: ccs::Object|
+            -> *mut ccs::Object {
+        unsafe {
+            // Allocate (uninitialized) node on the heap.
+            let list_node_ptr = ccs::ObjectListNode::allocate_ptr(&heap);
+
+            // Initialize node and set data.
+            *list_node_ptr = ccs::ObjectListNode::new(child);
+
+            let allocated_item_ptr = (*list_node_ptr).elem_mut_ptr();
+            parent.pub_obj_list.append(list_node_ptr);
+
+            allocated_item_ptr
+        }
+    };
+
     unsafe {
-        let mut list_node = ccs::ObjectListNode::new(kobzar_obj);
-        let kobzar_obj = list_node.elem_mut_ptr();
-        root_obj.pub_obj_list.append(list_node.allocate_and_move(&heap));
-
-        let mut list_node = ccs::ObjectListNode::new(kernel_obj);
-        let kernel_obj = list_node.elem_mut_ptr();
-        (*kobzar_obj).pub_obj_list.append(list_node.allocate_and_move(&heap));
-
-        let mut list_node = ccs::ObjectListNode::new(ram_mgr_obj);
-        let ram_mgr_obj = list_node.elem_mut_ptr();
-        (*kernel_obj).pub_obj_list.append(list_node.allocate_and_move(&heap));
+        let kobzar_obj  = save_to_pub_obj_list(&mut root_obj    , kobzar_obj);
+        let kernel_obj  = save_to_pub_obj_list(&mut *kobzar_obj , kernel_obj);
+        let ram_mgr_obj = save_to_pub_obj_list(&mut *kernel_obj , ram_mgr_obj);
 
         let list_node = ccs::ServiceListNode::new(allocate_serv);
         (*ram_mgr_obj).pub_serv_list.append(list_node.allocate_and_move(&heap));
