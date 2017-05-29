@@ -11,7 +11,7 @@ pub struct Stack {
 impl Stack {
 
     /// Remove last value from the stack and return it.
-    fn pop(&mut self) -> Option<u64> {
+    pub fn pop(&mut self) -> Option<u64> {
         if self.count == 0 {
             return None;
         }
@@ -22,6 +22,15 @@ impl Stack {
             self.count -= 1;
 
             Some(val)
+        }
+    }
+
+    /// Add new value onto the stack.
+    pub fn push(&mut self, val: u64) {
+        unsafe {
+            self.count += 1;
+            self.top = self.top.offset(1);
+            *self.top = val;
         }
     }
 }
