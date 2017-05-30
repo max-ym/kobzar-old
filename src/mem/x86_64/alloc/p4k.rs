@@ -100,15 +100,17 @@ impl Page4kMap {
 
     /// Try to return page back into the map. This will consume the page
     /// and set it as free for use.
-    pub fn try_return_page(&mut self, page: Page4k) -> Result<(), ()> {
+    pub fn try_return_page(&mut self, page: Page4k)
+            -> Result<(), PageReturnErr> {
         use self::PageStatus::Present;
+        use self::PageReturnErr::*;
 
         if !self.comprises(&page) {
-            return Err(());
+            return Err(NotComprised);
         }
 
         if self.page_status(&page) == Present {
-            return Err(());
+            return Err(AlreadyPresent);
         }
 
         self.set_page_present(&page);
@@ -137,4 +139,10 @@ impl Page4k {
 pub enum PageStatus {
     Present,
     Abscent,
+}
+
+#[derive(PartialEq)]
+pub enum PageReturnErr {
+    NotComprised,
+    AlreadyPresent,
 }
