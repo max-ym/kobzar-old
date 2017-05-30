@@ -239,3 +239,85 @@ impl PageFlags for P4E {
 
     fn_addr_12!();
 }
+
+impl PageFlags for P2E {
+
+    fn data(&self) -> u64 {
+        self.data
+    }
+
+    unsafe fn set_data(&mut self, data: u64) {
+        self.data = data;
+    }
+
+    fn addr(&self) -> u64 {
+        match self.as_variant() {
+            P2EVariant::Map(p2e) => (*p2e).addr(),
+            P2EVariant::Ref(p2e) => (*p2e).addr(),
+        }
+    }
+
+    unsafe fn set_addr(&mut self, addr: u64) {
+        match self.as_mut_variant() {
+            MutP2EVariant::Map(p2e) => (*p2e).set_addr(addr),
+            MutP2EVariant::Ref(p2e) => (*p2e).set_addr(addr),
+        }
+    }
+
+    fn pat(&self) -> bool {
+        match self.as_variant() {
+            P2EVariant::Map(p2e) => (*p2e).pat(),
+            P2EVariant::Ref(p2e) => (*p2e).pat(),
+        }
+    }
+
+    fn set_pat(&mut self, v: bool) {
+        match self.as_mut_variant() {
+            MutP2EVariant::Map(p2e) => (*p2e).set_pat(v),
+            MutP2EVariant::Ref(p2e) => (*p2e).set_pat(v),
+        }
+    }
+
+}
+
+impl P2E {
+
+    pub fn maps(&self) -> bool {
+        self.ps() == true
+    }
+
+    pub fn refs(&self) -> bool {
+        !self.maps()
+    }
+
+    pub fn as_variant(&self) -> P2EVariant {
+        if self.maps() {
+            let p: &P2EMap = unsafe {::core::mem::transmute(self) };
+            P2EVariant::Map(p)
+        } else {
+            let p: &P2ERef = unsafe { ::core::mem::transmute(self) };
+            P2EVariant::Ref(p)
+        }
+    }
+
+    pub fn as_mut_variant(&mut self) -> MutP2EVariant {
+        if self.maps() {
+            let p: &mut P2EMap = unsafe {::core::mem::transmute(self) };
+            MutP2EVariant::Map(p)
+        } else {
+            let p: &mut P2ERef = unsafe { ::core::mem::transmute(self) };
+            MutP2EVariant::Ref(p)
+        }
+    }
+
+}
+
+pub enum P2EVariant<'a> {
+    Map(&'a P2EMap),
+    Ref(&'a P2ERef),
+}
+
+pub enum MutP2EVariant<'a> {
+    Map(&'a mut P2EMap),
+    Ref(&'a mut P2ERef),
+}
