@@ -106,7 +106,7 @@ trait Allocate : Sized {
         unsafe { &mut *Self::allocate_ptr(ptr) }
     }
 
-    fn allocate_and_move(mut self, ptr: &Ptr) -> &mut Self {
+    fn allocate_and_move(self, ptr: &Ptr) -> &mut Self {
         let reference = Self::allocate_mut(ptr);
         *reference = self;
         reference
@@ -135,13 +135,13 @@ impl Allocate for ccs::ObjectListNode {
 }
 
 pub fn setup() {
-    let mut heap = Ptr::new_heap
+    let heap = Ptr::new_heap
             (CCS_BASIC_SETUP_ADDRESS, CCS_BASIC_SETUP_ADDRESS_END);
 
     let mut root_obj    = ccs::Object::new(MACHINE_ROOT_OBJECT);
-    let mut kobzar_obj  = ccs::Object::new(KOBZAR_ROOT_OBJECT);
-    let mut kernel_obj  = ccs::Object::new(KERNEL_OBJECT);
-    let mut ram_mgr_obj = ccs::Object::new(RAM_MANAGER_OBJECT);
+    let     kobzar_obj  = ccs::Object::new(KOBZAR_ROOT_OBJECT);
+    let     kernel_obj  = ccs::Object::new(KERNEL_OBJECT);
+    let     ram_mgr_obj = ccs::Object::new(RAM_MANAGER_OBJECT);
 
     // TODO: set valid service fn pointers.
     let allocate_serv   = ccs::Service::new(RAM_ALLOCATE_SERVICE, 0);
