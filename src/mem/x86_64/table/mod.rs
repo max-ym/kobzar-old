@@ -1,2 +1,2 @@
 mod page;
-pub use page::*;
+pub use self::page::*;
