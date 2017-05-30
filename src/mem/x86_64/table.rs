@@ -1,31 +1,64 @@
 /// Page Table entry. Page table level 1 entry. Maps 4KiB page.
 #[repr(packed)]
+#[derive(Default)]
 pub struct P1E {
     data    : u64
 }
 
 /// Page Directory entry. Page table level 2 entry. Maps 2MiB page.
 #[repr(packed)]
+#[derive(Default)]
 pub struct P2EMap {
     data    : u64
 }
 
 /// Page Directory entry. Page table level 2 entry. References P1 table.
 #[repr(packed)]
+#[derive(Default)]
 pub struct P2ERef {
+    data    : u64
+}
+
+/// Page Directory entry. Page table level 2 entry. Can be converted to
+/// P2EMap or P2ERef.
+#[repr(packed)]
+#[derive(Default)]
+pub struct P2E {
     data    : u64
 }
 
 /// Page Directory Pointer entry. Page table level 3 entry.
 #[repr(packed)]
+#[derive(Default)]
 pub struct P3E {
     data    : u64
 }
 
 /// Page Map Level 4 entry. Page table level 4 entry.
 #[repr(packed)]
+#[derive(Default)]
 pub struct P4E {
     data    : u64
+}
+
+#[repr(packed)]
+pub struct P4 {
+    entries : [P4E; 512]
+}
+
+#[repr(packed)]
+pub struct P3 {
+    entries : [P3E; 512]
+}
+
+#[repr(packed)]
+pub struct P2 {
+    entires : [P2E; 512]
+}
+
+#[repr(packed)]
+pub struct P1 {
+    entries : [P1E; 512]
 }
 
 /// Create getter and setter for single bit in page struct.
