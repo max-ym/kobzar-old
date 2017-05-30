@@ -34,7 +34,29 @@ impl Page4kMap {
 
     /// Get next free 4KiB page if any. Retrieved page is marked as used.
     pub fn get_next_page(&mut self) -> Option<Page4k> {
-        unimplemented!()
+        let mut iter_counter = 0u64;
+
+        while iter_counter < 8 {
+            let qw = &mut self.map[iter_counter as usize];
+            iter_counter += 1;
+
+            let v = ::asm::bit::bsf_u64(*qw);
+            if v.is_none() {
+                // No free pages in this qword. Skip to next.
+                continue;
+            }
+            // Found free page. Bit number of it in qword is stored here.
+            let biti = v.unwrap();
+
+            // Turn the page bit off = mark page abscent.
+            *qw ^= 1 << biti;
+
+            let page_index = biti + iter_counter * 64;
+
+            return Some(Page4k::new_by_index(&self.base, page_index as u16));
+        }
+
+        None
     }
 
     /// Whether given page was taken from this map.
@@ -101,6 +123,13 @@ impl Page4k {
     pub fn index(&self) -> u16 {
         let diff = self.addr - self.base.addr();
         (diff / 4096) as u16
+    }
+
+    pub fn new_by_index(base: &Page2m, index: u16) -> Self {
+        Page4k {
+            base    : base.clone(),
+            addr    : index as u64 * 4096 + base.addr()
+        }
     }
 }
 
