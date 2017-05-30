@@ -12,7 +12,7 @@ pub struct ServiceData {
 }
 
 /// General purpose register file.
-struct GPRegisterFile {
+struct GpRegisterFile {
     rax : u64,
     rbx : u64,
     rcx : u64,
