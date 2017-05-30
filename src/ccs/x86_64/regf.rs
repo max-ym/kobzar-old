@@ -16,6 +16,7 @@ pub struct GpRegisterFile {
     pub r14 : u64,
     pub r15 : u64,
 
+    pub rsp : u64,
     pub rip : u64,
     pub rf  : u64, // RFLAGS
 }
