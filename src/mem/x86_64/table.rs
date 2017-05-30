@@ -1,12 +1,18 @@
-/// Page Table entry. Page table level 1 entry.
+/// Page Table entry. Page table level 1 entry. Maps 4KiB page.
 #[repr(packed)]
 pub struct P1E {
     data    : u64
 }
 
-/// Page Directory entry. Page table level 2 entry.
+/// Page Directory entry. Page table level 2 entry. Maps 2MiB page.
 #[repr(packed)]
-pub struct P2E {
+pub struct P2EMap {
+    data    : u64
+}
+
+/// Page Directory entry. Page table level 2 entry. References P1 table.
+#[repr(packed)]
+pub struct P2ERef {
     data    : u64
 }
 
@@ -52,11 +58,49 @@ macro_rules! flag_rw_cancel {
     )
 }
 
+macro_rules! fn_addr_12 {
+    () => (
+        fn addr(&self) -> u64 {
+            let mask = 0x0007FFFFFFFFF000;
+            self.data & mask
+        }
+
+        unsafe fn set_addr(&mut self, a: u64) {
+            let mask = 0x0007FFFFFFFFF000;
+            self.data = self.data & !mask + a;
+        }
+    )
+}
+
+macro_rules! fn_addr_13 {
+    () => (
+        fn addr(&self) -> u64 {
+            let mask = 0x0007FFFFFFFFE000;
+            self.data & mask
+        }
+
+        unsafe fn set_addr(&mut self, a: u64) {
+            let mask = 0x0007FFFFFFFFE000;
+            self.data = self.data & !mask + a;
+        }
+    )
+}
+
 pub trait PageFlags {
 
+    #[inline(always)]
     fn data(&self) -> u64;
 
+    #[inline(always)]
     unsafe fn set_data(&mut self, data: u64);
+
+    /// Address of memory referenced by this page.
+    #[inline(always)]
+    fn addr(&self) -> u64;
+
+    /// Set address of memory referenced by this page.
+    #[inline(always)]
+    unsafe fn set_addr(&mut self, a: u64);
 
     flag_rw!(0x00, present  , set_present   );
     flag_rw!(0x01, rw       , set_rw        );
@@ -83,9 +127,11 @@ impl PageFlags for P1E {
 
     // Not availbale for P1E.
     flag_rw_cancel!(ps, set_ps);
+
+    fn_addr_12!();
 }
 
-impl PageFlags for P2E {
+impl PageFlags for P2EMap {
 
     fn data(&self) -> u64 {
         self.data
@@ -97,6 +143,34 @@ impl PageFlags for P2E {
 
     // Change bit id from 0x07 to 0x0C.
     flag_rw!(0x0C, pat, set_pat);
+
+    fn_addr_12!();
+
+    /// Must be 'true' to map to 2MiB page.
+    fn ps(&self) -> bool { true }
+    fn set_ps(&mut self, v: bool) {}
+}
+
+impl PageFlags for P2ERef {
+
+    fn data(&self) -> u64 {
+        self.data
+    }
+
+    unsafe fn set_data(&mut self, data: u64) {
+        self.data = data;
+    }
+
+    // Not exist.
+    flag_rw_cancel!(pat     , set_pat       );
+    flag_rw_cancel!(dirty   , set_dirty     );
+    flag_rw_cancel!(global  , set_global    );
+
+    fn_addr_13!();
+
+    /// Must be 'false' to reference level 1 page table.
+    fn ps(&self) -> bool { false }
+    fn set_ps(&mut self, v: bool) {}
 }
 
 impl PageFlags for P3E {
@@ -111,6 +185,8 @@ impl PageFlags for P3E {
 
     // Change bit id from 0x07 to 0x0C.
     flag_rw!(0x0C, pat, set_pat);
+
+    fn_addr_12!();
 }
 
 impl PageFlags for P4E {
@@ -126,4 +202,6 @@ impl PageFlags for P4E {
     // Ignored.
     flag_rw_cancel!(dirty   , set_dirty );
     flag_rw_cancel!(global  , set_global);
+
+    fn_addr_12!();
 }
