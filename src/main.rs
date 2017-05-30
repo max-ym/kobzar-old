@@ -6,6 +6,8 @@
 #![feature(asm)]
 #![feature(const_fn)]
 
+#![allow(dead_code)]
+
 // Contains some functions that perform same operations that otherwise would
 // require using asm! macro.
 #[cfg(target_arch = "x86_64")]
