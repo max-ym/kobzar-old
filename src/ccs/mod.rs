@@ -15,14 +15,13 @@ pub struct Service {
     name : *const str,
 
     /// Function address in object memory to run when service is requested.
-    /// The code pointer is 32-bit wide.
-    func : u32,
+    func : usize,
 }
 
 impl Service {
 
     /// Create new service metadata with given fields.
-    pub fn new(name: &str, func: u32) -> Self {
+    pub fn new(name: &str, func: usize) -> Self {
         Service {
             name : name as *const _,
             func : func,
