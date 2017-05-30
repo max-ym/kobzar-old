@@ -69,7 +69,7 @@ macro_rules! flag_rw {
 macro_rules! flag_rw_cancel {
     ($get_name:ident, $set_name:ident) => (
         fn $get_name(&self) -> bool { false }
-        fn $set_name(&mut self, v: bool) { }
+        fn $set_name(&mut self, _v: bool) { }
     )
 }
 
@@ -164,7 +164,7 @@ impl PageFlags for P2EMap {
 
     /// Must be 'true' to map to 2MiB page.
     fn ps(&self) -> bool { true }
-    fn set_ps(&mut self, v: bool) {}
+    fn set_ps(&mut self, _v: bool) {}
 }
 
 impl PageFlags for P2ERef {
@@ -186,7 +186,7 @@ impl PageFlags for P2ERef {
 
     /// Must be 'false' to reference level 1 page table.
     fn ps(&self) -> bool { false }
-    fn set_ps(&mut self, v: bool) {}
+    fn set_ps(&mut self, _v: bool) {}
 }
 
 impl PageFlags for P3E {
