@@ -1,4 +1,5 @@
 /// General purpose register file.
+#[derive(Default, Clone, Copy)]
 pub struct GpRegisterFile {
     pub rax : u64,
     pub rbx : u64,
@@ -16,9 +17,11 @@ pub struct GpRegisterFile {
     pub r15 : u64,
 }
 
+#[derive(Default, Clone, Copy)]
 pub struct Xmm(u64, u64);
 
 /// XMM register file.
+#[derive(Default, Clone, Copy)]
 pub struct XmmRegisterFile {
     pub xmm0    : Xmm,
     pub xmm1    : Xmm,
@@ -38,9 +41,11 @@ pub struct XmmRegisterFile {
     pub xmm15   : Xmm,
 }
 
+#[derive(Default, Clone, Copy)]
 pub struct Ymm(u64, u64, u64, u64);
 
 /// YMM register file.
+#[derive(Default, Clone, Copy)]
 pub struct YmmRegisterFile {
     pub ymm0    : Ymm,
     pub ymm1    : Ymm,
