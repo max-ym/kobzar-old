@@ -17,6 +17,7 @@ pub struct GpRegisterFile {
     pub r15 : u64,
 }
 
+/// XMM register.
 #[derive(Default, Clone, Copy)]
 pub struct Xmm(u64, u64);
 
@@ -41,6 +42,7 @@ pub struct XmmRegisterFile {
     pub xmm15   : Xmm,
 }
 
+/// YMM register.
 #[derive(Default, Clone, Copy)]
 pub struct Ymm(u64, u64, u64, u64);
 
