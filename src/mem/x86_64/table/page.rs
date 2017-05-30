@@ -43,26 +43,6 @@ pub struct P4E {
     data    : u64
 }
 
-#[repr(packed)]
-pub struct P4 {
-    entries : [P4E; 512]
-}
-
-#[repr(packed)]
-pub struct P3 {
-    entries : [P3E; 512]
-}
-
-#[repr(packed)]
-pub struct P2 {
-    entries : [P2E; 512]
-}
-
-#[repr(packed)]
-pub struct P1 {
-    entries : [P1E; 512]
-}
-
 /// Create getter and setter for single bit in page struct.
 macro_rules! flag_rw {
     ($i:expr, $get_name:ident, $set_name:ident) => (
@@ -326,40 +306,4 @@ pub enum P2EVariant<'a> {
 pub enum MutP2EVariant<'a> {
     Map(&'a mut P2EMap),
     Ref(&'a mut P2ERef),
-}
-
-impl Default for P1 {
-
-    fn default() -> Self {
-        P1 {
-            entries : [Default::default(); 512]
-        }
-    }
-}
-
-impl Default for P2 {
-
-    fn default() -> Self {
-        P2 {
-            entries : [Default::default(); 512]
-        }
-    }
-}
-
-impl Default for P3 {
-
-    fn default() -> Self {
-        P3 {
-            entries : [Default::default(); 512]
-        }
-    }
-}
-
-impl Default for P4 {
-
-    fn default() -> Self {
-        P4 {
-            entries : [Default::default(); 512]
-        }
-    }
 }
