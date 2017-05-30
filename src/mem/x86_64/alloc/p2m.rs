@@ -2,7 +2,7 @@
 pub struct Stack {
 
     /// Top of the stack.
-    top     : *mut Page2mHandle,
+    top     : *mut Page2m,
 
     /// The count of addresses on the stack.
     count   : u32,
@@ -10,7 +10,7 @@ pub struct Stack {
 
 #[derive(Clone, Copy)]
 /// 2MiB page handle.
-pub struct Page2mHandle {
+pub struct Page2m {
 
     /// Address of a page.
     addr    : u64
@@ -19,7 +19,7 @@ pub struct Page2mHandle {
 impl Stack {
 
     /// Remove last value from the stack and return it.
-    pub fn pop(&mut self) -> Option<Page2mHandle> {
+    pub fn pop(&mut self) -> Option<Page2m> {
         if self.count == 0 {
             return None;
         }
@@ -34,7 +34,7 @@ impl Stack {
     }
 
     /// Add new value onto the stack.
-    pub fn push(&mut self, val: Page2mHandle) {
+    pub fn push(&mut self, val: Page2m) {
         unsafe {
             self.count += 1;
             self.top = self.top.offset(1);
@@ -43,10 +43,10 @@ impl Stack {
     }
 }
 
-impl Page2mHandle {
+impl Page2m {
 
     pub fn new(addr: u64) -> Self {
-        Page2mHandle { addr : addr }
+        Page2m { addr : addr }
     }
 
     pub fn addr(&self) -> u64 {
