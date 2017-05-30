@@ -3,6 +3,9 @@
 mod page;
 pub use self::page::*;
 
+/// Main page map.
+pub type MainPageMap = P4;
+
 #[repr(packed)]
 pub struct P4 {
     entries : [P4E; 512]
