@@ -88,3 +88,16 @@ pub struct FprRegisterFile {
     pub fpr6    : Fpr,
     pub fpr7    : Fpr,
 }
+
+/// MMX register file.
+#[derive(Default, Clone, Copy)]
+pub struct MmxRegisterFile {
+    pub mmx0    : u64,
+    pub mmx1    : u64,
+    pub mmx2    : u64,
+    pub mmx3    : u64,
+    pub mmx4    : u64,
+    pub mmx5    : u64,
+    pub mmx6    : u64,
+    pub mmx7    : u64,
+}
