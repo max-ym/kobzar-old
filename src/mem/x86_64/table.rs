@@ -2,21 +2,21 @@
 
 /// Page Table entry. Page table level 1 entry. Maps 4KiB page.
 #[repr(packed)]
-#[derive(Default)]
+#[derive(Default, Clone, Copy)]
 pub struct P1E {
     data    : u64
 }
 
 /// Page Directory entry. Page table level 2 entry. Maps 2MiB page.
 #[repr(packed)]
-#[derive(Default)]
+#[derive(Default, Clone, Copy)]
 pub struct P2EMap {
     data    : u64
 }
 
 /// Page Directory entry. Page table level 2 entry. References P1 table.
 #[repr(packed)]
-#[derive(Default)]
+#[derive(Default, Clone, Copy)]
 pub struct P2ERef {
     data    : u64
 }
@@ -24,21 +24,21 @@ pub struct P2ERef {
 /// Page Directory entry. Page table level 2 entry. Can be converted to
 /// P2EMap or P2ERef.
 #[repr(packed)]
-#[derive(Default)]
+#[derive(Default, Clone, Copy)]
 pub struct P2E {
     data    : u64
 }
 
 /// Page Directory Pointer entry. Page table level 3 entry.
 #[repr(packed)]
-#[derive(Default)]
+#[derive(Default, Clone, Copy)]
 pub struct P3E {
     data    : u64
 }
 
 /// Page Map Level 4 entry. Page table level 4 entry.
 #[repr(packed)]
-#[derive(Default)]
+#[derive(Default, Clone, Copy)]
 pub struct P4E {
     data    : u64
 }
@@ -55,7 +55,7 @@ pub struct P3 {
 
 #[repr(packed)]
 pub struct P2 {
-    entires : [P2E; 512]
+    entries : [P2E; 512]
 }
 
 #[repr(packed)]
@@ -322,4 +322,40 @@ pub enum P2EVariant<'a> {
 pub enum MutP2EVariant<'a> {
     Map(&'a mut P2EMap),
     Ref(&'a mut P2ERef),
+}
+
+impl Default for P1 {
+
+    fn default() -> Self {
+        P1 {
+            entries : [Default::default(); 512]
+        }
+    }
+}
+
+impl Default for P2 {
+
+    fn default() -> Self {
+        P2 {
+            entries : [Default::default(); 512]
+        }
+    }
+}
+
+impl Default for P3 {
+
+    fn default() -> Self {
+        P3 {
+            entries : [Default::default(); 512]
+        }
+    }
+}
+
+impl Default for P4 {
+
+    fn default() -> Self {
+        P4 {
+            entries : [Default::default(); 512]
+        }
+    }
 }
