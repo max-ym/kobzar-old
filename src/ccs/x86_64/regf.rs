@@ -15,6 +15,9 @@ pub struct GpRegisterFile {
     pub r13 : u64,
     pub r14 : u64,
     pub r15 : u64,
+
+    pub rip : u64,
+    pub rf  : u64, // RFLAGS
 }
 
 /// XMM register.
