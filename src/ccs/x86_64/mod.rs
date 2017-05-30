@@ -28,3 +28,25 @@ struct GpRegisterFile {
     r14 : u64,
     r15 : u64,
 }
+
+struct Xmm(u64, u64);
+
+/// XMM register file.
+struct XmmRegisterFile {
+    xmm0    : Xmm,
+    xmm1    : Xmm,
+    xmm2    : Xmm,
+    xmm3    : Xmm,
+    xmm4    : Xmm,
+    xmm5    : Xmm,
+    xmm6    : Xmm,
+    xmm7    : Xmm,
+    xmm8    : Xmm,
+    xmm9    : Xmm,
+    xmm10   : Xmm,
+    xmm11   : Xmm,
+    xmm12   : Xmm,
+    xmm13   : Xmm,
+    xmm14   : Xmm,
+    xmm15   : Xmm,
+}
