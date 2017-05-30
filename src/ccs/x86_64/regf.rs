@@ -37,3 +37,25 @@ pub struct XmmRegisterFile {
     pub xmm14   : Xmm,
     pub xmm15   : Xmm,
 }
+
+pub struct Ymm(u64, u64, u64, u64);
+
+/// YMM register file.
+pub struct YmmRegisterFile {
+    pub ymm0    : Ymm,
+    pub ymm1    : Ymm,
+    pub ymm2    : Ymm,
+    pub ymm3    : Ymm,
+    pub ymm4    : Ymm,
+    pub ymm5    : Ymm,
+    pub ymm6    : Ymm,
+    pub ymm7    : Ymm,
+    pub ymm8    : Ymm,
+    pub ymm9    : Ymm,
+    pub ymm10   : Ymm,
+    pub ymm11   : Ymm,
+    pub ymm12   : Ymm,
+    pub ymm13   : Ymm,
+    pub ymm14   : Ymm,
+    pub ymm15   : Ymm,
+}
