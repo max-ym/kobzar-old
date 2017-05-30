@@ -98,7 +98,8 @@ pub trait PageFlags {
     #[inline(always)]
     fn addr(&self) -> u64;
 
-    /// Set address of memory referenced by this page.
+    /// Set address of memory referenced by this page. Does not check
+    /// if address is valid!
     #[inline(always)]
     unsafe fn set_addr(&mut self, a: u64);
 
