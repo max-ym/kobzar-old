@@ -69,3 +69,21 @@ pub struct YmmRegisterFile {
     pub ymm14   : Ymm,
     pub ymm15   : Ymm,
 }
+
+/// Floating-point register.
+#[derive(Default, Clone, Copy)]
+#[repr(packed)]
+pub struct Fpr(u16, u64);
+
+/// Floating-point register register file.
+#[derive(Default, Clone, Copy)]
+pub struct FprRegisterFile {
+    pub fpr0    : Fpr,
+    pub fpr1    : Fpr,
+    pub fpr2    : Fpr,
+    pub fpr3    : Fpr,
+    pub fpr4    : Fpr,
+    pub fpr5    : Fpr,
+    pub fpr6    : Fpr,
+    pub fpr7    : Fpr,
+}
