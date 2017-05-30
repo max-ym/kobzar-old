@@ -292,31 +292,27 @@ impl P2E {
         !self.maps()
     }
 
+    unsafe fn transmute<T>(&self) -> &T {
+        &*(self as *const P2E as *const T)
+    }
+
+    unsafe fn transmute_mut<T>(&mut self) -> &mut T {
+        &mut *(self as *const P2E as *mut P2E as *mut T)
+    }
+
     pub fn as_variant(&self) -> P2EVariant {
         if self.maps() {
-            let p: &P2EMap = unsafe {
-                &*(self as *const P2E as *const P2EMap)
-            };
-            P2EVariant::Map(p)
+            P2EVariant::Map(unsafe { self.transmute() })
         } else {
-            let p: &P2ERef = unsafe {
-                &*(self as *const P2E as *const P2ERef)
-            };
-            P2EVariant::Ref(p)
+            P2EVariant::Ref(unsafe { self.transmute() })
         }
     }
 
     pub fn as_mut_variant(&mut self) -> MutP2EVariant {
         if self.maps() {
-            let p: &mut P2EMap = unsafe {
-                &mut *(self as *const P2E as *mut P2E as *mut _)
-            };
-            MutP2EVariant::Map(p)
+            MutP2EVariant::Map(unsafe { self.transmute_mut() })
         } else {
-            let p: &mut P2ERef = unsafe {
-                &mut *(self as *const P2E as *mut P2E as *mut _)
-            };
-            MutP2EVariant::Ref(p)
+            MutP2EVariant::Ref(unsafe { self.transmute_mut() })
         }
     }
 
