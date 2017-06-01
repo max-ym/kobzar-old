@@ -75,14 +75,49 @@ pub struct GdtHandle {
 impl GdtHandle {
 
     /// Get descriptor reference by it's index in the descriptor table.
+    /// Does not check if descriptor is actually present in the table.
     pub unsafe fn descriptor_ref<'a, 'b>(&'a self, index: u16)
             -> &'b Descriptor {
         &*self.arr.offset(index as isize)
     }
 
-    /// Get mutable reference to descriptor in GDT by it's index.
+    /// Get descriptor reference by it's index in the descriptor table.
+    /// Return None if descriptor is not present.
+    pub fn get_descriptor_ref<'a, 'b>(&'a self, index: u16)
+            -> Option<&'b Descriptor> {
+        if self.limit_broken_by(index) {
+            None
+        } else {
+            Some(unsafe { self.descriptor_ref(index) })
+        }
+    }
+
+    /// Get mutable reference to descriptor in GDT by it's index. Does
+    /// not check if descriptor is actually present in the table.
     pub unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
             -> &'b mut Descriptor {
         &mut *self.arr.offset(index as isize)
+    }
+
+    /// Get mutable reference to descriptor in GDT by it's index.
+    /// If descriptor is abscent the None is returned.
+    pub fn get_descriptor_mut<'a, 'b>(&'a self, index: u16)
+            -> Option<&'b mut Descriptor> {
+        if self.limit_broken_by(index) {
+            None
+        } else {
+            Some(unsafe { self.descriptor_mut(index) })
+        }
+    }
+
+    /// Get limit of GDT.
+    pub fn limit(&self) -> u16 {
+        self.limit
+    }
+
+    /// Check if given index breaks the limit of GDT. If so, there is no
+    /// descriptor with given index in the table.
+    pub fn limit_broken_by(&self, index: u16) -> bool {
+        self.limit >= index
     }
 }
