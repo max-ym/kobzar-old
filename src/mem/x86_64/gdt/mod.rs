@@ -61,7 +61,7 @@ impl GdtrValue {
     pub unsafe fn gdt(&self) -> GdtHandle {
         GdtHandle {
             limit   : self.limit,
-            data    : ::core::mem::transmute(self.addr),
+            arr     : ::core::mem::transmute(self.addr),
         }
     }
 }
@@ -69,5 +69,5 @@ impl GdtrValue {
 /// Global Descriptor Table handle.
 pub struct GdtHandle {
     limit   : u16,
-    data    : *mut Descriptor,
+    arr    : *mut Descriptor,
 }
