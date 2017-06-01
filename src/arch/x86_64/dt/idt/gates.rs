@@ -91,10 +91,10 @@ pub trait Gate {
     fn ist(&self) -> Ist {
         use self::Ist::*;
         match self.flags() & 0x3 {
-            1 => Ist0,
-            2 => Ist1,
-            3 => Ist2,
-            4 => Ist3,
+            0 => Ist0,
+            1 => Ist1,
+            2 => Ist2,
+            3 => Ist3,
             _ => unreachable!()
         }
     }
