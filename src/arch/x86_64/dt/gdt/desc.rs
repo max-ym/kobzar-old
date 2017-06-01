@@ -1,3 +1,5 @@
+use super::Dpl;
+
 /// Struct to represent general GDT descriptor type.
 #[repr(packed)]
 pub struct GdtDescriptor {
@@ -6,15 +8,6 @@ pub struct GdtDescriptor {
 
 use super::Descriptor;
 impl Descriptor for GdtDescriptor {
-}
-
-/// Descriptor Privilege Level.
-#[repr(u32)]
-pub enum Dpl {
-    Dpl0 = 0,
-    Dpl1 = 1,
-    Dpl2 = 2,
-    Dpl3 = 3,
 }
 
 /// The Code Segment Descriptor.

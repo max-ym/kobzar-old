@@ -87,3 +87,12 @@ pub trait Handle {
         self.limit() >= index
     }
 }
+
+/// Descriptor Privilege Level. Used in GDT and IDT.
+#[repr(u32)]
+pub enum Dpl {
+    Dpl0 = 0,
+    Dpl1 = 1,
+    Dpl2 = 2,
+    Dpl3 = 3,
+}
