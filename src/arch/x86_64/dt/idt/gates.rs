@@ -127,7 +127,16 @@ pub trait Gate {
     }
 
     /// Change present flag value.
-    unsafe fn set_present(&mut self, v: bool);
+    unsafe fn set_present(&mut self, v: bool) {
+        let a = self.flags() & !(1 << 15);
+        self.set_flags(
+            if v {
+                a | (1 << 15)
+            } else {
+                a
+            }
+        );
+    }
 
     /// Descriptor Privilege Level.
     fn dpl(&self) -> Dpl {
