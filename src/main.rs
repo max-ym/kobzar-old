@@ -29,7 +29,12 @@ mod mem;
 /// Module to handle CCS networking of local objects (programs and threads).
 mod ccs;
 
-/// Architecture-dependent code.
+/// Architecture-dependent code. Defines architectural structs and functions
+/// but does not contain the code which directly accesses this stuff for
+/// implementing anything inside kernel. Only general things are kept in this
+/// module.
+///
+/// TODO: consider moving this module to seperate library later.
 mod arch;
 
 /// The starting point of kernel Rust code execution.
