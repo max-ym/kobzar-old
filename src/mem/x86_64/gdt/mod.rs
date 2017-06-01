@@ -28,6 +28,13 @@ impl GdtrValue {
         unimplemented!();
     }
 
+    pub fn new(addr: u64, limit: u16) -> Self {
+        GdtrValue {
+            addr    : addr,
+            limit   : limit,
+        }
+    }
+
     /// Get address of GDT.
     pub fn addr(&self) -> u64 {
         self.addr
