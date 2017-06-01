@@ -119,7 +119,12 @@ pub trait Gate {
         }
     }
 
-    unsafe fn set_ist(&mut self, ist: Ist);
+    unsafe fn set_ist(&mut self, ist: Ist) {
+        let v = ist as u16;
+        let a = self.flags() & !0x03;
+
+        self.set_flags(a | v);
+    }
 
     /// Present flag value.
     fn present(&self) -> bool {
