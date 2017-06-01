@@ -1,3 +1,9 @@
+/// Struct to represent general descriptor type.
+#[repr(packed)]
+pub struct Descriptor {
+    data    : u64,
+}
+
 /// Descriptor Privilege Level.
 #[repr(u32)]
 pub enum Dpl {
