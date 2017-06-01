@@ -56,10 +56,18 @@ impl GdtrValue {
     pub unsafe fn set_limit(&mut self, limit: u16) {
         self.limit = limit;
     }
+
+    /// Get Gdt handle from GDTR value.
+    pub unsafe fn gdt(&self) -> GdtHandle {
+        GdtHandle {
+            limit   : self.limit,
+            data    : ::core::mem::transmute(self.addr),
+        }
+    }
 }
 
 /// Global Descriptor Table handle.
-pub struct Gdt {
+pub struct GdtHandle {
     limit   : u16,
     data    : *mut Descriptor,
 }
