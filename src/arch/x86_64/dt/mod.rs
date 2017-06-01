@@ -33,7 +33,7 @@ pub trait RegValue {
     unsafe fn set_limit(&mut self, limit: u16);
 
     /// Get Gdt handle from GDTR value.
-    unsafe fn dt(&self) -> Handle;
+    unsafe fn table(&self) -> Handle;
 }
 
 /// Descriptor from DescriptorTable.
