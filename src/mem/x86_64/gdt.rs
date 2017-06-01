@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 /// Descriptor Privilege Level.
 #[repr(u32)]
 pub enum Dpl {
