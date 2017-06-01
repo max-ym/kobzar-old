@@ -1,6 +1,3 @@
-/// Global Descriptor Table related stuff.
-pub mod gdt;
-
 /// Paging tables.
 pub mod paging;
 
@@ -10,5 +7,6 @@ pub mod regf;
 /// Code related to using I/O APIC and Local APIC.
 pub mod apic;
 
-/// Interrupt Descriptor Table stuff.
-pub mod idt;
+/// Descriptor Table module. Contains IDT, GDT.
+mod dt;
+pub use self::dt::*;
