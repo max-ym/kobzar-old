@@ -1,7 +1,7 @@
 /// Descriptors module.
 pub mod desc;
 
-pub use self::desc::Descriptor;
+pub use self::desc::GdtDescriptor;
 
 /// Global Descriptor Table Register value.
 #[repr(packed)]
@@ -69,7 +69,7 @@ impl GdtrValue {
 /// Global Descriptor Table handle.
 pub struct GdtHandle {
     limit   : u16,
-    arr    : *mut Descriptor,
+    arr    : *mut GdtDescriptor,
 }
 
 impl GdtHandle {
@@ -77,14 +77,14 @@ impl GdtHandle {
     /// Get descriptor reference by it's index in the descriptor table.
     /// Does not check if descriptor is actually present in the table.
     pub unsafe fn descriptor_ref<'a, 'b>(&'a self, index: u16)
-            -> &'b Descriptor {
+            -> &'b GdtDescriptor {
         &*self.arr.offset(index as isize)
     }
 
     /// Get descriptor reference by it's index in the descriptor table.
     /// Return None if descriptor is not present.
     pub fn get_descriptor_ref<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b Descriptor> {
+            -> Option<&'b GdtDescriptor> {
         if self.limit_broken_by(index) {
             None
         } else {
@@ -95,14 +95,14 @@ impl GdtHandle {
     /// Get mutable reference to descriptor in GDT by it's index. Does
     /// not check if descriptor is actually present in the table.
     pub unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
-            -> &'b mut Descriptor {
+            -> &'b mut GdtDescriptor {
         &mut *self.arr.offset(index as isize)
     }
 
     /// Get mutable reference to descriptor in GDT by it's index.
     /// If descriptor is abscent the None is returned.
     pub fn get_descriptor_mut<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b mut Descriptor> {
+            -> Option<&'b mut GdtDescriptor> {
         if self.limit_broken_by(index) {
             None
         } else {

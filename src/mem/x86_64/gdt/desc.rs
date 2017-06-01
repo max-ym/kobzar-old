@@ -1,6 +1,6 @@
-/// Struct to represent general descriptor type.
+/// Struct to represent general GDT descriptor type.
 #[repr(packed)]
-pub struct Descriptor {
+pub struct GdtDescriptor {
     data    : u64,
 }
 
