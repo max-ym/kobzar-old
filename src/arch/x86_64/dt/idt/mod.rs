@@ -107,3 +107,12 @@ impl RegValue for IdtrValue {
         }
     }
 }
+
+/// Interrupt Stack Table.
+#[repr(u16)]
+pub enum Ist {
+    Ist0 = 0,
+    Ist1 = 1,
+    Ist2 = 2,
+    Ist3 = 3,
+}
