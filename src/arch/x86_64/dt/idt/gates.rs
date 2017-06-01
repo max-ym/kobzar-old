@@ -141,7 +141,13 @@ pub trait Gate {
         }
     }
 
-    unsafe fn set_dpl(&mut self, dpl: Dpl);
+    unsafe fn set_dpl(&mut self, dpl: Dpl) {
+        let v = dpl as u16;
+        let v = v << 13;
+
+        let f = self.flags() & (!(3u16 << 13));
+        self.set_flags(f | v);
+    }
 
     /// Get all flags.
     fn flags(&self) -> u16;
