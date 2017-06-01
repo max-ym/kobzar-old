@@ -4,6 +4,10 @@ pub struct GdtDescriptor {
     data    : u64,
 }
 
+use super::Descriptor;
+impl Descriptor for GdtDescriptor {
+}
+
 /// Descriptor Privilege Level.
 #[repr(u32)]
 pub enum Dpl {

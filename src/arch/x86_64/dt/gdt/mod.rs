@@ -3,6 +3,8 @@ pub mod desc;
 
 pub use self::desc::GdtDescriptor;
 
+use super::*;
+
 /// Global Descriptor Table Register value.
 #[repr(packed)]
 pub struct GdtrValue {
@@ -13,24 +15,26 @@ pub struct GdtrValue {
     addr    : u64,
 }
 
-impl GdtrValue {
+impl RegValue for GdtrValue {
+
+    type HandleType = GdtHandle;
 
     /// Write current value to the GDTR.
-    pub unsafe fn write(&self) {
+    unsafe fn write(&self) {
         unimplemented!();
     }
 
     /// Read current value from the GDTR.
-    pub fn read(&mut self) {
+    fn read(&mut self) {
         unimplemented!();
     }
 
     /// Create GdtrValue struct from current value in GDTR.
-    pub fn new_from_gdtr() -> Self {
+    fn new_from_reg() -> Self {
         unimplemented!();
     }
 
-    pub fn new(addr: u64, limit: u16) -> Self {
+    fn new(addr: u64, limit: u16) -> Self {
         GdtrValue {
             addr    : addr,
             limit   : limit,
@@ -38,27 +42,27 @@ impl GdtrValue {
     }
 
     /// Get address of GDT.
-    pub fn addr(&self) -> u64 {
+    fn addr(&self) -> u64 {
         self.addr
     }
 
     /// Get limit of GDT.
-    pub fn limit(&self) -> u16 {
+    fn limit(&self) -> u16 {
         self.limit
     }
 
     /// Set address of GDT.
-    pub unsafe fn set_addr(&mut self, addr: u64) {
+    unsafe fn set_addr(&mut self, addr: u64) {
         self.addr = addr;
     }
 
     /// Set limit of GDT.
-    pub unsafe fn set_limit(&mut self, limit: u16) {
+    unsafe fn set_limit(&mut self, limit: u16) {
         self.limit = limit;
     }
 
     /// Get Gdt handle from GDTR value.
-    pub unsafe fn gdt(&self) -> GdtHandle {
+    unsafe fn table(&self) -> Self::HandleType {
         GdtHandle {
             limit   : self.limit,
             arr     : ::core::mem::transmute(self.addr),
@@ -72,19 +76,21 @@ pub struct GdtHandle {
     arr    : *mut GdtDescriptor,
 }
 
-impl GdtHandle {
+impl Handle for GdtHandle {
+
+    type DescriptorType = GdtDescriptor;
 
     /// Get descriptor reference by it's index in the descriptor table.
     /// Does not check if descriptor is actually present in the table.
-    pub unsafe fn descriptor_ref<'a, 'b>(&'a self, index: u16)
-            -> &'b GdtDescriptor {
+    unsafe fn descriptor_ref<'a, 'b>(&'a self, index: u16)
+            -> &'b Self::DescriptorType {
         &*self.arr.offset(index as isize)
     }
 
     /// Get descriptor reference by it's index in the descriptor table.
     /// Return None if descriptor is not present.
-    pub fn get_descriptor_ref<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b GdtDescriptor> {
+    fn get_descriptor_ref<'a, 'b>(&'a self, index: u16)
+            -> Option<&'b Self::DescriptorType> {
         if self.limit_broken_by(index) {
             None
         } else {
@@ -94,15 +100,15 @@ impl GdtHandle {
 
     /// Get mutable reference to descriptor in GDT by it's index. Does
     /// not check if descriptor is actually present in the table.
-    pub unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
-            -> &'b mut GdtDescriptor {
+    unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
+            -> &'b mut Self::DescriptorType {
         &mut *self.arr.offset(index as isize)
     }
 
     /// Get mutable reference to descriptor in GDT by it's index.
     /// If descriptor is abscent the None is returned.
-    pub fn get_descriptor_mut<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b mut GdtDescriptor> {
+    fn get_descriptor_mut<'a, 'b>(&'a self, index: u16)
+            -> Option<&'b mut Self::DescriptorType> {
         if self.limit_broken_by(index) {
             None
         } else {
@@ -111,13 +117,13 @@ impl GdtHandle {
     }
 
     /// Get limit of GDT.
-    pub fn limit(&self) -> u16 {
+    fn limit(&self) -> u16 {
         self.limit
     }
 
     /// Check if given index breaks the limit of GDT. If so, there is no
     /// descriptor with given index in the table.
-    pub fn limit_broken_by(&self, index: u16) -> bool {
+    fn limit_broken_by(&self, index: u16) -> bool {
         self.limit >= index
     }
 }
