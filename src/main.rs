@@ -19,9 +19,6 @@ use asm_x86_64 as asm;
 /// All the stuff that is needed at early initialization.
 mod early;
 
-/// Interrupt handling.
-mod interrupts;
-
 /// Module to work with physical memory: memory protection mechanisms, paging
 /// and other related stuff is located here.
 mod mem;
