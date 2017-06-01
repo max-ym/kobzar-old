@@ -1,5 +1,4 @@
-// Mod needs revision. May be changed and moved to other mod that
-// holds all descriptor tables (IDT, GDT etc.).
+// Mod needs revision.
 #![allow(dead_code)]
 
 use ::arch::gdt::desc::Dpl;
