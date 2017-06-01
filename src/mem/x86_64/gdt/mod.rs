@@ -75,7 +75,8 @@ pub struct GdtHandle {
 impl GdtHandle {
 
     /// Get descriptor reference by it's index in the descriptor table.
-    pub unsafe fn descriptor<'a, 'b>(&'a self, index: u16) -> &'b Descriptor {
+    pub unsafe fn descriptor_ref<'a, 'b>(&'a self, index: u16)
+            -> &'b Descriptor {
         &*self.arr.offset(index as isize)
     }
 
