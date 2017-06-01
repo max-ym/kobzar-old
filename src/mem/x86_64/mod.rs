@@ -8,4 +8,4 @@ pub mod map;
 pub mod alloc;
 
 /// Paging tables.
-pub mod table;
+pub mod paging;
