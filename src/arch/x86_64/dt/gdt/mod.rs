@@ -77,34 +77,12 @@ impl Handle for GdtHandle {
         &*self.arr.offset(index as isize)
     }
 
-    fn get_descriptor_ref<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b Self::DescriptorType> {
-        if self.limit_broken_by(index) {
-            None
-        } else {
-            Some(unsafe { self.descriptor_ref(index) })
-        }
-    }
-
     unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
             -> &'b mut Self::DescriptorType {
         &mut *self.arr.offset(index as isize)
     }
 
-    fn get_descriptor_mut<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b mut Self::DescriptorType> {
-        if self.limit_broken_by(index) {
-            None
-        } else {
-            Some(unsafe { self.descriptor_mut(index) })
-        }
-    }
-
     fn limit(&self) -> u16 {
         self.limit
-    }
-
-    fn limit_broken_by(&self, index: u16) -> bool {
-        self.limit >= index
     }
 }
