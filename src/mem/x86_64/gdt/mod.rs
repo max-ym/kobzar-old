@@ -1,6 +1,8 @@
 /// Descriptors module.
 pub mod desc;
 
+pub use self::desc::Descriptor;
+
 /// Global Descriptor Table Register value.
 #[repr(packed)]
 pub struct GdtrValue {
@@ -54,4 +56,10 @@ impl GdtrValue {
     pub unsafe fn set_limit(&mut self, limit: u16) {
         self.limit = limit;
     }
+}
+
+/// Global Descriptor Table handle.
+pub struct Gdt {
+    limit   : u16,
+    data    : *mut Descriptor,
 }
