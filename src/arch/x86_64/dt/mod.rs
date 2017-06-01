@@ -7,9 +7,10 @@ pub mod idt;
 /// Descriptor Table Register Value.
 pub trait RegValue {
 
+    type HandleType : Handle;
+
     /// Write current value to appropriate DTR.
     unsafe fn write(&self);
-
 
     /// Read current value from appropriate DTR.
     fn read(&mut self);
@@ -33,7 +34,7 @@ pub trait RegValue {
     unsafe fn set_limit(&mut self, limit: u16);
 
     /// Get Gdt handle from GDTR value.
-    unsafe fn table(&self) -> Handle;
+    unsafe fn table(&self) -> Self::HandleType;
 }
 
 /// Descriptor from DescriptorTable.
@@ -43,24 +44,27 @@ pub trait Descriptor {
 /// Descriptor Table handle.
 pub trait Handle {
 
+    type DescriptorType : Descriptor;
+
     /// Get descriptor reference by it's index in the descriptor table.
     /// Does not check if descriptor is actually present in the table.
-    unsafe fn descriptor_ref<'a, 'b>(&'a self, index: u16) -> &'b Descriptor;
+    unsafe fn descriptor_ref<'a, 'b>(&'a self, index: u16)
+            -> &'b Self::DescriptorType;
 
     /// Get descriptor reference by it's index in the descriptor table.
     /// Return None if descriptor is not present.
     fn get_descriptor_ref<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b Descriptor>;
+            -> Option<&'b Self::DescriptorType>;
 
     /// Get mutable reference to descriptor in DT by it's index. Does
     /// not check if descriptor is actually present in the table.
     unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
-            -> &'b mut Descriptor;
+            -> &'b mut Self::DescriptorType;
 
     /// Get mutable reference to descriptor in GDT by it's index.
     /// If descriptor is abscent the None is returned.
     fn get_descriptor_mut<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b mut Descriptor>;
+            -> Option<&'b mut Self::DescriptorType>;
 
     /// Get limit of DT.
     fn limit(&self) -> u16;
