@@ -6,11 +6,11 @@ pub use self::desc::GdtDescriptor;
 /// Global Descriptor Table Register value.
 #[repr(packed)]
 pub struct GdtrValue {
-    /// Address of the GDT.
-    addr    : u64,
-
     /// Limit. Number of entries of GDT.
     limit   : u16,
+
+    /// Address of the GDT.
+    addr    : u64,
 }
 
 impl GdtrValue {
