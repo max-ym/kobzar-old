@@ -91,7 +91,16 @@ pub trait Gate {
     fn offset_fields(&self) -> (u16, u16, u32);
 
     /// Set the address of the function that handles the interrupt.
-    unsafe fn set_offset(&mut self, offset: u64);
+    unsafe fn set_offset(&mut self, offset: u64) {
+        let a = (offset >> 00) & 0xFFFF;
+        let b = (offset >> 16) & 0xFFFF;
+        let c = (offset >> 32) & 0xFFFFFFFF;
+
+        self.set_offset_fields((a as u16, b as u16, c as u32));
+    }
+
+    /// Set fields with offset as they are stored in descriptor.
+    unsafe fn set_offset_fields(&mut self, offset: (u16, u16, u32));
 
     /// Segment Selector.
     fn segsel(&self) -> u16;
