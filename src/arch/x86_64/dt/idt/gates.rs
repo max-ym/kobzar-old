@@ -102,4 +102,11 @@ pub trait Gate {
     fn dpl(&self) -> Dpl;
 
     unsafe fn set_dpl(&mut self, dpl: Dpl);
+
+    /// Get all flags.
+    fn flags(&self) -> u16;
+
+    /// Set all flags with given value. Does not check if value is correct nor
+    /// change any of it's bit. Even if some bits must be zero (but are set).
+    unsafe fn set_flags(&mut self, f: u16);
 }
