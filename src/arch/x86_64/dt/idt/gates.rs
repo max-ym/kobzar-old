@@ -79,7 +79,7 @@ pub trait Gate {
     /// Intel System Programming Manual calls it 'offset'.
     fn offset(&self) -> u64;
 
-    /// Set tha address of the function that handles the interrupt.
+    /// Set the address of the function that handles the interrupt.
     unsafe fn set_offset(&mut self, offset: u64);
 
     /// Segment Selector.
