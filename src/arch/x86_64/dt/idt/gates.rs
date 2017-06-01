@@ -1,3 +1,5 @@
+use super::{Dpl, Ist};
+
 /// The list of architecture defined interrupt vectors.
 /// For more information see Intel System Programming Guide.
 #[derive(Copy, Clone)]
@@ -69,4 +71,35 @@ pub struct InterruptGate {
     offset2     : u32,
 
     _reserved   : u32,
+}
+
+pub trait Gate {
+
+    /// Address of the function that handles the interrupt.
+    /// Intel System Programming Manual calls it 'offset'.
+    fn offset(&self) -> u64;
+
+    /// Set tha address of the function that handles the interrupt.
+    unsafe fn set_offset(&mut self, offset: u64);
+
+    /// Segment Selector.
+    fn segsel(&self) -> u16;
+
+    unsafe fn set_segsel(&mut self, ss: u16);
+
+    /// Interrupt Stack Table.
+    fn ist(&self) -> Ist;
+
+    unsafe fn set_ist(&mut self, ist: Ist);
+
+    /// Present flag value.
+    fn present(&self) -> bool;
+
+    /// Change present flag value.
+    unsafe fn set_present(&mut self, v: bool);
+
+    /// Descriptor Privilege Level.
+    fn dpl(&self) -> Dpl;
+
+    unsafe fn set_dpl(&mut self, dpl: Dpl);
 }
