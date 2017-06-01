@@ -77,7 +77,18 @@ pub trait Gate {
 
     /// Address of the function that handles the interrupt.
     /// Intel System Programming Manual calls it 'offset'.
-    fn offset(&self) -> u64;
+    fn offset(&self) -> u64 {
+        let (a, b, c) = self.offset_fields();
+
+        let a = a as u64;
+        let b = b as u64;
+        let c = c as u64;
+
+        a + (b << 16) + (c << 32)
+    }
+
+    /// Fields with offset as they are stored in descriptor.
+    fn offset_fields(&self) -> (u16, u16, u32);
 
     /// Set the address of the function that handles the interrupt.
     unsafe fn set_offset(&mut self, offset: u64);
