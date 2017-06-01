@@ -102,7 +102,9 @@ pub trait Gate {
     unsafe fn set_ist(&mut self, ist: Ist);
 
     /// Present flag value.
-    fn present(&self) -> bool;
+    fn present(&self) -> bool {
+        self.flags() & (1 << 15) != 0
+    }
 
     /// Change present flag value.
     unsafe fn set_present(&mut self, v: bool);
