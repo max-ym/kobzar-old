@@ -4,7 +4,7 @@ mod setup;
 use ::arch::regf::*;
 
 pub use self::setup::setup;
-pub use super::Service;
+pub use super::super::Service;
 
 use ::arch::paging::MainPageMap;
 

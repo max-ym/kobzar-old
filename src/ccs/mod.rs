@@ -1,8 +1,6 @@
-#[cfg(target_arch = "x86_64")]
-mod x86_64;
+mod arch;
 
-#[cfg(target_arch = "x86_64")]
-pub use self::x86_64::setup;
+pub use self::arch::setup;
 
 mod lists;
 use self::lists::*;
