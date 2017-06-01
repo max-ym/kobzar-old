@@ -5,7 +5,7 @@ pub mod gdt;
 pub mod idt;
 
 /// Descriptor Table Register Value.
-pub trait DtrValue {
+pub trait RegValue {
 
     /// Write current value to appropriate DTR.
     unsafe fn write(&self);
@@ -33,5 +33,41 @@ pub trait DtrValue {
     unsafe fn set_limit(&mut self, limit: u16);
 
     /// Get Gdt handle from GDTR value.
-    unsafe fn dt(&self) -> DtHandle;
+    unsafe fn dt(&self) -> Handle;
+}
+
+/// Descriptor from DescriptorTable.
+pub trait Descriptor {
+}
+
+/// Descriptor Table handle.
+pub trait Handle {
+
+    /// Get descriptor reference by it's index in the descriptor table.
+    /// Does not check if descriptor is actually present in the table.
+    unsafe fn descriptor_ref<'a, 'b>(&'a self, index: u16) -> &'b Descriptor;
+
+    /// Get descriptor reference by it's index in the descriptor table.
+    /// Return None if descriptor is not present.
+    fn get_descriptor_ref<'a, 'b>(&'a self, index: u16)
+            -> Option<&'b Descriptor>;
+
+    /// Get mutable reference to descriptor in DT by it's index. Does
+    /// not check if descriptor is actually present in the table.
+    unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
+            -> &'b mut Descriptor;
+
+    /// Get mutable reference to descriptor in GDT by it's index.
+    /// If descriptor is abscent the None is returned.
+    fn get_descriptor_mut<'a, 'b>(&'a self, index: u16)
+            -> Option<&'b mut Descriptor>;
+
+    /// Get limit of DT.
+    fn limit(&self) -> u16;
+
+    /// Check if given index breaks the limit of DT. If so, there is no
+    /// descriptor with given index in the table.
+    fn limit_broken_by(&self, index: u16) -> bool {
+        self.limit() >= index
+    }
 }
