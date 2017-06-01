@@ -78,4 +78,10 @@ impl GdtHandle {
     pub unsafe fn descriptor<'a, 'b>(&'a self, index: u16) -> &'b Descriptor {
         &*self.arr.offset(index as isize)
     }
+
+    /// Get mutable reference to descriptor in GDT by it's index.
+    pub unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
+            -> &'b mut Descriptor {
+        &mut *self.arr.offset(index as isize)
+    }
 }
