@@ -2,7 +2,7 @@
 // holds all descriptor tables (IDT, GDT etc.).
 #![allow(dead_code)]
 
-use ::mem::gdt::desc::Dpl;
+use ::arch::gdt::desc::Dpl;
 
 /// Code related to using I/O APIC and Local APIC.
 pub mod apic;
