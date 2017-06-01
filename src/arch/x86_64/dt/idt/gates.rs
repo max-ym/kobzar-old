@@ -88,7 +88,16 @@ pub trait Gate {
     unsafe fn set_segsel(&mut self, ss: u16);
 
     /// Interrupt Stack Table.
-    fn ist(&self) -> Ist;
+    fn ist(&self) -> Ist {
+        use self::Ist::*;
+        match self.flags() & 0x3 {
+            1 => Ist0,
+            2 => Ist1,
+            3 => Ist2,
+            4 => Ist3,
+            _ => unreachable!()
+        }
+    }
 
     unsafe fn set_ist(&mut self, ist: Ist);
 
