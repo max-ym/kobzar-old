@@ -8,7 +8,7 @@ use self::regf::*;
 pub use self::setup::setup;
 pub use super::Service;
 
-use ::mem::paging::MainPageMap;
+use ::arch::paging::MainPageMap;
 
 /// All information needed to execute the service. Memory pages, register file
 /// stack etc.
