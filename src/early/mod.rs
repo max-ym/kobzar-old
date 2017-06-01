@@ -1,3 +1,6 @@
+mod arch;
+pub use self::arch::*;
+
 /// The early basic logger for the system initialization process.
 static mut LOGGER: Logger = Logger::new();
 
@@ -19,12 +22,5 @@ pub trait LoggerTrait : ::core::fmt::Write {
 
     fn newline(&mut self);
 }
-
-#[cfg(target_arch = "x86_64")]
-pub use self::x86_64::*;
-
-/// Stuff implemented for x86_64.
-#[cfg(target_arch = "x86_64")]
-mod x86_64;
 
 pub mod ccs;

@@ -1,4 +1,4 @@
-use super::LoggerTrait;
+use super::super::LoggerTrait;
 
 /// Simple logger module for early logs.
 mod logger;
