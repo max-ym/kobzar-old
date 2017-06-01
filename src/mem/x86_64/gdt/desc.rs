@@ -58,4 +58,3 @@ impl CodeSegmentDescriptor {
         unsafe { ::core::mem::transmute(val) }
     }
 }
-
