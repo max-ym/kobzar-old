@@ -1,3 +1,5 @@
+// Mod needs revision. May be changed and moved to other mod that
+// holds all descriptor tables (IDT, GDT etc.).
 #![allow(dead_code)]
 
 use ::mem::gdt::desc::Dpl;
