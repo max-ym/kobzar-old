@@ -19,17 +19,14 @@ impl RegValue for GdtrValue {
 
     type HandleType = GdtHandle;
 
-    /// Write current value to the GDTR.
     unsafe fn write(&self) {
         unimplemented!();
     }
 
-    /// Read current value from the GDTR.
     fn read(&mut self) {
         unimplemented!();
     }
 
-    /// Create GdtrValue struct from current value in GDTR.
     fn new_from_reg() -> Self {
         unimplemented!();
     }
@@ -41,27 +38,22 @@ impl RegValue for GdtrValue {
         }
     }
 
-    /// Get address of GDT.
     fn addr(&self) -> u64 {
         self.addr
     }
 
-    /// Get limit of GDT.
     fn limit(&self) -> u16 {
         self.limit
     }
 
-    /// Set address of GDT.
     unsafe fn set_addr(&mut self, addr: u64) {
         self.addr = addr;
     }
 
-    /// Set limit of GDT.
     unsafe fn set_limit(&mut self, limit: u16) {
         self.limit = limit;
     }
 
-    /// Get Gdt handle from GDTR value.
     unsafe fn table(&self) -> Self::HandleType {
         GdtHandle {
             limit   : self.limit,
@@ -80,15 +72,11 @@ impl Handle for GdtHandle {
 
     type DescriptorType = GdtDescriptor;
 
-    /// Get descriptor reference by it's index in the descriptor table.
-    /// Does not check if descriptor is actually present in the table.
     unsafe fn descriptor_ref<'a, 'b>(&'a self, index: u16)
             -> &'b Self::DescriptorType {
         &*self.arr.offset(index as isize)
     }
 
-    /// Get descriptor reference by it's index in the descriptor table.
-    /// Return None if descriptor is not present.
     fn get_descriptor_ref<'a, 'b>(&'a self, index: u16)
             -> Option<&'b Self::DescriptorType> {
         if self.limit_broken_by(index) {
@@ -98,15 +86,11 @@ impl Handle for GdtHandle {
         }
     }
 
-    /// Get mutable reference to descriptor in GDT by it's index. Does
-    /// not check if descriptor is actually present in the table.
     unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
             -> &'b mut Self::DescriptorType {
         &mut *self.arr.offset(index as isize)
     }
 
-    /// Get mutable reference to descriptor in GDT by it's index.
-    /// If descriptor is abscent the None is returned.
     fn get_descriptor_mut<'a, 'b>(&'a self, index: u16)
             -> Option<&'b mut Self::DescriptorType> {
         if self.limit_broken_by(index) {
@@ -116,13 +100,10 @@ impl Handle for GdtHandle {
         }
     }
 
-    /// Get limit of GDT.
     fn limit(&self) -> u16 {
         self.limit
     }
 
-    /// Check if given index breaks the limit of GDT. If so, there is no
-    /// descriptor with given index in the table.
     fn limit_broken_by(&self, index: u16) -> bool {
         self.limit >= index
     }
