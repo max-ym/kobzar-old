@@ -54,7 +54,13 @@ pub trait Handle {
     /// Get descriptor reference by it's index in the descriptor table.
     /// Return None if descriptor is not present.
     fn get_descriptor_ref<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b Self::DescriptorType>;
+            -> Option<&'b Self::DescriptorType> {
+        if self.limit_broken_by(index) {
+            None
+        } else {
+            Some(unsafe { self.descriptor_ref(index) })
+        }
+    }
 
     /// Get mutable reference to descriptor in DT by it's index. Does
     /// not check if descriptor is actually present in the table.
@@ -64,7 +70,13 @@ pub trait Handle {
     /// Get mutable reference to descriptor in GDT by it's index.
     /// If descriptor is abscent the None is returned.
     fn get_descriptor_mut<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b mut Self::DescriptorType>;
+            -> Option<&'b mut Self::DescriptorType> {
+        if self.limit_broken_by(index) {
+            None
+        } else {
+            Some(unsafe { self.descriptor_mut(index) })
+        }
+    }
 
     /// Get limit of DT.
     fn limit(&self) -> u16;
