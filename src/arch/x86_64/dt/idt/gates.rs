@@ -110,7 +110,7 @@ pub trait Gate {
     /// Interrupt Stack Table.
     fn ist(&self) -> Ist {
         use self::Ist::*;
-        match self.flags() & 0x3 {
+        match self.flags() & 0x03 {
             0 => Ist0,
             1 => Ist1,
             2 => Ist2,
