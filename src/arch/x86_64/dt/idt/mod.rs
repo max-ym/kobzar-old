@@ -1,5 +1,9 @@
 use super::*;
 
+/// Interrupt gates.
+mod gates;
+pub use self::gates::*;
+
 /// General interrupt descriptor table gate.
 #[repr(packed)]
 #[derive(Copy, Clone)]
