@@ -27,4 +27,24 @@ impl GdtrValue {
     pub fn new_from_gdtr() -> Self {
         unimplemented!();
     }
+
+    /// Get address of GDT.
+    pub fn addr(&self) -> u64 {
+        self.addr
+    }
+
+    /// Get limit of GDT.
+    pub fn limit(&self) -> u16 {
+        self.limit
+    }
+
+    /// Set address of GDT.
+    pub unsafe fn set_addr(&mut self, addr: u64) {
+        self.addr = addr;
+    }
+
+    /// Set limit of GDT.
+    pub unsafe fn set_limit(&mut self, limit: u16) {
+        self.limit = limit;
+    }
 }
