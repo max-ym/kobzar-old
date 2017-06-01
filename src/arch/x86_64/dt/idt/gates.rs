@@ -110,7 +110,16 @@ pub trait Gate {
     unsafe fn set_present(&mut self, v: bool);
 
     /// Descriptor Privilege Level.
-    fn dpl(&self) -> Dpl;
+    fn dpl(&self) -> Dpl {
+        use self::Dpl::*;
+        match (self.flags() & (3 << 13)) >> 13 {
+            0 => Dpl0,
+            1 => Dpl1,
+            2 => Dpl2,
+            3 => Dpl3,
+            _ => unreachable!()
+        }
+    }
 
     unsafe fn set_dpl(&mut self, dpl: Dpl);
 
