@@ -46,6 +46,22 @@ pub trait Descriptor : Sized {
     }
 }
 
+/// Specific interpretation of some general descriptor in table. For
+/// example, IDT has gates which are descriptors of this table. But
+/// those descriptors can be interrupt gates or trap gates. So each
+/// of the gates implement this trait to show their specialization and all
+/// implement Descriptor trait as both are descriptors of IDT.
+pub trait DescriptorVariant<T: Descriptor>: Descriptor {
+
+    /// Try to get reference to a descriptor variant. If it cannot be
+    /// interpreted in a requested way, None will be returned.
+    fn try_variant_ref(value: &T) -> Option<&Self>;
+
+    /// Try to get mutable reference to a descriptor variant. If it cannot be
+    /// interpreted in a requested way, None will be returned.
+    fn try_variant_mut(value: &mut T) -> Option<&mut Self>;
+}
+
 /// Descriptor Table handle.
 pub trait Handle {
 
