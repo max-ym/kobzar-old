@@ -127,4 +127,13 @@ pub enum DescriptorType {
     CallGate        = 0b1100,
     InterruptGate   = 0b1110,
     TrapGate        = 0b1111,
+
+    Reserved
+}
+
+impl From<u16> for DescriptorType {
+
+    fn from(v: u16) -> Self {
+        unsafe { ::core::mem::transmute(v) }
+    }
 }
