@@ -117,3 +117,14 @@ pub enum Dpl {
     Dpl2 = 2,
     Dpl3 = 3,
 }
+
+/// IA-32e mode descriptor type.
+#[repr(u16)]
+pub enum DescriptorType {
+    Ldt             = 0b0010,
+    TssAvailable    = 0b1001,
+    TssBusy         = 0b1011,
+    CallGate        = 0b1100,
+    InterruptGate   = 0b1110,
+    TrapGate        = 0b1111,
+}
