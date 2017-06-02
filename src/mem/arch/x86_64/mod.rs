@@ -3,3 +3,6 @@ pub mod map;
 
 /// Memory allocator for system. Manages pages of memory for further use.
 pub mod alloc;
+
+/// Memory pages of the kernel.
+pub mod paging;
