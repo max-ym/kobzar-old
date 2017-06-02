@@ -10,7 +10,7 @@ pub use self::gates::*;
 pub struct IdtGate(i64, i64);
 
 // IDT gate is a of descriptor in IDT.
-impl Descriptor for IdtGate {
+impl Entry for IdtGate {
 }
 
 /// Interrupt Descriptor Table.
@@ -27,22 +27,29 @@ pub struct IdtHandle {
     idt     : *mut Idt,
 }
 
-impl Handle for IdtHandle {
+impl DtLimit for IdtHandle {
+}
 
-    type DescriptorType = IdtGate;
+impl Table for IdtHandle {
 
-    unsafe fn descriptor_ref<'a, 'b>(&'a self, index: u16)
-            -> &'b Self::DescriptorType {
+    type EntryType = IdtGate;
+
+    unsafe fn entry_ref<'a, 'b>(&'a self, index: u16)
+            -> &'b Self::EntryType {
         &*self.gates().offset(index as isize)
     }
 
-    unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
-            -> &'b mut Self::DescriptorType {
+    unsafe fn entry_mut<'a, 'b>(&'a self, index: u16)
+            -> &'b mut Self::EntryType {
         &mut *self.gates().offset(index as isize)
     }
 
     fn limit(&self) -> u16 {
         self.limit
+    }
+
+    fn limit_broken_by(&self, index: u16) -> bool {
+        <Self as DtLimit>::limit_broken_by(&self, index)
     }
 
 }

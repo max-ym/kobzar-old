@@ -68,21 +68,28 @@ pub struct GdtHandle {
     arr    : *mut GdtDescriptor,
 }
 
-impl Handle for GdtHandle {
+impl DtLimit for GdtHandle {
+}
 
-    type DescriptorType = GdtDescriptor;
+impl Table for GdtHandle {
 
-    unsafe fn descriptor_ref<'a, 'b>(&'a self, index: u16)
-            -> &'b Self::DescriptorType {
+    type EntryType = GdtDescriptor;
+
+    unsafe fn entry_ref<'a, 'b>(&'a self, index: u16)
+            -> &'b Self::EntryType {
         &*self.arr.offset(index as isize)
     }
 
-    unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
-            -> &'b mut Self::DescriptorType {
+    unsafe fn entry_mut<'a, 'b>(&'a self, index: u16)
+            -> &'b mut Self::EntryType {
         &mut *self.arr.offset(index as isize)
     }
 
     fn limit(&self) -> u16 {
         self.limit
+    }
+
+    fn limit_broken_by(&self, index: u16) -> bool {
+        <Self as DtLimit>::limit_broken_by(&self, index)
     }
 }

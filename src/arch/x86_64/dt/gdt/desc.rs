@@ -6,8 +6,8 @@ pub struct GdtDescriptor {
     data    : u64,
 }
 
-use super::Descriptor;
-impl Descriptor for GdtDescriptor {
+use super::Entry;
+impl Entry for GdtDescriptor {
 }
 
 /// The Code Segment Descriptor.

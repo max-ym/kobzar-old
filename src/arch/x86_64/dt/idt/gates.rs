@@ -1,4 +1,4 @@
-use super::{Dpl, IdtGate, Ist, Descriptor, DescriptorVariant, DescriptorType};
+use super::{Dpl, IdtGate, Ist, Entry, EntryVariant, DescriptorType};
 
 /// The list of architecture defined interrupt vectors.
 /// For more information see Intel System Programming Guide.
@@ -73,13 +73,13 @@ pub struct InterruptGate {
     _reserved   : u32,
 }
 
-impl Descriptor for TrapGate {
+impl Entry for TrapGate {
 }
 
-impl Descriptor for InterruptGate {
+impl Entry for InterruptGate {
 }
 
-pub trait Gate : Descriptor {
+pub trait Gate : Entry {
 
     /// Address of the function that handles the interrupt.
     /// Intel System Programming Manual calls it 'offset'.
@@ -245,7 +245,7 @@ impl Gate for InterruptGate {
     }
 }
 
-impl DescriptorVariant<IdtGate> for InterruptGate {
+impl EntryVariant<IdtGate> for InterruptGate {
 
     fn try_variant_ref(v: &IdtGate) -> Option<&InterruptGate> {
         let s: &Self = unsafe { ::core::mem::transmute(v) };
@@ -266,7 +266,7 @@ impl DescriptorVariant<IdtGate> for InterruptGate {
     }
 }
 
-impl DescriptorVariant<IdtGate> for TrapGate {
+impl EntryVariant<IdtGate> for TrapGate {
 
     fn try_variant_ref(v: &IdtGate) -> Option<&TrapGate> {
         let s: &Self = unsafe { ::core::mem::transmute(v) };
