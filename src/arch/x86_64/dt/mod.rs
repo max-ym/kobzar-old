@@ -120,6 +120,7 @@ pub enum Dpl {
 
 /// IA-32e mode descriptor type.
 #[repr(u16)]
+#[derive(PartialEq)]
 pub enum DescriptorType {
     Ldt             = 0b0010,
     TssAvailable    = 0b1001,
