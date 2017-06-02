@@ -10,3 +10,7 @@ pub mod apic;
 /// Descriptor Table module. Contains IDT, GDT.
 mod dt;
 pub use self::dt::*;
+
+/// Table Entries traits. Used for system tables like GDT, IDT,
+/// Paging tables etc.
+pub mod tentr;
