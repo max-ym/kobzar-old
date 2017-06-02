@@ -49,9 +49,7 @@ pub trait Table {
 
     /// Check if given index breaks the limit of entry table.
     /// If so, there is no entry with given index in the table.
-    fn limit_broken_by(&self, index: u16) -> bool {
-        self.limit() < index * Self::EntryType::size() as u16 + 1
-    }
+    fn limit_broken_by(&self, index: u16) -> bool;
 }
 
 /// Specific interpretation of some general entries in table. For
