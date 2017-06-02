@@ -265,3 +265,24 @@ impl DescriptorVariant<IdtGate> for InterruptGate {
         }
     }
 }
+
+impl DescriptorVariant<IdtGate> for TrapGate {
+
+    fn try_variant_ref(v: &IdtGate) -> Option<&TrapGate> {
+        let s: &Self = unsafe { ::core::mem::transmute(v) };
+        if s.type_enum() == DescriptorType::TrapGate {
+            Some(s)
+        } else {
+            None
+        }
+    }
+
+    fn try_variant_mut(v: &mut IdtGate) -> Option<&mut TrapGate> {
+        let s: &mut Self = unsafe { ::core::mem::transmute(v) };
+        if s.type_enum() == DescriptorType::TrapGate {
+            Some(s)
+        } else {
+            None
+        }
+    }
+}
