@@ -38,7 +38,12 @@ pub trait RegValue {
 }
 
 /// Descriptor from DescriptorTable.
-pub trait Descriptor {
+pub trait Descriptor : Sized {
+
+    /// Get size in bytes of a descriptor type.
+    fn size() -> usize {
+        ::core::mem::size_of::<Self>()
+    }
 }
 
 /// Descriptor Table handle.
@@ -84,7 +89,7 @@ pub trait Handle {
     /// Check if given index breaks the limit of DT. If so, there is no
     /// descriptor with given index in the table.
     fn limit_broken_by(&self, index: u16) -> bool {
-        self.limit() >= index
+        self.limit() < index * Self::DescriptorType::size() as u16 + 1
     }
 }
 
