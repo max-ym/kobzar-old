@@ -30,17 +30,17 @@ pub trait Table {
 
     /// Get mutable reference to entry in table by it's index. Does
     /// not check if entry is actually present in the table.
-    unsafe fn descriptor_mut<'a, 'b>(&'a self, index: u16)
+    unsafe fn entry_mut<'a, 'b>(&'a self, index: u16)
             -> &'b mut Self::EntryType;
 
     /// Get mutable reference to entry in table by it's index.
-    /// If descriptor is abscent the None is returned.
+    /// If entry is abscent the None is returned.
     fn get_entry_mut<'a, 'b>(&'a self, index: u16)
             -> Option<&'b mut Self::EntryType> {
         if self.limit_broken_by(index) {
             None
         } else {
-            Some(unsafe { self.descriptor_mut(index) })
+            Some(unsafe { self.entry_mut(index) })
         }
     }
 
