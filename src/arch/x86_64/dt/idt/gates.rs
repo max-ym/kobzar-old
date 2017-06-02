@@ -244,3 +244,24 @@ impl Gate for InterruptGate {
         self.flags = flags;
     }
 }
+
+impl DescriptorVariant<IdtGate> for InterruptGate {
+
+    fn try_variant_ref(v: &IdtGate) -> Option<&InterruptGate> {
+        let s: &Self = unsafe { ::core::mem::transmute(v) };
+        if s.type_enum() == DescriptorType::InterruptGate {
+            Some(s)
+        } else {
+            None
+        }
+    }
+
+    fn try_variant_mut(v: &mut IdtGate) -> Option<&mut InterruptGate> {
+        let s: &mut Self = unsafe { ::core::mem::transmute(v) };
+        if s.type_enum() == DescriptorType::InterruptGate {
+            Some(s)
+        } else {
+            None
+        }
+    }
+}
