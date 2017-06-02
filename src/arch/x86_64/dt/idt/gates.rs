@@ -1,4 +1,4 @@
-use super::{Dpl, Ist};
+use super::{Dpl, Ist, Descriptor};
 
 /// The list of architecture defined interrupt vectors.
 /// For more information see Intel System Programming Guide.
@@ -73,7 +73,13 @@ pub struct InterruptGate {
     _reserved   : u32,
 }
 
-pub trait Gate {
+impl Descriptor for TrapGate {
+}
+
+impl Descriptor for InterruptGate {
+}
+
+pub trait Gate : Descriptor {
 
     /// Address of the function that handles the interrupt.
     /// Intel System Programming Manual calls it 'offset'.
