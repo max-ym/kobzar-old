@@ -1,4 +1,4 @@
-use super::{Dpl, Ist, Descriptor};
+use super::{Dpl, IdtGate, Ist, Descriptor, DescriptorVariant, DescriptorType};
 
 /// The list of architecture defined interrupt vectors.
 /// For more information see Intel System Programming Guide.
@@ -167,6 +167,16 @@ pub trait Gate : Descriptor {
 
         let f = self.flags() & (!(3u16 << 13));
         self.set_flags(f | v);
+    }
+
+    /// Get descriptor type field as enum.
+    fn type_enum(&self) -> DescriptorType {
+        self.type_value().into()
+    }
+
+    /// Descriptor type field value.
+    fn type_value(&self) -> u16 {
+        (self.flags() & 0x0F00) >> 8
     }
 
     /// Get all flags.
