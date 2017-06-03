@@ -28,3 +28,29 @@ fn p4() -> &'static mut P4 {
         &mut *a
     }
 }
+
+/// Initialize and load kernel paging table.
+pub fn setup() {
+    use arch::tentr::*;
+
+    unsafe {
+        use core::intrinsics::write_bytes;
+        // Set all pages in tables to zero.
+        write_bytes(p1() as *const _ as *mut P1, 0, 1);
+        write_bytes(p2() as *const _ as *mut P2, 0, 1);
+        write_bytes(p3() as *const _ as *mut P3, 0, 1);
+        write_bytes(p4() as *const _ as *mut P4, 0, 1);
+    }
+
+    unsafe {
+        // Setup P4 entry. This entry covers the first 512 GiB of RAM.
+        let p4e = p4().entry_mut(0);
+        p4e.set_rw(true); // Readable and Writable.
+        p4e.set_us(true); // Accessible for user-mode processes.
+        p4e.set_addr(p3() as *const _ as u64); // P3 table address.
+
+        p4e.set_present(true);
+    }
+
+    unimplemented!()
+}
