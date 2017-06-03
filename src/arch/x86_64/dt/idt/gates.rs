@@ -245,10 +245,10 @@ impl Gate for InterruptGate {
     }
 }
 
-impl EntryVariant<IdtGate> for InterruptGate {
+impl EntryVariant<InterruptGate> for IdtGate {
 
-    fn try_variant_ref(v: &IdtGate) -> Option<&InterruptGate> {
-        let s: &Self = unsafe { ::core::mem::transmute(v) };
+    fn try_variant_ref(&self) -> Option<&InterruptGate> {
+        let s = unsafe { &*(self as *const _ as *mut InterruptGate) };
         if s.type_enum() == DescriptorType::InterruptGate {
             Some(s)
         } else {
@@ -256,8 +256,8 @@ impl EntryVariant<IdtGate> for InterruptGate {
         }
     }
 
-    fn try_variant_mut(v: &mut IdtGate) -> Option<&mut InterruptGate> {
-        let s: &mut Self = unsafe { ::core::mem::transmute(v) };
+    fn try_variant_mut(&mut self) -> Option<&mut InterruptGate> {
+        let s = unsafe { &mut *(self as *const _ as *mut InterruptGate) };
         if s.type_enum() == DescriptorType::InterruptGate {
             Some(s)
         } else {
@@ -266,10 +266,10 @@ impl EntryVariant<IdtGate> for InterruptGate {
     }
 }
 
-impl EntryVariant<IdtGate> for TrapGate {
+impl EntryVariant<TrapGate> for IdtGate {
 
-    fn try_variant_ref(v: &IdtGate) -> Option<&TrapGate> {
-        let s: &Self = unsafe { ::core::mem::transmute(v) };
+    fn try_variant_ref(&self) -> Option<&TrapGate> {
+        let s = unsafe { &*(self as *const _ as *mut TrapGate) };
         if s.type_enum() == DescriptorType::TrapGate {
             Some(s)
         } else {
@@ -277,8 +277,8 @@ impl EntryVariant<IdtGate> for TrapGate {
         }
     }
 
-    fn try_variant_mut(v: &mut IdtGate) -> Option<&mut TrapGate> {
-        let s: &mut Self = unsafe { ::core::mem::transmute(v) };
+    fn try_variant_mut(&mut self) -> Option<&mut TrapGate> {
+        let s = unsafe { &mut *(self as *const _ as *mut TrapGate) };
         if s.type_enum() == DescriptorType::TrapGate {
             Some(s)
         } else {

@@ -61,9 +61,9 @@ pub trait EntryVariant<E: Entry> : Entry {
 
     /// Try to get reference to an entry variant. If it cannot be
     /// interpreted in a requested way, None will be returned.
-    fn try_variant_ref(value: &E) -> Option<&Self>;
+    fn try_variant_ref(&self) -> Option<&E>;
 
     /// Try to get mutable reference to an entry variant. If it cannot be
     /// interpreted in a requested way, None will be returned.
-    fn try_variant_mut(value: &mut E) -> Option<&mut Self>;
+    fn try_variant_mut(&mut self) -> Option<&mut E>;
 }

@@ -240,10 +240,10 @@ impl Entry for P2EMap {
 impl Entry for P2ERef {
 }
 
-impl EntryVariant<P2E> for P2EMap {
+impl EntryVariant<P2EMap> for P2E {
 
-    fn try_variant_ref(value: &P2E) -> Option<&Self> {
-        let entry: &P2EMap = unsafe { ::core::mem::transmute(value) };
+    fn try_variant_ref(&self) -> Option<&P2EMap> {
+        let entry = unsafe { &*(self as *const _ as *mut P2EMap) };
         if entry.ps() {
             None
         } else {
@@ -251,8 +251,8 @@ impl EntryVariant<P2E> for P2EMap {
         }
     }
 
-    fn try_variant_mut(value: &mut P2E) -> Option<&mut Self> {
-        let entry: &mut P2EMap = unsafe { ::core::mem::transmute(value) };
+    fn try_variant_mut(&mut self) -> Option<&mut P2EMap> {
+        let entry = unsafe { &mut *(self as *const _ as *mut P2EMap) };
         if entry.ps() {
             None
         } else {
@@ -261,10 +261,10 @@ impl EntryVariant<P2E> for P2EMap {
     }
 }
 
-impl EntryVariant<P2E> for P2ERef {
+impl EntryVariant<P2ERef> for P2E {
 
-    fn try_variant_ref(value: &P2E) -> Option<&Self> {
-        let entry: &P2ERef = unsafe { ::core::mem::transmute(value) };
+    fn try_variant_ref(&self) -> Option<&P2ERef> {
+        let entry = unsafe { &*(self as *const _ as *mut P2ERef) };
         if entry.ps() {
             Some(entry)
         } else {
@@ -272,8 +272,8 @@ impl EntryVariant<P2E> for P2ERef {
         }
     }
 
-    fn try_variant_mut(value: &mut P2E) -> Option<&mut Self> {
-        let entry: &mut P2ERef = unsafe { ::core::mem::transmute(value) };
+    fn try_variant_mut(&mut self) -> Option<&mut P2ERef> {
+        let entry = unsafe { &mut *(self as *const _ as *mut P2ERef) };
         if entry.ps() {
             Some(entry)
         } else {
