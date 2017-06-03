@@ -81,5 +81,30 @@ pub fn setup() {
         *p2().entry_mut(0) = p2e.into();
     }
 
+    unsafe {
+        // 0x00000 - 0x00FFF
+        let p = p1().entry_mut(0);
+        p.set_rw(true);
+        p.set_us(false);
+        p.set_present(true);
+        p.set_addr(0x00000);
+
+        // 0x01000 - 0x01FFF
+        assert!(super::map::APIC_BASE_ADDRESS == 0x01000);
+        let p = p1().entry_mut(1);
+        p.set_rw(true);
+        p.set_pwt(true); // Write-through.
+        p.set_pcd(true); // Disable caching.
+        p.set_present(true);
+        p.set_addr(0x01000);
+
+        for i in 0x02..0x9F {
+            let p = p1().entry_mut(i);
+            p.set_rw(true);
+            p.set_present(true);
+            p.set_addr(0x01000 * i);
+        }
+    }
+
     unimplemented!()
 }
