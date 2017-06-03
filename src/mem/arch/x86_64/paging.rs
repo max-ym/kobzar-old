@@ -69,5 +69,17 @@ pub fn setup() {
         p3e.set_present(true);
     }
 
+    unsafe {
+        // Each P2 entry covers 2MiB region.
+
+        let mut p2e = P2ERef::default();
+        p2e.set_rw(true);
+        p2e.set_us(false);
+        p2e.set_addr(p1() as *const _ as u64);
+        p2e.set_present(true);
+
+        *p2().entry_mut(0) = p2e.into();
+    }
+
     unimplemented!()
 }
