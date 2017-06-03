@@ -1,4 +1,4 @@
-// TODO: mod needs revision.
+use super::{Entry, EntryVariant};
 
 /// Page Table entry. Page table level 1 entry. Maps 4KiB page.
 #[repr(packed)]
@@ -21,8 +21,8 @@ pub struct P2ERef {
     data    : u64
 }
 
-/// Page Directory entry. Page table level 2 entry. Can be converted to
-/// P2EMap or P2ERef.
+/// Page Directory entry. Page table level 2 entry. Can be interpreted either
+/// as P2EMap or P2ERef.
 #[repr(packed)]
 #[derive(Default, Clone, Copy)]
 pub struct P2E {
@@ -222,88 +222,62 @@ impl PageFlags for P4E {
     fn_addr_12!();
 }
 
-impl PageFlags for P2E {
-
-    fn data(&self) -> u64 {
-        self.data
-    }
-
-    unsafe fn set_data(&mut self, data: u64) {
-        self.data = data;
-    }
-
-    fn addr(&self) -> u64 {
-        match self.as_variant() {
-            P2EVariant::Map(p2e) => (*p2e).addr(),
-            P2EVariant::Ref(p2e) => (*p2e).addr(),
-        }
-    }
-
-    unsafe fn set_addr(&mut self, addr: u64) {
-        match self.as_mut_variant() {
-            MutP2EVariant::Map(p2e) => (*p2e).set_addr(addr),
-            MutP2EVariant::Ref(p2e) => (*p2e).set_addr(addr),
-        }
-    }
-
-    fn pat(&self) -> bool {
-        match self.as_variant() {
-            P2EVariant::Map(p2e) => (*p2e).pat(),
-            P2EVariant::Ref(p2e) => (*p2e).pat(),
-        }
-    }
-
-    fn set_pat(&mut self, v: bool) {
-        match self.as_mut_variant() {
-            MutP2EVariant::Map(p2e) => (*p2e).set_pat(v),
-            MutP2EVariant::Ref(p2e) => (*p2e).set_pat(v),
-        }
-    }
-
+impl Entry for P1E {
 }
 
-impl P2E {
+impl Entry for P2E {
+}
 
-    pub fn maps(&self) -> bool {
-        self.ps() == true
-    }
+impl Entry for P3E {
+}
 
-    pub fn refs(&self) -> bool {
-        !self.maps()
-    }
+impl Entry for P4E {
+}
 
-    unsafe fn transmute<T>(&self) -> &T {
-        &*(self as *const P2E as *const T)
-    }
+impl Entry for P2EMap {
+}
 
-    unsafe fn transmute_mut<T>(&mut self) -> &mut T {
-        &mut *(self as *const P2E as *mut P2E as *mut T)
-    }
+impl Entry for P2ERef {
+}
 
-    pub fn as_variant(&self) -> P2EVariant {
-        if self.maps() {
-            P2EVariant::Map(unsafe { self.transmute() })
+impl EntryVariant<P2E> for P2EMap {
+
+    fn try_variant_ref(value: &P2E) -> Option<&Self> {
+        let entry: &P2EMap = unsafe { ::core::mem::transmute(value) };
+        if entry.ps() {
+            None
         } else {
-            P2EVariant::Ref(unsafe { self.transmute() })
+            Some(entry)
         }
     }
 
-    pub fn as_mut_variant(&mut self) -> MutP2EVariant {
-        if self.maps() {
-            MutP2EVariant::Map(unsafe { self.transmute_mut() })
+    fn try_variant_mut(value: &mut P2E) -> Option<&mut Self> {
+        let entry: &mut P2EMap = unsafe { ::core::mem::transmute(value) };
+        if entry.ps() {
+            None
         } else {
-            MutP2EVariant::Ref(unsafe { self.transmute_mut() })
+            Some(entry)
+        }
+    }
+}
+
+impl EntryVariant<P2E> for P2ERef {
+
+    fn try_variant_ref(value: &P2E) -> Option<&Self> {
+        let entry: &P2ERef = unsafe { ::core::mem::transmute(value) };
+        if entry.ps() {
+            Some(entry)
+        } else {
+            None
         }
     }
 
-}
-
-pub enum P2EVariant<'a> {
-    Map(&'a P2EMap),
-    Ref(&'a P2ERef),
-}
-
-pub enum MutP2EVariant<'a> {
-    Map(&'a mut P2EMap),
-    Ref(&'a mut P2ERef),
+    fn try_variant_mut(value: &mut P2E) -> Option<&mut Self> {
+        let entry: &mut P2ERef = unsafe { ::core::mem::transmute(value) };
+        if entry.ps() {
+            Some(entry)
+        } else {
+            None
+        }
+    }
 }
