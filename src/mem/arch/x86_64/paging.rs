@@ -45,11 +45,28 @@ pub fn setup() {
     unsafe {
         // Setup P4 entry. This entry covers the first 512 GiB of RAM.
         let p4e = p4().entry_mut(0);
+
         p4e.set_rw(true); // Readable and Writable.
-        p4e.set_us(true); // Accessible for user-mode processes.
+
+        // NOT accessible for user-mode processes.
+        // This page table must be used only by the kernel. No
+        // user-space process must never use this table. So
+        // this flag must not be set.
+        p4e.set_us(false);
+
         p4e.set_addr(p3() as *const _ as u64); // P3 table address.
 
         p4e.set_present(true);
+    }
+
+    unsafe {
+        // Setup P3 entries.
+        // First entry covers first 1GiB of RAM.
+        let p3e = p3().entry_mut(0);
+        p3e.set_rw(true);
+        p3e.set_us(false);
+        p3e.set_addr(p2() as *const _ as u64);
+        p3e.set_present(true);
     }
 
     unimplemented!()
