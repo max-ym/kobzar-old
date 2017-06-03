@@ -10,6 +10,7 @@
 //! 00000:000FF - free
 //! 00100:003FF - CCS basic setup temporary memory.
 //! 00400:004FF - BIOS Data Area.
+//! 00500:00FFF - free
 //! 01000:01FFF - Local APIC registers.
 //! 02000:02FFF - Paging. Page Table Level 1.
 //! 03000:03FFF - Paging. Page Table Level 2.
