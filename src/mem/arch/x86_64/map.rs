@@ -2,7 +2,9 @@
 //! 00000:003FF - free
 //! 00400:004FF - BIOS Data Area.
 //! 00500:7FFFF - free
-//! >=80000 - may not all be used.
+//! 80000:9FBFF - free but may not all be used.
+//! 9FC00:9FFFF - typical location for EBDA. But no guarantees.
+//! A0000:FFFFF - Video + ROM. Must not be cached, write through.
 //!
 //! Memory map of the kernel in selected region:
 //! 00000:000FF - free
