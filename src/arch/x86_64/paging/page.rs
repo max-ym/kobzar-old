@@ -9,14 +9,14 @@ pub struct P1E {
 
 /// Page Directory entry. Page table level 2 entry. Maps 2MiB page.
 #[repr(packed)]
-#[derive(Default, Clone, Copy)]
+#[derive(Clone, Copy)]
 pub struct P2EMap {
     data    : u64
 }
 
 /// Page Directory entry. Page table level 2 entry. References P1 table.
 #[repr(packed)]
-#[derive(Default, Clone, Copy)]
+#[derive(Clone, Copy)]
 pub struct P2ERef {
     data    : u64
 }
@@ -41,6 +41,42 @@ pub struct P3E {
 #[derive(Default, Clone, Copy)]
 pub struct P4E {
     data    : u64
+}
+
+impl Default for P2EMap {
+
+    fn default() -> Self {
+        P2EMap {
+            data : 1 << 7, // Turn on PS
+        }
+    }
+}
+
+impl Default for P2ERef {
+
+    fn default() -> Self {
+        P2ERef {
+            data : 0 << 7, // PS is off
+        }
+    }
+}
+
+impl ::core::convert::Into<P2E> for P2ERef {
+
+    fn into(self) -> P2E {
+        P2E {
+            data : self.data
+        }
+    }
+}
+
+impl ::core::convert::Into<P2E> for P2EMap {
+
+    fn into(self) -> P2E {
+        P2E {
+            data : self.data
+        }
+    }
 }
 
 /// Create getter and setter for single bit in page struct.
