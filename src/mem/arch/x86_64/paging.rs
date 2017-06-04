@@ -115,5 +115,7 @@ pub fn setup() {
         }
     }
 
+    // TODO: save to CR3.
+
     unimplemented!()
 }
