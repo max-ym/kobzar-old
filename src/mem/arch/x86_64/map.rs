@@ -29,7 +29,14 @@ pub const CCS_BASIC_SETUP_ADDRESS: usize = 0x00100;
 /// The bound of the memory that can be used by CCS basic setup data.
 pub const CCS_BASIC_SETUP_ADDRESS_END: usize = 0x003FF;
 
+/// Address of the level 1 paging table of the kernel.
 pub const PAGING_P1: usize = 0x2000;
+
+/// Address of the level 2 paging table of the kernel.
 pub const PAGING_P2: usize = 0x3000;
+
+/// Address of the level 3 paging table of the kernel.
 pub const PAGING_P3: usize = 0x4000;
+
+/// Address of the level 4 paging table of the kernel.
 pub const PAGING_P4: usize = 0x5000;
