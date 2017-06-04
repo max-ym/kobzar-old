@@ -95,7 +95,7 @@ pub fn setup() {
         p.set_present(true);
         p.set_addr(0x00000);
 
-        // 0x01000 - 0x01FFF
+        // 0x01000 - 0x01FFF: APIC registers.
         assert!(super::map::APIC_BASE_ADDRESS == 0x01000);
         let p = p1().entry_mut(1);
         p.set_rw(true);
@@ -104,6 +104,7 @@ pub fn setup() {
         p.set_present(true);
         p.set_addr(0x01000);
 
+        // Conventional memory.
         for i in 0x02..0x9F {
             let p = p1().entry_mut(i);
             p.set_rw(true);
@@ -111,6 +112,7 @@ pub fn setup() {
             p.set_addr(0x01000 * i as u64);
         }
 
+        // I/O devices are mapped in this region.
         for i in 0xA0..0xFF {
             let p = p1().entry_mut(i);
             p.set_rw(true);
