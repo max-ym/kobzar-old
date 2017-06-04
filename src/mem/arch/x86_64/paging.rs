@@ -108,7 +108,7 @@ pub fn setup() {
             let p = p1().entry_mut(i);
             p.set_rw(true);
             p.set_present(true);
-            p.set_addr(0x01000 * i);
+            p.set_addr(0x01000 * i as u64);
         }
 
         for i in 0xA0..0xFF {
@@ -117,7 +117,7 @@ pub fn setup() {
             p.set_present(true);
             p.set_pwt(true);
             p.set_pcd(true);
-            p.set_addr(0x1000 * i);
+            p.set_addr(0x1000 * i as u64);
         }
     }
 
