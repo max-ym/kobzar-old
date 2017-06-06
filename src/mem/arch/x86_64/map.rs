@@ -20,9 +20,9 @@
 //! 04000:04FFF - Paging. Page Table Level 3.
 //! 05000:05FFF - Paging. Page Table Level 4.
 //! 06000:7BFFF - free
-//! 7C000:7CFFF - Initial paging. Page Table Level 1.
-//! 7D000:7DFFF - Initial paging. Page Table Level 2.
-//! 7E000:7EFFF - Initial paging. Page Table Level 3.
+//! 7C000:7CFFF - Initial paging. Page Table Level 2.
+//! 7D000:7DFFF - Initial paging. Page Table Level 3.
+//! 7E000:7EFFF - Initial paging. Page Table Level 4.
 //! 7F000:7FFFF - Stack.
 //!
 //! Note that as soon as second paging tables are enabled,
