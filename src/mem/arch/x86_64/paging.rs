@@ -123,7 +123,11 @@ pub fn setup() {
         }
     }
 
-    // TODO: save to CR3.
-
-    unimplemented!()
+    // Save P4 address to CR3 and so start using new paging.
+    unsafe {
+        use asm::cr::{Cr3, Reg};
+        let mut cr3 = Cr3::read();
+        cr3.set_addr(p4() as *const _ as _);
+        cr3.save();
+    }
 }
