@@ -57,6 +57,11 @@ pub extern fn main() -> ! {
     logger().println("Kobzar kernel logger greets you!");
     logger().println("Very first initialization begins! Hold on tight ^-^\n");
 
+    // Setup paging first to enable caching and correct communication
+    // with memory mapped devices.
+    logger().println("Enabling new initial kernel paging tables.");
+    ::mem::paging::setup();
+
     logger().println("Setting up basic CCS table.");
     ::ccs::setup();
 
