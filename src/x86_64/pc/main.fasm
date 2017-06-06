@@ -23,44 +23,19 @@ MAGIC       equ  0x1BADB002
 ; Checksum of above, to prove we are multiboot
 CHECKSUM    equ -(MAGIC + FLAGS)
 
+STACK_TOP   equ 0x400
+
+PAGE_START  equ 0x7C000
+PD          equ 0x7C000
+PDPT        equ 0x7E000
+PML4        equ 0x7F000
+PAGE_END    equ 0x80000
+
 ; Declare a header as required by the Multiboot Standard.
 section '.multiboot'
     dd      MAGIC
     dd      FLAGS
     dd      CHECKSUM
-
-; #####
-; ### Stack
-; #
-
-section '.bootstrap_stack'
-stack_bottom:
-    repeat 16 * 1024     ; Create a stack with 16KiB size
-        db      ?
-    end repeat
-stack_top:
-
-; #####
-; ### Paging table
-; #
-
-section '.page'
-page_start:
-pdpt:
-    repeat 512
-        dq ?
-    end repeat
-pml4:
-    repeat 512
-        dq ?
-    end repeat
-pd:
-    repeat 512
-        dq ?
-    end repeat
-page_end:
-
-
 
 section '.data'
 public gdt
@@ -117,7 +92,7 @@ _start:
     ; 3. Save the pointer
     ; >>>>>
 
-    mov      esp , stack_top - 4    ; 1 and 2
+    mov      esp , STACK_TOP - 4    ; 1 and 2
     mov     [esp], ebx              ; 3
 
     ; >>>>> >>>>>
@@ -177,19 +152,19 @@ _start:
     mov     cr0, eax
 
     ; Step 2
-    mov     eax, pml4
+    mov     eax, PML4
     mov     cr3, eax
 
     ; Step 3
     xor     eax, eax
-    mov     edi, page_start
-    mov     ecx, (page_end - page_start) / 4
+    mov     edi, PAGE_START
+    mov     ecx, (PAGE_END - PAGE_START) / 4
 rep stosd
-    mov            edi ,     pml4
-    mov     dword [edi], 3 + pdpt ; Is present and read/write-able
-    mov            edi ,     pdpt
-    mov     dword [edi], 3 + pd
-    mov            edi ,     pd
+    mov            edi ,     PML4
+    mov     dword [edi], 3 + PDPT ; Is present and read/write-able
+    mov            edi ,     PDPT
+    mov     dword [edi], 3 + PD
+    mov            edi ,     PD
     mov     dword [edi], 3 + 128 + 16 + 8 ; Is also 2MiB and strong uncachable
 
     ; Step 4
@@ -243,18 +218,18 @@ use64       ; 64 bit world
     mov     cr4, rax
 
     ; Setup identity paging
-    mov     edi, pdpt + 8
-    mov     eax, 3 + pd
+    mov     edi, PDPT + 8
+    mov     eax, 3 + PD
     mov     ecx, 511
 rep stosq
-    mov     edi, pd + 8
+    mov     edi, PD + 8
     mov     eax, 128 + 3
     mov     ecx, 511
 rep stosq
 
     ; Pass control to higher level code
     mov     esi, [esp]     ; This will be passed as argument to highlevel code
-    mov     esp, stack_top
+    mov     esp, STACK_TOP
             extrn main
     jmp     main
     ; Kernel asembler booting is done by now

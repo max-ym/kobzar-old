@@ -15,7 +15,7 @@ SECTIONS
     /* First put the multiboot header, as it is required to be put very
        early in the image or the bootloader won't recognize the file
        format. */
-    .text BLOCK(8) : ALIGN(8)
+    .text BLOCK(16) : ALIGN(16)
     {
         *(.text)
     }
@@ -37,11 +37,5 @@ SECTIONS
     {
         *(COMMON)
         *(.bss)
-        *(.bootstrap_stack)
-    }
-
-    .page BLOCK(4K) : ALIGN(4K)
-    {
-        *(.page)
     }
 }
