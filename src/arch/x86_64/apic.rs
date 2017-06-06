@@ -1,47 +1,14 @@
 use ::asm::msr::ApicBase;
 use ::asm::cpuid;
-use ::mem::map::APIC_BASE_ADDRESS;
 
-/// Shows if Local APIC is available on current machine.
-/// The initial value is not correct before module initialization.
-static mut APIC_PRESENT: bool = false;
-
-/// Initialize the APIC module.
-pub fn init() {
-    // Check if Local APIC is availabale.
-    if cpuid::Features::get().local_apic_is_present() {
-        unsafe { APIC_PRESENT = true; }
-    } else {
-        unsafe { APIC_PRESENT = false; }
-
-        // Nothing to initalize as there is no Local APIC.
-        return;
-    }
-
-    // Get APIC Base MSR. It is safe to do so as we checked that Local APIC
-    // is really present.
-    let mut msr = unsafe { ApicBase::read() };
-
-    // Move the APIC registers to Low Memory.
-    msr.set_apic_base(APIC_BASE_ADDRESS);
-
-    // Save the MSR changes.
-    unsafe { msr.write() };
-}
-
-/// Get Local APIC present bit state. This bit is set to correct
-/// value after module initialization.
-pub fn local_apic_present() -> bool {
-    unsafe { APIC_PRESENT }
-}
-
-/// Local APIC registers representation.
+/// Local APIC handle.
 pub struct LocalApic {
-    // The registers are accessed by other functions and are not listed.
+    apic_base_msr   : ApicBase,
 }
 
 /// List of all local APIC registers and their addresses.
 #[repr(u64)]
+#[derive(PartialEq, Clone, Copy)]
 enum LocalApicReg {
     Id                      = 0x020, // RW (Nehalem RO)
     Version                 = 0x030, // RO
@@ -105,6 +72,36 @@ enum LocalApicReg {
     //      present in future IA-32 or Intel 64 processors.
 }
 
+impl LocalApicReg {
+
+    /// Pointer to given local APIC register.
+    pub fn ptr32(&self, apic: &LocalApic) -> *const u32 {
+        let addr = *self as usize + apic.base_addr();
+        addr as _
+    }
+
+    /// Pointer to mutable local APIC register.
+    pub fn ptr32_mut(&self, apic: &mut LocalApic) -> *mut u32 {
+        self.ptr32(apic) as _
+    }
+
+    pub fn ptr64(&self, apic: &LocalApic) -> *const u64 {
+        self.ptr32(apic) as _
+    }
+
+    pub fn ptr64_mut(&self, apic: &mut LocalApic) -> *mut u64 {
+        self.ptr32(apic) as _
+    }
+
+    pub fn ptr128(&self, apic: &LocalApic) -> *const (u64, u64) {
+        self.ptr32(apic) as _
+    }
+
+    pub fn ptr128_mut(&self, apic: &mut LocalApic) -> *mut (u64, u64) {
+        self.ptr32(apic) as _
+    }
+}
+
 // Macro to create basic getter functions for local APIC registers.
 macro_rules! ro {
     ($x:tt, $y:tt) => {
@@ -123,51 +120,37 @@ macro_rules! wo {
     };
 }
 
-#[allow(dead_code)]
 impl LocalApic {
 
-    /// Get Local APIC access.
-    pub fn get() -> Option<&'static LocalApic> {
-        if local_apic_present() {
-            let ptr = APIC_BASE_ADDRESS as *mut LocalApic;
-            unsafe { Some(&(*ptr)) }
+    /// Get Local APIC reference if APIC is actually available.
+    pub fn new() -> Option<LocalApic> {
+        if Self::local_apic_is_present() {
+            unsafe {
+                let apic_base_msr = ApicBase::read();
+                Some(LocalApic {
+                    apic_base_msr : apic_base_msr
+                })
+            }
         } else {
             None
         }
     }
 
-    /// Get a pointer to a local APIC register.
-    #[inline(always)]
-    fn ptr(reg: LocalApicReg) -> *mut u32 {
-        let offset = reg as u64;
-        let address = APIC_BASE_ADDRESS + offset;
-        address as *mut u32
+    /// Check if local APIC is present in given system. Function
+    /// uses CPUID to check feature availability. Because of that
+    /// calls to this function are slow.
+    pub fn local_apic_is_present() -> bool {
+        cpuid::Features::get().local_apic_is_present()
     }
 
-    /// Get a value of a local APIC register.
-    #[inline(always)]
-    fn val(reg: LocalApicReg) -> u32 {
-        unsafe { *Self::ptr(reg) }
+    /// Base address of local APIC registers mapped to RAM.
+    pub fn base_addr(&self) -> usize {
+        self.apic_base_msr.apic_base() as _
     }
 
-    #[inline(always)]
-    fn sval(reg: LocalApicReg, val: u32) {
-        unsafe { *Self::ptr(reg) = val }
-    }
-
-    ro!(Id,                         id                      );
-
-    #[inline(always)]
-    pub fn eoi_broadcast_suppression_supported(&self) -> bool {
-        Self::val(LocalApicReg::Version) & 0x1000000 != 0
-    }
-
-    #[inline(always)]
-    pub fn max_lvt_entry(&self) -> u8 {
-        (Self::val(LocalApicReg::Version) >> 16) as u8
-    }
-
-    pub fn version(&self) -> u8 {
-        Self::val(LocalApicReg::Version) as u8
+    /// Re-map local APIC registers to given new address.
+    pub unsafe fn set_base_addr(&mut self, base: usize) {
+        self.apic_base_msr.set_apic_base(base as _);
+        self.apic_base_msr.write();
     }
 }
