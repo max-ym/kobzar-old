@@ -112,13 +112,13 @@ macro_rules! flag_rw_cancel {
 macro_rules! fn_addr_12 {
     () => (
         fn addr(&self) -> u64 {
-            let mask = 0x0007FFFFFFFFF000;
+            let mask = 0x0007FFFFFFFFF800;
             self.data & mask
         }
 
         unsafe fn set_addr(&mut self, a: u64) {
-            let mask = 0x0007FFFFFFFFF000;
-            self.data = self.data & !mask + a;
+            let mask = !0x0007FFFFFFFFF800;
+            self.data = (self.data & mask) + a;
         }
     )
 }
@@ -126,13 +126,13 @@ macro_rules! fn_addr_12 {
 macro_rules! fn_addr_13 {
     () => (
         fn addr(&self) -> u64 {
-            let mask = 0x0007FFFFFFFFE000;
+            let mask = 0x0007FFFFFFFFF000;
             self.data & mask
         }
 
         unsafe fn set_addr(&mut self, a: u64) {
-            let mask = 0x0007FFFFFFFFE000;
-            self.data = self.data & !mask + a;
+            let mask = !0x0007FFFFFFFFF000;
+            self.data = (self.data & mask) + a;
         }
     )
 }
