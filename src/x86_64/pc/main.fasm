@@ -104,7 +104,7 @@ gdt:
 ; ### Code
 ; #
 
-section '.text'
+section '.text' align 16
 
 public _start
 use32
@@ -306,3 +306,63 @@ use32
     jmp     .end.print
   @@:
     db      'ERROR:', 0
+
+; >>>>> >>>>>
+; Helper functions which may be used by Rust Core library.
+use64
+
+; memset function using avx instructions. Before execution, data must be
+; already aligned to 32-byte boudnary.
+;
+; RDI - address where data store starts.
+; SIL - value that will be stored in memory.
+; RDX - num of 32 byte patterns to store.
+;
+; TODO: test needed.
+align 16
+memset_avx:
+    ; Set all bits of RAX to pattern.
+    movzx   ax , sil
+    movzx   si , sil
+    shl     ax , 8
+    or      ax , si
+    movzx   esi, ax
+    shl     eax, 16
+    or      eax, esi
+    mov     esi, eax
+    shl     rax, 32
+    or      rax, rsi
+
+    ; Align the stack pointer to 32-bit boundary.
+    mov     rsi, rsp
+    and     rsi, not 0x1F
+
+    ; Set pattern in 256-bit memory location (on the stack).
+    mov     [rsi       ], rax   ; 8  bytes
+    mov     [rsi - 0x08], rax   ; 16 bytes
+    mov     [rsi - 0x10], rax   ; 24 bytes
+    mov     [rsi - 0x18], rax   ; 32 bytes
+
+    ; Load YMM with a pattern
+    vmovaps ymm0, [rsi]
+
+    ; Check number of 64-byte stores.
+    shr      rdx , 1
+    jnc      @f             ; Check if one more 32-byte store must be done...
+    vmovaps [rsi], ymm0     ; ... before the main loop with 64-byte stores.
+    add      rdi , 16
+
+@@:
+    mov     rsi, rdi
+    mov     rax, 64
+.loop:
+    mov     rdi, rsi
+    add     rsi, rax
+    sub     rdx, 1
+
+    vmovaps [rdi     ], ymm0
+    vmovaps [rdi + 32], ymm0
+
+    jnz     .loop
+
+    ret
