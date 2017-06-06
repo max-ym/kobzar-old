@@ -70,12 +70,6 @@ pub extern fn main() -> ! {
     halt_forever();
 }
 
-/// Setup mechanisms that are controlling the interrupts.
-#[cfg(target_arch = "x86_64")]
-fn setup_interrupts() {
-    ::early::setup_interrupts();
-}
-
 #[cfg(target_arch = "x86_64")]
 extern "C" {
     fn memset_avx(dest: *mut u8, c: u64, n: usize);
@@ -153,8 +147,13 @@ pub unsafe extern "C" fn memset(dest: *mut u8, c: u8, n: usize) -> *mut u8 {
     align2(             &mut dest, c, &mut n);
 
     if n > 32 {
-        // TODO support processors with no AVX.
-        memset_avx(dest, c, n / 32);
+        asm!(
+            "rep stosq"
+        :
+        :   "{rax}" (c), "{rcx}" (n / 8), "{rdi}" (dest as usize)
+        :   "rcx", "rdi"
+        :   "volatile"
+        );
     }
 
     // Fill the end which gone out of 32-byte boundary.
