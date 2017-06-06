@@ -121,6 +121,14 @@ pub fn setup() {
             p.set_pcd(true);
             p.set_addr(0x1000 * i as u64);
         }
+
+        // Map second megabyte where OS code is stored.
+        for i in 0x100..0x200 {
+            let p = p1().entry_mut(i);
+            p.set_rw(true);
+            p.set_present(true);
+            p.set_addr(0x1000 * i as u64);
+        }
     }
 
     // Save P4 address to CR3 and so start using new paging.
