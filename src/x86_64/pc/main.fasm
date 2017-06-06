@@ -25,9 +25,9 @@ CHECKSUM    equ -(MAGIC + FLAGS)
 
 STACK_TOP   equ 0x80000
 
-PAGE_START  equ 0x7B000
-PD          equ 0x7B000
-PDPT        equ 0x7C000
+PAGE_START  equ 0x7C000
+PD          equ 0x7C000
+PDPT        equ 0x7D000
 PML4        equ 0x7E000
 PAGE_END    equ 0x7F000
 
