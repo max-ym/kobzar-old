@@ -32,7 +32,7 @@ SECTIONS
         *(.data)
     }
 
-    /* Read-write data (uninitialized) and stack */
+    /* Read-write data (uninitialized) */
     .bss BLOCK(8) : ALIGN(8)
     {
         *(COMMON)
