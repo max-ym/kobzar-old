@@ -37,6 +37,8 @@ mod arch;
 // Export global function 'memset'.
 pub use arch::memset;
 
+/// Interrupt-handling module.
+mod ints;
 
 macro_rules! panic {
     () => {{
