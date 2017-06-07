@@ -68,12 +68,13 @@ macro_rules! panic {
 pub extern fn main() -> ! {
     /* Things to be done:
      *
+     * Setup proper paging.
      * Initialize CCS model.
-     * Start multi-threading.
-     * Load memory manager.
+     * Set proper interrupt-handling system.
+     * Start scheduler and multi-threading.
      *
-     * Start initial kernel graphics server.
-     * Start initial kernel logger.
+     * Start memory manager server.
+     * Start basic kernel graphics server.
      * Start file system servers.
      * Run startup script (if any is found).
      * Start kernel terminal.
