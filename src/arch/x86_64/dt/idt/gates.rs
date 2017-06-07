@@ -79,6 +79,34 @@ impl Entry for TrapGate {
 impl Entry for InterruptGate {
 }
 
+impl Default for TrapGate {
+
+    fn default() -> Self {
+        TrapGate {
+            offset0     : 0,
+            segsel      : 0,
+            flags       : (::arch::DescriptorType::TrapGate as u16) << 8,
+            offset1     : 0,
+            offset2     : 0,
+            _reserved   : 0,
+        }
+    }
+}
+
+impl Default for InterruptGate {
+
+    fn default() -> Self {
+        InterruptGate {
+            offset0     : 0,
+            segsel      : 0,
+            flags       : (::arch::DescriptorType::InterruptGate as u16) << 8,
+            offset1     : 0,
+            offset2     : 0,
+            _reserved   : 0,
+        }
+    }
+}
+
 pub trait Gate : Entry {
 
     /// Address of the function that handles the interrupt.
