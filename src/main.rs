@@ -37,6 +37,30 @@ mod arch;
 // Export global function 'memset'.
 pub use arch::memset;
 
+
+macro_rules! panic {
+    () => {{
+        use early::logger;
+        use core::fmt::Write;
+        write!(logger(),
+            "PANIC! in file {}: line {}\n", file!(), line!()).unwrap();
+    }};
+
+    ($msg:expr) => {{
+        use early::logger;
+        use core::fmt::Write;
+        panic!();
+        logger().println($msg);
+    }};
+
+    ($fmt:expr, $($arg:tt)+) => {{
+        use early::logger;
+        use core::fmt::Write;
+        panic!();
+        write!(logger(), $fmt, $arg).unwrap();
+    }};
+}
+
 /// The starting point of kernel Rust code execution.
 /// Before this point runs some initial assembly code that initializes
 /// the environment where Rust code can start performing.
