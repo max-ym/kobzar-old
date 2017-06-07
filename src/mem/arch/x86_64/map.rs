@@ -19,7 +19,8 @@
 //! 03000:03FFF - Paging. Page Table Level 2.
 //! 04000:04FFF - Paging. Page Table Level 3.
 //! 05000:05FFF - Paging. Page Table Level 4.
-//! 06000:7BFFF - free
+//! 06000:06FFF - IDT.
+//! 07000:7BFFF - free
 //! 7C000:7CFFF - Initial paging. Page Table Level 2.
 //! 7D000:7DFFF - Initial paging. Page Table Level 3.
 //! 7E000:7EFFF - Initial paging. Page Table Level 4.
@@ -50,3 +51,6 @@ pub const PAGING_P3: usize = 0x4000;
 
 /// Address of the level 4 paging table of the kernel.
 pub const PAGING_P4: usize = 0x5000;
+
+/// Address of Interrupt Descriptor Table.
+pub const IDT: usize = 0x6000;
