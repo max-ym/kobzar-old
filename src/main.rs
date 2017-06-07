@@ -68,27 +68,19 @@ pub extern fn main() -> ! {
     logger().println("Setting up basic CCS table.");
     ::ccs::setup();
 
-    //setup_interrupts();
-
     halt_forever();
 }
 
 #[lang = "eh_personality"]
 #[no_mangle]
-pub extern fn rust_eh_personality() {
+pub extern fn eh_personality() {
+    halt_forever();
 }
 
 #[lang = "panic_fmt"]
 #[no_mangle]
-pub extern fn rust_begin_panic(msg: core::fmt::Arguments,
-                               file: &'static str,
-                               line: u32) -> ! {
-    use early::{logger};
-    use core::fmt::Write;
-
-    write!(logger(), "PANIC! in file '{}', line '{}'", file, line).unwrap();
-    logger().write_fmt(msg).unwrap();
-
+pub extern fn panic_impl(_fmt: ::core::fmt::Arguments,
+                        _file: &'static str, _line: u32) -> ! {
     halt_forever();
 }
 
