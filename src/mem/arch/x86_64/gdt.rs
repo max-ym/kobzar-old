@@ -17,15 +17,18 @@ impl GdtStack {
         GDT as *const GdtDescriptor as *mut _
     }
 
+    /// Add new element to GDT.
     pub unsafe fn push(&mut self, dsc: GdtDescriptor) {
         *Self::gdt().offset(self.counter as _) = dsc;
         self.counter += 1;
     }
 
+    /// Current element counter.
     pub fn counter(&self) -> u16 {
         self.counter
     }
 
+    /// Create this structure to add entries to GDT.
     pub fn new() -> Self {
         GdtStack {
             counter: 0
@@ -33,6 +36,7 @@ impl GdtStack {
     }
 }
 
+/// Setup GDT for kernel.
 pub fn setup() {
     let mut gdtr  = GdtrValue::new(GDT as _, 0);
     let mut table = gdtr.into_table();
