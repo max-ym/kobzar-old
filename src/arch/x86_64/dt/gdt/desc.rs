@@ -26,6 +26,9 @@ pub struct NullDescriptor {
     null    : u64
 }
 
+impl Entry for NullDescriptor {
+}
+
 impl Default for NullDescriptor {
 
     fn default() -> Self {
