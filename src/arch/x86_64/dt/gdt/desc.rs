@@ -6,7 +6,7 @@ pub struct GdtDescriptor {
     data    : u64,
 }
 
-use super::Entry;
+use super::{Entry, EntryVariant};
 impl Entry for GdtDescriptor {
 }
 
@@ -80,5 +80,24 @@ impl CodeSegmentDescriptor {
     pub fn dpl(&self) -> Dpl {
         let val = self.a & (CsdFlag::Dpl as u32) >> 13;
         unsafe { ::core::mem::transmute(val) }
+    }
+}
+
+impl EntryVariant<NullDescriptor> for GdtDescriptor {
+
+    fn try_variant_ref(&self) -> Option<&NullDescriptor> {
+        if self.data == 0 {
+            unsafe { Some(::core::mem::transmute(self)) }
+        } else {
+            None
+        }
+    }
+
+    fn try_variant_mut(&mut self) -> Option<&mut NullDescriptor> {
+        if self.data == 0 {
+            unsafe { Some(::core::mem::transmute(self)) }
+        } else {
+            None
+        }
     }
 }
