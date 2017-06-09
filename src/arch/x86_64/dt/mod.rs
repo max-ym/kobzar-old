@@ -39,7 +39,7 @@ pub trait RegValue: Sized {
     fn into_table(self) -> Self::HandleType;
 
     /// Consume DT and get a DTR value that can be stored to phisical register.
-    unsafe fn from_table(table: Self::HandleType) -> Self {
+    fn from_table(table: Self::HandleType) -> Self {
         Self::new(table.addr(), table.limit())
     }
 }
