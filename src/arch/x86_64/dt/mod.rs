@@ -81,7 +81,7 @@ impl From<u16> for DescriptorType {
 /// same name to override them. Implementing this trait lets to use default
 /// functions to calculate limit bounds in spite of implementing the same
 /// function for each DT entry type individually.
-trait DtLimit: Table {
+pub trait DtLimit: Table {
 
     /// Convert element index to minimal limit value of the handle that
     /// must be set so that this element could be accessed.
