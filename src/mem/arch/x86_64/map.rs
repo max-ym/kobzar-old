@@ -27,7 +27,7 @@
 //! 7E000:7EFFF - Initial paging. Page Table Level 4.
 //! 7F000:7FFFF - Stack.
 //!
-//! Note that as soon as second paging tables are enabled,
+//! Note that as soon as main paging tables are set,
 //! memory region of 7C000:7EFFF gets free.
 
 /// Local APIC base registers address. They are moved from their default
