@@ -50,6 +50,9 @@ pub trait Table {
     /// Check if given index breaks the limit of entry table.
     /// If so, there is no entry with given index in the table.
     fn limit_broken_by(&self, index: u16) -> bool;
+
+    /// Get address of the table.
+    fn addr(&self) -> u64;
 }
 
 /// Specific interpretation of some general entries in table. For

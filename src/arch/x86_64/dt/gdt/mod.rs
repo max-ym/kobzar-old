@@ -92,4 +92,8 @@ impl Table for GdtHandle {
     fn limit_broken_by(&self, index: u16) -> bool {
         <Self as DtLimit>::limit_broken_by(&self, index)
     }
+
+    fn addr(&self) -> u64 {
+        self.arr as *const GdtDescriptor as _
+    }
 }

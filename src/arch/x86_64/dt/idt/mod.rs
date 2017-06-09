@@ -52,6 +52,9 @@ impl Table for IdtHandle {
         <Self as DtLimit>::limit_broken_by(&self, index)
     }
 
+    fn addr(&self) -> u64 {
+        self.idt as *const IdtGate as _
+    }
 }
 
 impl IdtHandle {

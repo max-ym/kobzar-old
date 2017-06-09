@@ -87,6 +87,10 @@ macro_rules! impl_table {
             fn limit_broken_by(&self, index: u16) -> bool {
                 index >= self.limit()
             }
+
+            fn addr(&self) -> u64 {
+                &self.entries[0] as *const $e as _
+            }
         }
     );
 }

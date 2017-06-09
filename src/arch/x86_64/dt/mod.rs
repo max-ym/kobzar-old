@@ -7,7 +7,7 @@ pub mod gdt;
 pub mod idt;
 
 /// Descriptor Table Register Value.
-pub trait RegValue {
+pub trait RegValue: Sized {
 
     type HandleType : Table;
 
@@ -37,6 +37,11 @@ pub trait RegValue {
 
     /// Consume DTR value and get DT handle.
     fn into_table(self) -> Self::HandleType;
+
+    /// Consume DT and get a DTR value that can be stored to phisical register.
+    unsafe fn from_table(table: Self::HandleType) -> Self {
+        Self::new(table.addr(), table.limit())
+    }
 }
 
 /// Descriptor Privilege Level. Used in GDT and IDT.
