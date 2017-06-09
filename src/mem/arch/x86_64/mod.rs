@@ -6,3 +6,6 @@ pub mod alloc;
 
 /// Memory pages of the kernel.
 pub mod paging;
+
+/// Global Descriptor Table of the kernel.
+pub mod gdt;
