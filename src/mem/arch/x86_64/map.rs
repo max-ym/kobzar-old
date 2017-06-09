@@ -1,7 +1,7 @@
 //! Memory map after launching the kernel.
 //! 00000:003FF - free
 //! 00400:004FF - BIOS Data Area.
-//! 00500:7FFFF - free
+//! 00500:7BFFF - free
 //! 7C000:7CFFF - Initial paging. Page Table Level 2.
 //! 7D000:7DFFF - Initial paging. Page Table Level 3.
 //! 7E000:7EFFF - Initial paging. Page Table Level 4.
@@ -20,6 +20,7 @@
 //! 04000:04FFF - Paging. Page Table Level 3.
 //! 05000:05FFF - Paging. Page Table Level 4.
 //! 06000:06FFF - IDT.
+//! 07000:09000 - GDT.
 //! 07000:7BFFF - free
 //! 7C000:7CFFF - Initial paging. Page Table Level 2.
 //! 7D000:7DFFF - Initial paging. Page Table Level 3.
@@ -54,3 +55,6 @@ pub const PAGING_P4: usize = 0x5000;
 
 /// Address of Interrupt Descriptor Table.
 pub const IDT: usize = 0x6000;
+
+/// Address of Global Descriptor Table.
+pub const GDT: usize = 0x7000;
