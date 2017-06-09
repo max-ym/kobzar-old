@@ -83,9 +83,27 @@ impl From<u16> for DescriptorType {
 /// function for each DT entry type individually.
 trait DtLimit: Table {
 
+    /// Convert element index to minimal limit value of the handle that
+    /// must be set so that this element could be accessed.
+    fn limit_from_index(index: u16) -> u16 {
+        (index + 1) * Self::EntryType::size() as u16 - 1
+    }
+
+    /// Set limit to given value. Function does not check if given limit
+    /// is of a valid value.
+    unsafe fn set_limit(&mut self, limit: u16);
+
     /// Check if given index breaks the limit of DT. If so, there is no
     /// descriptor with given index in the table.
     fn limit_broken_by(&self, index: u16) -> bool {
-        self.limit() < index * Self::EntryType::size() as u16 + 1
+        self.limit() < Self::limit_from_index(index)
+    }
+
+    /// Set entry count of entry table. This count is converted
+    /// to apropriate limit value and is set in the handle. This
+    /// function does not check if element count does not exceed
+    /// valid value.
+    unsafe fn set_limit_by_entry_count(&mut self, count: u16) {
+        self.set_limit(Self::limit_from_index(count));
     }
 }

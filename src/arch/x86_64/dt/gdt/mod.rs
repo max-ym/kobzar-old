@@ -69,6 +69,10 @@ pub struct GdtHandle {
 }
 
 impl DtLimit for GdtHandle {
+
+    unsafe fn set_limit(&mut self, limit: u16) {
+        self.limit = limit;
+    }
 }
 
 impl Table for GdtHandle {

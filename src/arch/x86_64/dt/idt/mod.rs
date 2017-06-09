@@ -28,6 +28,10 @@ pub struct IdtHandle {
 }
 
 impl DtLimit for IdtHandle {
+
+    unsafe fn set_limit(&mut self, limit: u16) {
+        self.limit = limit;
+    }
 }
 
 impl Table for IdtHandle {
