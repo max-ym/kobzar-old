@@ -17,6 +17,24 @@ pub struct CodeSegmentDescriptor {
     _b  : u32, // This one is unused.
 }
 
+impl Entry for CodeSegmentDescriptor {
+}
+
+/// The first descriptor in GDT is null.
+#[repr(packed)]
+pub struct NullDescriptor {
+    null    : u64
+}
+
+impl Default for NullDescriptor {
+
+    fn default() -> Self {
+        NullDescriptor {
+            null: 0
+        }
+    }
+}
+
 /// Code Segment Descriptor flag list.
 #[repr(u32)]
 enum CsdFlag {
