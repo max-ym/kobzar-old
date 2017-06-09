@@ -107,10 +107,10 @@ impl RegValue for IdtrValue {
         self.limit = limit;
     }
 
-    unsafe fn table(&self) -> Self::HandleType {
+    fn into_table(self) -> Self::HandleType {
         IdtHandle {
             limit   : self.limit,
-            idt     : ::core::mem::transmute(self.addr)
+            idt     : self.addr as *const IdtGate as *mut _,
         }
     }
 }

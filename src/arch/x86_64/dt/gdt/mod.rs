@@ -54,10 +54,10 @@ impl RegValue for GdtrValue {
         self.limit = limit;
     }
 
-    unsafe fn table(&self) -> Self::HandleType {
+    fn into_table(self) -> Self::HandleType {
         GdtHandle {
             limit   : self.limit,
-            arr     : ::core::mem::transmute(self.addr),
+            arr     : self.addr as *const GdtDescriptor as *mut _,
         }
     }
 }

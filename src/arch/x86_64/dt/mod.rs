@@ -35,8 +35,8 @@ pub trait RegValue {
     /// Set limit of DT.
     unsafe fn set_limit(&mut self, limit: u16);
 
-    /// Get Gdt handle from GDTR value.
-    unsafe fn table(&self) -> Self::HandleType;
+    /// Consume DTR value and get DT handle.
+    fn into_table(self) -> Self::HandleType;
 }
 
 /// Descriptor Privilege Level. Used in GDT and IDT.
