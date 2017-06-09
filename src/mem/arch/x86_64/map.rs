@@ -2,9 +2,9 @@
 //! 00000:003FF - free
 //! 00400:004FF - BIOS Data Area.
 //! 00500:7FFFF - free
-//! 7C000:7CFFF - Initial paging. Page Table Level 1.
-//! 7D000:7DFFF - Initial paging. Page Table Level 2.
-//! 7E000:7EFFF - Initial paging. Page Table Level 3.
+//! 7C000:7CFFF - Initial paging. Page Table Level 2.
+//! 7D000:7DFFF - Initial paging. Page Table Level 3.
+//! 7E000:7EFFF - Initial paging. Page Table Level 4.
 //! 7F000:7FFFF - Stack.
 //! 80000:9FBFF - free but may not all be used.
 //! 9FC00:9FFFF - typical location for EBDA. But no guarantees.
