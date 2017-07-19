@@ -225,4 +225,12 @@ impl CallGateDescriptor {
         self.offset1 = (offset >> 16) as u16;
         self.offset2 = (offset >> 32) as u32;
     }
+
+    pub fn segsel(&self) -> u16 {
+        self.segsel
+    }
+
+    pub fn set_segsel(&mut self, segsel: u16) {
+        self.segsel = segsel;
+    }
 }
