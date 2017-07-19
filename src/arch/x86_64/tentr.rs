@@ -56,7 +56,7 @@ pub trait Table {
 }
 
 /// Specific interpretation of some general entries in table. For
-/// example, IDT has gates which are entreis of this table. But
+/// example, IDT has gates which are entries of this table. But
 /// those entries can be interrupt gates or trap gates. So each
 /// of the gates implement this trait to allow reinterpreting them as
 /// more specific entries to access additional functions and properties.
