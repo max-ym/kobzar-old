@@ -166,3 +166,16 @@ impl EntryVariant<LdtDescriptor> for GdtDescriptor {
         }
     }
 }
+
+/// Bitmasks of flags in TSS and LDT descriptors.
+enum TssLdtFlags {
+
+    // First flags byte.
+    Dpl             = (1 << 14) | (1 << 13),
+    Present         = 1 << 15,
+
+    // Second flags byte.
+    Limit           = 0xF,
+    Available       = 1 << 4,
+    Granularity     = 1 << 7,
+}
