@@ -249,4 +249,15 @@ impl TssDescriptor {
         let mask = (dpl as u16) << 13;
         self.flags0 = self.flags0 & !(DplFlag as u16) | mask;
     }
+
+    pub fn present(&self) -> bool {
+        use self::TssLdtFlag::Present;
+        self.flags0 & Present as u16 != 0
+    }
+
+    pub fn set_present(&mut self, v: bool) {
+        use self::TssLdtFlag::Present;
+        let mask = if v { Present as u16 } else { 0 };
+        self.flags0 = self.flags0 & !(Present as u16) | mask;
+    }
 }
