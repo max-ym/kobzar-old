@@ -234,3 +234,19 @@ impl CallGateDescriptor {
         self.segsel = segsel;
     }
 }
+
+impl TssDescriptor {
+
+    pub fn dpl(&self) -> Dpl {
+        use self::TssLdtFlag::Dpl as DplFlag;
+        let val = self.flags0 & DplFlag as u16;
+        let val = val >> 13;
+        Dpl::from_num(val as _).unwrap()
+    }
+
+    pub fn set_dpl(&mut self, dpl: Dpl) {
+        use self::TssLdtFlag::Dpl as DplFlag;
+        let mask = (dpl as u16) << 13;
+        self.flags0 = self.flags0 & !(DplFlag as u16) | mask;
+    }
+}
