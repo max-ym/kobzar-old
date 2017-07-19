@@ -46,3 +46,42 @@ impl EntryVariant<NullDescriptor> for GdtDescriptor {
         }
     }
 }
+
+#[repr(packed)]
+pub struct CallGateDescriptor {
+    offset0 : u16,
+    segsel  : u16,
+    flags   : u16,
+    offset1 : u16,
+    offset2 : u32,
+    resv    : u32,
+}
+
+impl Entry for CallGateDescriptor {
+}
+
+macro_rules! is_cgd_type {
+    ($x:ident) => {{
+        use super::DescriptorType::CallGate;
+        ($x.data[0] & 0x0F000000) >> 8 == CallGate as _
+    }};
+}
+
+impl EntryVariant<CallGateDescriptor> for GdtDescriptor {
+
+    fn try_variant_ref(&self) -> Option<&CallGateDescriptor> {
+        if is_cgd_type!(self) {
+            unsafe { Some(::core::mem::transmute(self)) }
+        } else {
+            None
+        }
+    }
+
+    fn try_variant_mut(&mut self) -> Option<&mut CallGateDescriptor> {
+        if is_cgd_type!(self) {
+            unsafe { Some(::core::mem::transmute(self)) }
+        } else {
+            None
+        }
+    }
+}
