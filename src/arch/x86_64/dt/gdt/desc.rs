@@ -211,4 +211,18 @@ impl CallGateDescriptor {
         let mask = (dpl as u16) << 13;
         self.flags = self.flags & !(DplFlag as u16) | mask;
     }
+
+    pub fn offset(&self) -> u64 {
+        let mut val = 0;
+        val |= (self.offset0 as u64) << 00;
+        val |= (self.offset1 as u64) << 16;
+        val |= (self.offset2 as u64) << 32;
+        val
+    }
+
+    pub fn set_offset(&mut self, offset: u64) {
+        self.offset0 = (offset >> 00) as u16;
+        self.offset1 = (offset >> 16) as u16;
+        self.offset2 = (offset >> 32) as u32;
+    }
 }
