@@ -198,4 +198,17 @@ impl CallGateDescriptor {
         let mask = if v { Present as u16 } else { 0 };
         self.flags = self.flags & !(Present as u16) | mask;
     }
+
+    pub fn dpl(&self) -> Dpl {
+        use self::CallGateFlag::Dpl as DplFlag;
+        let val = self.flags & DplFlag as u16;
+        let val = val >> 13;
+        Dpl::from_num(val as _).unwrap()
+    }
+
+    pub fn set_dpl(&mut self, dpl: Dpl) {
+        use self::CallGateFlag::Dpl as DplFlag;
+        let mask = (dpl as u16) << 13;
+        self.flags = self.flags & !(DplFlag as u16) | mask;
+    }
 }

@@ -53,6 +53,21 @@ pub enum Dpl {
     Dpl3 = 3,
 }
 
+impl Dpl {
+
+    /// Convert number from 0 to 3 to corresponding DPL level.
+    pub fn from_num(i: u32) -> Option<Self> {
+        use self::Dpl::*;
+        match i {
+            0 => Some(Dpl0),
+            1 => Some(Dpl1),
+            2 => Some(Dpl2),
+            3 => Some(Dpl3),
+            _ => None
+        }
+    }
+}
+
 /// IA-32e mode descriptor type.
 #[repr(u16)]
 #[derive(PartialEq)]
