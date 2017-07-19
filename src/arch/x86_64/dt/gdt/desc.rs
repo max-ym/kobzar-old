@@ -57,6 +57,28 @@ pub struct CallGateDescriptor {
     resv    : u32,
 }
 
+#[repr(packed)]
+pub struct TssDescriptor {
+    limit   : u16,
+    base0   : u16,
+    flags0  : u16,
+    flags1  : u8 ,
+    base1   : u8 ,
+    base2   : u32,
+    resv    : u32,
+}
+
+#[repr(packed)]
+pub struct LdtDesriptor {
+    limit   : u16,
+    base0   : u16,
+    flags0  : u16,
+    flags1  : u8 ,
+    base1   : u8 ,
+    base2   : u32,
+    resv    : u32,
+}
+
 impl Entry for CallGateDescriptor {
 }
 
