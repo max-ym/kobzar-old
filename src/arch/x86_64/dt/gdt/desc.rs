@@ -167,6 +167,12 @@ impl EntryVariant<LdtDescriptor> for GdtDescriptor {
     }
 }
 
+/// Bitmasks of flags in Call Gate descriptor.
+enum CallGateFlag {
+    Dpl     = (1 << 14) | (1 << 13),
+    Present = 1 << 15,
+}
+
 /// Bitmasks of flags in TSS and LDT descriptors.
 enum TssLdtFlags {
 
