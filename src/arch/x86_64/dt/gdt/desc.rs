@@ -281,4 +281,14 @@ impl TssDescriptor {
         self.flags1 &= !(Available as u8);
         self.flags1 |= if avl { Available as u8 } else { 0 };
     }
+
+    pub fn granularity(&self) -> bool {
+        self.flags1 & self::TssLdtFlag::Granularity as u8 != 0
+    }
+
+    pub fn set_granularity(&mut self, g: bool) {
+        use self::TssLdtFlag::Granularity;
+        self.flags1 &= !(Granularity as u8);
+        self.flags1 |= if g { Granularity as u8 } else { 0 };
+    }
 }
