@@ -270,4 +270,15 @@ impl TssDescriptor {
         self.flags1 &= !(Limit as u8);
         self.flags1 |= (limit & Limit as u8);
     }
+
+    pub fn available(&self) -> bool {
+        use self::TssLdtFlag::Available;
+        self.flags1 & (Available as u8) != 0
+    }
+
+    pub fn set_available(&mut self, avl: bool) {
+        use self::TssLdtFlag::Available;
+        self.flags1 &= !(Available as u8);
+        self.flags1 |= if avl { Available as u8 } else { 0 };
+    }
 }
