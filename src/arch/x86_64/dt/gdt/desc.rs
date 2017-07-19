@@ -185,3 +185,17 @@ enum TssLdtFlag {
     Available       = 1 << 4,
     Granularity     = 1 << 7,
 }
+
+impl CallGateDescriptor {
+
+    pub fn present(&self) -> bool {
+        use self::CallGateFlag::Present;
+        self.flags & Present as u16 != 0
+    }
+
+    pub fn set_present(&mut self, v: bool) {
+        use self::CallGateFlag::Present;
+        let mask = if v { Present as u16 } else { 0 };
+        self.flags = self.flags & !(Present as u16) | mask;
+    }
+}
