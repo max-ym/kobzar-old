@@ -174,7 +174,7 @@ enum CallGateFlag {
 }
 
 /// Bitmasks of flags in TSS and LDT descriptors.
-enum TssLdtFlags {
+enum TssLdtFlag {
 
     // First flags byte.
     Dpl             = (1 << 14) | (1 << 13),
