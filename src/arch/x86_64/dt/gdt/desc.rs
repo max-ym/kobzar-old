@@ -260,4 +260,14 @@ impl TssDescriptor {
         let mask = if v { Present as u16 } else { 0 };
         self.flags0 = self.flags0 & !(Present as u16) | mask;
     }
+
+    pub fn limit(&self) -> u8 {
+        self.flags1 & 0xF
+    }
+
+    pub fn set_limit(&mut self, limit: u8) {
+        use self::TssLdtFlag::Limit;
+        self.flags1 &= !(Limit as u8);
+        self.flags1 |= (limit & Limit as u8);
+    }
 }
