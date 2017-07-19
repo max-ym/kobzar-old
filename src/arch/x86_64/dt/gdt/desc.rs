@@ -69,7 +69,7 @@ pub struct TssDescriptor {
 }
 
 #[repr(packed)]
-pub struct LdtDesriptor {
+pub struct LdtDescriptor {
     limit   : u16,
     base0   : u16,
     flags0  : u16,
@@ -82,10 +82,31 @@ pub struct LdtDesriptor {
 impl Entry for CallGateDescriptor {
 }
 
+impl Entry for TssDescriptor {
+}
+
+impl Entry for LdtDescriptor {
+}
+
 macro_rules! is_cgd_type {
     ($x:ident) => {{
         use super::DescriptorType::CallGate;
         ($x.data[0] & 0x0F000000) >> 8 == CallGate as _
+    }};
+}
+
+macro_rules! is_tss_type {
+    ($x:ident) => {{
+        use super::DescriptorType::{TssAvailable, TssBusy};
+        let t = ($x.data[0] & 0x0F000000) >> 8;
+        t == TssAvailable as _ || t == TssBusy as _
+    }};
+}
+
+macro_rules! is_ldt_type {
+    ($x:ident) => {{
+        use super::DescriptorType::{Ldt};
+        ($x.data[0] & 0x0F000000) >> 8 == Ldt as _
     }};
 }
 
@@ -101,6 +122,44 @@ impl EntryVariant<CallGateDescriptor> for GdtDescriptor {
 
     fn try_variant_mut(&mut self) -> Option<&mut CallGateDescriptor> {
         if is_cgd_type!(self) {
+            unsafe { Some(::core::mem::transmute(self)) }
+        } else {
+            None
+        }
+    }
+}
+
+impl EntryVariant<TssDescriptor> for GdtDescriptor {
+
+    fn try_variant_ref(&self) -> Option<&TssDescriptor> {
+        if is_tss_type!(self) {
+            unsafe { Some(::core::mem::transmute(self)) }
+        } else {
+            None
+        }
+    }
+
+    fn try_variant_mut(&mut self) -> Option<&mut TssDescriptor> {
+        if is_tss_type!(self) {
+            unsafe { Some(::core::mem::transmute(self)) }
+        } else {
+            None
+        }
+    }
+}
+
+impl EntryVariant<LdtDescriptor> for GdtDescriptor {
+
+    fn try_variant_ref(&self) -> Option<&LdtDescriptor> {
+        if is_ldt_type!(self) {
+            unsafe { Some(::core::mem::transmute(self)) }
+        } else {
+            None
+        }
+    }
+
+    fn try_variant_mut(&mut self) -> Option<&mut LdtDescriptor> {
+        if is_ldt_type!(self) {
             unsafe { Some(::core::mem::transmute(self)) }
         } else {
             None
