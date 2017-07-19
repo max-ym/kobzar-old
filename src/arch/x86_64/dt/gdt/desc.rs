@@ -268,7 +268,7 @@ impl TssDescriptor {
     pub fn set_limit(&mut self, limit: u8) {
         use self::TssLdtFlag::Limit;
         self.flags1 &= !(Limit as u8);
-        self.flags1 |= (limit & Limit as u8);
+        self.flags1 |= limit & Limit as u8;
     }
 
     pub fn available(&self) -> bool {
