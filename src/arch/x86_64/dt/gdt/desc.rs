@@ -3,7 +3,7 @@ use super::Dpl;
 /// Struct to represent general GDT descriptor type.
 #[repr(packed)]
 pub struct GdtDescriptor {
-    data    : [u64; 2]
+    data    : [u64; 2] // TODO not all descriptors have 16 byte size!
 }
 
 use super::{Entry, EntryVariant};
