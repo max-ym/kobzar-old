@@ -12,6 +12,12 @@ pub struct GdtDescriptor16 {
     data    : [u64; 2],
 }
 
+impl Entry for GdtDescriptor16 {
+}
+
+impl Entry for GdtDescriptor8 {
+}
+
 /// The first descriptor in GDT is null.
 #[repr(packed)]
 pub struct NullDescriptor {
