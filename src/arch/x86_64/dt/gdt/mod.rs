@@ -57,7 +57,7 @@ impl RegValue for GdtrValue {
     fn into_table(self) -> Self::HandleType {
         GdtHandle {
             limit   : self.limit,
-            arr     : self.addr as *const GdtDescriptor as *mut _,
+            arr     : self.addr as *const GdtDescriptor8 as *mut _,
         }
     }
 }
@@ -65,7 +65,10 @@ impl RegValue for GdtrValue {
 /// Global Descriptor Table handle.
 pub struct GdtHandle {
     limit   : u16,
-    arr    : *mut GdtDescriptor,
+
+    // GDT entries are divisible by 8 (bytes), so base entry type is
+    // GdtDescriptor8.
+    arr    : *mut GdtDescriptor8,
 }
 
 impl DtLimit for GdtHandle {
@@ -77,7 +80,7 @@ impl DtLimit for GdtHandle {
 
 impl Table for GdtHandle {
 
-    type EntryType = GdtDescriptor;
+    type EntryType = GdtDescriptor8;
 
     unsafe fn entry_ref<'a, 'b>(&'a self, index: u16)
             -> &'b Self::EntryType {
@@ -98,6 +101,6 @@ impl Table for GdtHandle {
     }
 
     fn addr(&self) -> u64 {
-        self.arr as *const GdtDescriptor as _
+        self.arr as *const GdtDescriptor8 as _
     }
 }
