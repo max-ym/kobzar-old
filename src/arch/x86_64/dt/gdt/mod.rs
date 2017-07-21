@@ -1,7 +1,7 @@
 /// Descriptors module.
 pub mod desc;
 
-pub use self::desc::GdtDescriptor;
+pub use self::desc::*;
 
 use super::*;
 
