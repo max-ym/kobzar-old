@@ -13,13 +13,13 @@ struct GdtStack {
 impl GdtStack {
 
     /// Pointer to GdtDescriptor array (which is GDT table).
-    fn gdt() -> *mut GdtDescriptor {
-        GDT as *const GdtDescriptor as *mut _
+    fn gdt() -> *mut GdtDescriptor8 {
+        GDT as *const GdtDescriptor8 as *mut _
     }
 
     /// Add new element to GDT.
-    pub unsafe fn push(&mut self, dsc: GdtDescriptor) {
-        *Self::gdt().offset(self.counter as _) = dsc;
+    pub unsafe fn push(&mut self, dsc: GdtDescriptorHandle) {
+        unimplemented!();
         self.counter += 1;
     }
 
