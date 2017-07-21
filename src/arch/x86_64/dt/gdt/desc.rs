@@ -29,24 +29,26 @@ impl Entry for GdtDescriptor8 {
 impl<'a> From<&'a GdtDescriptor8> for GdtDescriptorHandle<'a> {
 
     fn from(r: &GdtDescriptor8) -> GdtDescriptorHandle {
+        let flag_mask = 0x0F000000;
+
         let is_cgd_type = |data: u64| -> bool {
             use super::DescriptorType::CallGate;
-            (data & 0x0F000000) >> 8 == CallGate as _
+            (data & flag_mask) >> 8 == CallGate as _
         };
 
         let is_tss_type = |data: u64| -> bool {
             use super::DescriptorType::{TssAvailable, TssBusy};
-            let t = (data & 0x0F000000) >> 8;
+            let t = (data & flag_mask) >> 8;
             t == TssAvailable as _ || t == TssBusy as _
         };
 
         let is_ldt_type = |data: u64| -> bool {
             use super::DescriptorType::Ldt;
-            (data & 0x0F000000) >> 8 == Ldt as _
+            (data & flag_mask) >> 8 == Ldt as _
         };
 
         let is_null_type = |data: u64| -> bool {
-            (data & 0x0F000000) == 0
+            (data & flag_mask) == 0
         };
 
         use super::GdtDescriptorHandle::*;
