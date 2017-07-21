@@ -71,6 +71,28 @@ impl Entry for TssDescriptor {
 impl Entry for LdtDescriptor {
 }
 
+macro_rules! is_cgd_type {
+    ($x:ident) => {{
+        use super::DescriptorType::CallGate;
+        ($x.data[0] & 0x0F000000) >> 8 == CallGate as _
+    }};
+}
+
+macro_rules! is_tss_type {
+    ($x:ident) => {{
+        use super::DescriptorType::{TssAvailable, TssBusy};
+        let t = ($x.data[0] & 0x0F000000) >> 8;
+        t == TssAvailable as _ || t == TssBusy as _
+    }};
+}
+
+macro_rules! is_ldt_type {
+    ($x:ident) => {{
+        use super::DescriptorType::{Ldt};
+        ($x.data[0] & 0x0F000000) >> 8 == Ldt as _
+    }};
+}
+
 /// Bitmasks of flags in Call Gate descriptor.
 enum CallGateFlag {
     Dpl     = (1 << 14) | (1 << 13),
