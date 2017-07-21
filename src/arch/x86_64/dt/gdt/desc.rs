@@ -2,12 +2,14 @@ use super::{Dpl, Entry, EntryVariant};
 
 /// General 8 byte GDT descriptor.
 #[repr(packed)]
+#[derive(Clone, Copy)]
 pub struct GdtDescriptor8 {
     data    : u64,
 }
 
 /// General 16 byte GDT descriptor.
 #[repr(packed)]
+#[derive(Clone, Copy)]
 pub struct GdtDescriptor16 {
     data    : [u64; 2],
 }
@@ -80,6 +82,7 @@ impl Into<(GdtDescriptor8, GdtDescriptor8)> for GdtDescriptor16 {
 
 /// The first descriptor in GDT is null.
 #[repr(packed)]
+#[derive(Clone, Copy)]
 pub struct NullDescriptor {
     null    : u64
 }
@@ -97,6 +100,7 @@ impl Default for NullDescriptor {
 }
 
 #[repr(packed)]
+#[derive(Clone, Copy)]
 pub struct CallGateDescriptor {
     offset0 : u16,
     segsel  : u16,
@@ -107,6 +111,7 @@ pub struct CallGateDescriptor {
 }
 
 #[repr(packed)]
+#[derive(Clone, Copy)]
 pub struct TssDescriptor {
     limit   : u16,
     base0   : u16,
@@ -118,6 +123,7 @@ pub struct TssDescriptor {
 }
 
 #[repr(packed)]
+#[derive(Clone, Copy)]
 pub struct LdtDescriptor {
     limit   : u16,
     base0   : u16,
