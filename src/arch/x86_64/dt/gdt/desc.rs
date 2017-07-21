@@ -1,12 +1,15 @@
 use super::{Dpl, Entry, EntryVariant};
 
-/// Struct to represent general GDT descriptor type.
-pub struct GdtDescriptorInfo {
-    /// First 8 byte word.
+/// General 8 byte GDT descriptor.
+#[repr(packed)]
+pub struct GdtDescriptor8 {
     data    : u64,
+}
 
-    /// Extension of GDT entry if descriptor size is 16 byte.
-    ext0    : Option<u64>,
+/// General 16 byte GDT descriptor.
+#[repr(packed)]
+pub struct GdtDescriptor16 {
+    data    : [u64; 2],
 }
 
 /// The first descriptor in GDT is null.
