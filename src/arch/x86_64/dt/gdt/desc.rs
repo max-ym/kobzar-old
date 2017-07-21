@@ -69,6 +69,15 @@ impl<'a> From<&'a GdtDescriptor8> for GdtDescriptorHandle<'a> {
     }
 }
 
+impl Into<(GdtDescriptor8, GdtDescriptor8)> for GdtDescriptor16 {
+
+    fn into(self) -> (GdtDescriptor8, GdtDescriptor8) {
+        let a = GdtDescriptor8 { data: self.data[0] };
+        let b = GdtDescriptor8 { data: self.data[1] };
+        (a, b)
+    }
+}
+
 /// The first descriptor in GDT is null.
 #[repr(packed)]
 pub struct NullDescriptor {
