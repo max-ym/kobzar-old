@@ -12,10 +12,59 @@ pub struct GdtDescriptor16 {
     data    : [u64; 2],
 }
 
+/// Handle for descriptor that can either be 8 byte or 16 byte wide.
+pub enum GdtDescriptorHandle<'a> {
+    Null(&'a NullDescriptor),
+    CallGate(&'a CallGateDescriptor),
+    Tss(&'a TssDescriptor),
+    Ldt(&'a LdtDescriptor),
+}
+
 impl Entry for GdtDescriptor16 {
 }
 
 impl Entry for GdtDescriptor8 {
+}
+
+impl<'a> From<&'a GdtDescriptor8> for GdtDescriptorHandle<'a> {
+
+    fn from(r: &GdtDescriptor8) -> GdtDescriptorHandle {
+        let is_cgd_type = |data: u64| -> bool {
+            use super::DescriptorType::CallGate;
+            (data & 0x0F000000) >> 8 == CallGate as _
+        };
+
+        let is_tss_type = |data: u64| -> bool {
+            use super::DescriptorType::{TssAvailable, TssBusy};
+            let t = (data & 0x0F000000) >> 8;
+            t == TssAvailable as _ || t == TssBusy as _
+        };
+
+        let is_ldt_type = |data: u64| -> bool {
+            use super::DescriptorType::Ldt;
+            (data & 0x0F000000) >> 8 == Ldt as _
+        };
+
+        let is_null_type = |data: u64| -> bool {
+            (data & 0x0F000000) == 0
+        };
+
+        use super::GdtDescriptorHandle::*;
+
+        unsafe {
+            if is_cgd_type(r.data) {
+                CallGate(::core::mem::transmute(r))
+            } else if is_tss_type(r.data) {
+                Tss(::core::mem::transmute(r))
+            } else if is_ldt_type(r.data) {
+                Ldt(::core::mem::transmute(r))
+            } else if is_null_type(r.data) {
+                Null(::core::mem::transmute(r))
+            } else {
+                unreachable!()
+            }
+        }
+    }
 }
 
 /// The first descriptor in GDT is null.
@@ -75,85 +124,6 @@ impl Entry for TssDescriptor {
 }
 
 impl Entry for LdtDescriptor {
-}
-
-macro_rules! is_cgd_type {
-    ($x:ident) => {{
-        use super::DescriptorType::CallGate;
-        ($x.data[0] & 0x0F000000) >> 8 == CallGate as _
-    }};
-}
-
-macro_rules! is_tss_type {
-    ($x:ident) => {{
-        use super::DescriptorType::{TssAvailable, TssBusy};
-        let t = ($x.data[0] & 0x0F000000) >> 8;
-        t == TssAvailable as _ || t == TssBusy as _
-    }};
-}
-
-macro_rules! is_ldt_type {
-    ($x:ident) => {{
-        use super::DescriptorType::{Ldt};
-        ($x.data[0] & 0x0F000000) >> 8 == Ldt as _
-    }};
-}
-
-impl EntryVariant<CallGateDescriptor> for GdtDescriptor16 {
-
-    fn try_variant_ref(&self) -> Option<&CallGateDescriptor> {
-        if is_cgd_type!(self) {
-            unsafe { Some(::core::mem::transmute(self)) }
-        } else {
-            None
-        }
-    }
-
-    fn try_variant_mut(&mut self) -> Option<&mut CallGateDescriptor> {
-        if is_cgd_type!(self) {
-            unsafe { Some(::core::mem::transmute(self)) }
-        } else {
-            None
-        }
-    }
-}
-
-impl EntryVariant<TssDescriptor> for GdtDescriptor16 {
-
-    fn try_variant_ref(&self) -> Option<&TssDescriptor> {
-        if is_tss_type!(self) {
-            unsafe { Some(::core::mem::transmute(self)) }
-        } else {
-            None
-        }
-    }
-
-    fn try_variant_mut(&mut self) -> Option<&mut TssDescriptor> {
-        if is_tss_type!(self) {
-            unsafe { Some(::core::mem::transmute(self)) }
-        } else {
-            None
-        }
-    }
-}
-
-impl EntryVariant<LdtDescriptor> for GdtDescriptor16 {
-
-    fn try_variant_ref(&self) -> Option<&LdtDescriptor> {
-        if is_ldt_type!(self) {
-            unsafe { Some(::core::mem::transmute(self)) }
-        } else {
-            None
-        }
-    }
-
-    fn try_variant_mut(&mut self) -> Option<&mut LdtDescriptor> {
-        if is_ldt_type!(self) {
-            unsafe { Some(::core::mem::transmute(self)) }
-        } else {
-            None
-        }
-    }
 }
 
 /// Bitmasks of flags in Call Gate descriptor.
