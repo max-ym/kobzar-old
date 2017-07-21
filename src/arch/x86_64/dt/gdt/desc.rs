@@ -137,6 +137,25 @@ impl EntryVariant<TssDescriptor> for GdtDescriptor16 {
     }
 }
 
+impl EntryVariant<LdtDescriptor> for GdtDescriptor16 {
+
+    fn try_variant_ref(&self) -> Option<&LdtDescriptor> {
+        if is_ldt_type!(self) {
+            unsafe { Some(::core::mem::transmute(self)) }
+        } else {
+            None
+        }
+    }
+
+    fn try_variant_mut(&mut self) -> Option<&mut LdtDescriptor> {
+        if is_ldt_type!(self) {
+            unsafe { Some(::core::mem::transmute(self)) }
+        } else {
+            None
+        }
+    }
+}
+
 /// Bitmasks of flags in Call Gate descriptor.
 enum CallGateFlag {
     Dpl     = (1 << 14) | (1 << 13),
