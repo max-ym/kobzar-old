@@ -1,6 +1,6 @@
 mod arch;
 
-pub use self::arch::setup;
+// pub use self::arch::setup;
 
 mod lists;
 use self::lists::*;

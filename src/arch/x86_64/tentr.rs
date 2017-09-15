@@ -7,40 +7,28 @@ pub trait Entry : Sized {
     }
 }
 
+/// The handle of an entry.
+pub trait EntryHandle {
+}
+
 /// Table of entries.
 pub trait Table {
 
-    type EntryType : Entry;
+    type Handle : EntryHandle;
 
     /// Get entry reference by it's index in the entry table.
     /// Does not check if entry is actually present in the table.
-    unsafe fn entry_ref<'a, 'b>(&'a self, index: u16)
-            -> &'b Self::EntryType;
+    unsafe fn entry_handle<'a, 'b>(&'a self, index: u16)
+            -> &'b Self::Handle;
 
     /// Get entry reference by it's index in the entry table.
     /// Return None if entry is not present.
-    fn get_entry_ref<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b Self::EntryType> {
+    fn get_entry_handle<'a, 'b>(&'a self, index: u16)
+            -> Option<&'b Self::Handle> {
         if self.limit_broken_by(index) {
             None
         } else {
             Some(unsafe { self.entry_ref(index) })
-        }
-    }
-
-    /// Get mutable reference to entry in table by it's index. Does
-    /// not check if entry is actually present in the table.
-    unsafe fn entry_mut<'a, 'b>(&'a self, index: u16)
-            -> &'b mut Self::EntryType;
-
-    /// Get mutable reference to entry in table by it's index.
-    /// If entry is abscent the None is returned.
-    fn get_entry_mut<'a, 'b>(&'a self, index: u16)
-            -> Option<&'b mut Self::EntryType> {
-        if self.limit_broken_by(index) {
-            None
-        } else {
-            Some(unsafe { self.entry_mut(index) })
         }
     }
 

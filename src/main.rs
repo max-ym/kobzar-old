@@ -26,16 +26,8 @@ mod mem;
 /// Module to handle CCS networking of local objects (programs and threads).
 mod ccs;
 
-/// Architecture-dependent code. Defines architectural structs and functions
-/// but does not contain the code which directly accesses this stuff for
-/// implementing anything inside kernel. Only general things are kept in this
-/// module.
-///
-/// TODO: consider moving this module to seperate library later.
-mod arch;
-
 // Export global function 'memset'.
-pub use arch::memset;
+// pub use arch::memset;
 
 /// Interrupt-handling module.
 mod ints;
@@ -90,10 +82,10 @@ pub extern fn main() -> ! {
     // Setup paging first to enable caching and correct communication
     // with memory mapped devices.
     logger().println("Enabling new initial kernel paging tables.");
-    ::mem::paging::setup();
+    //::mem::paging::setup();
 
     logger().println("Setting up basic CCS table.");
-    ::ccs::setup();
+    //::ccs::setup();
 
     halt_forever();
 }

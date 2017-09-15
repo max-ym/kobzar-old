@@ -37,7 +37,7 @@ fn p4() -> &'static mut P4 {
 /// normal data and code. Also, disables cache for regions with
 /// mapped I/O devices.
 pub fn setup() {
-    use arch::tentr::*;
+    // use arch::tentr::*;
 
     unsafe {
         use core::intrinsics::write_bytes;

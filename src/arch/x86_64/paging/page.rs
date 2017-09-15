@@ -43,6 +43,18 @@ pub struct P4E {
     data    : u64
 }
 
+impl EntryHandle for P1E {
+}
+
+impl EntryHandle for P2E {
+}
+
+impl EntryHandle for P3E {
+}
+
+impl EntryHandle for P4E {
+}
+
 impl Default for P2EMap {
 
     fn default() -> Self {
