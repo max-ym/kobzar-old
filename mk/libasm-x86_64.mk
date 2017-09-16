@@ -23,4 +23,4 @@ $(OBJASM-X86_64-DOWNDIR):
 	@mv $(DOWNDIR)$(ASM-X86_64-GITNAME) $(OBJASM-X86_64-DOWNDIR)
 
 $(OBJASM-X86_64): $(OBJASM-X86_64-DOWNDIR) $(TARGETSPEC) $(OBJNEW_BITFLAGS)
-	$(RUSTCF) --out-dir=$(OBJBDIR) --emit=link,dep-info --extern core=$(OBJCORE) $(OBJASM-X86_64-DOWNDIR)src/lib.rs
+	$(RUSTCF) --out-dir=$(OBJBDIR) --emit=link,dep-info --extern core=$(OBJCORE) --extern new_bitflags=$(OBJNEW_BITFLAGS) $(OBJASM-X86_64-DOWNDIR)src/lib.rs
