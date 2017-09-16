@@ -1,4 +1,4 @@
-use arch::paging::*;
+use arch::tables::paging::*;
 use mem::map::{PAGING_P4, PAGING_P3, PAGING_P2, PAGING_P1};
 
 /// Get reference to P1 page struct of the kernel.
@@ -133,7 +133,7 @@ pub fn setup() {
 
     // Save P4 address to CR3 and so start using new paging.
     unsafe {
-        use asm::cr::{Cr3, Reg};
+        use arch::cr::{Cr3, Reg};
         let mut cr3 = Cr3::read();
         cr3.set_addr(p4() as *const _ as _);
         cr3.save();
