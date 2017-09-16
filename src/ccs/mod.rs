@@ -10,6 +10,10 @@ use self::lists::*;
 /// uses signals to interrupt service that has execution time out.
 mod signals;
 
+/// Module related to channels and communication between two or multiple
+/// objects or single object with itself.
+mod chan;
+
 #[derive(Clone, Copy)]
 /// CCS Service handle.
 pub struct Service {
