@@ -40,7 +40,7 @@ impl Page4kMap {
             let qw = &mut self.map[iter_counter as usize];
             iter_counter += 1;
 
-            let v = ::asm::bit::bsf_u64(*qw);
+            let v = ::arch::bit::bsf_u64(*qw);
             if v.is_none() {
                 // No free pages in this qword. Skip to next.
                 continue;

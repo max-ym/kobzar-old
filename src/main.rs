@@ -15,7 +15,7 @@
 extern crate asm_x86_64;
 
 #[cfg(target_arch = "x86_64")]
-use asm_x86_64 as asm;
+use asm_x86_64 as arch;
 
 /// All the stuff that is needed at early initialization.
 mod early;

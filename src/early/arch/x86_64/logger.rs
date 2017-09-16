@@ -30,7 +30,7 @@ impl Logger {
         let cell = (self.index as isize * 2 + 0xB8000) as *mut i16;
         unsafe { *cell = 0x0700 | (c as i16); }
 
-        ::asm::port::Port::from(0x2E8u16).out_u8(c as u8);
+        ::arch::port::Port::from(0x2E8u16).out_u8(c as u8);
         for _ in 0..(1000_000) {
             unsafe { asm!("nop"); }
         }
@@ -40,7 +40,7 @@ impl Logger {
 impl LoggerTrait for Logger {
 
     fn newline(&mut self) {
-        ::asm::port::Port::from(0x2E8u16).out_u8('\n' as u8);
+        ::arch::port::Port::from(0x2E8u16).out_u8('\n' as u8);
         for _ in 0..(1000_000) {
             unsafe { asm!("nop"); }
         }
