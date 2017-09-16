@@ -37,8 +37,6 @@ fn p4() -> &'static mut P4 {
 /// normal data and code. Also, disables cache for regions with
 /// mapped I/O devices.
 pub fn setup() {
-    // use arch::tentr::*;
-
     unsafe {
         use core::intrinsics::write_bytes;
         // Set all pages in tables to zero.
@@ -48,86 +46,141 @@ pub fn setup() {
         write_bytes(p4() as *const _ as *mut P4, 0, 1);
     }
 
+    use arch::tables::*;
+
     unsafe {
         // Setup P4 entry. This entry covers the first 512 GiB of RAM.
-        let p4e = p4().entry_mut(0);
+        let p4e = p4().entry_handle(0).unwrap().variant();
+        let p4e = match p4e { P4EVariant::P4E(a) => a };
 
-        p4e.set_rw(true); // Readable and Writable.
+        let flags =
+            PageFlag::rw        () | // Readable and Writable.
+            PageFlag::present   () ;
 
+        // US flag is off.
         // NOT accessible for user-mode processes.
         // This page table must be used only by the kernel. No
         // user-space process must never use this table. So
         // this flag must not be set.
-        p4e.set_us(false);
 
-        p4e.set_addr(p3() as *const _ as u64); // P3 table address.
+        let addr = p3() as *const _ as u64;
+        let b: u64 = PageFlag::p4addr().into();
+        if addr != addr & b {
+            panic!("Address invalid");
+        }
 
-        p4e.set_present(true);
+        p4e.data_rewrite(flags | PageFlag::from(addr));
     }
 
     unsafe {
         // Setup P3 entries.
         // First entry covers first 1GiB of RAM.
-        let p3e = p3().entry_mut(0);
-        p3e.set_rw(true);
-        p3e.set_us(false);
-        p3e.set_addr(p2() as *const _ as u64);
-        p3e.set_present(true);
+        let p3e = p3().entry_handle(0).unwrap().variant();
+        let p3e = match p3e { P3EVariant::P3E(a) => a };
+
+        let flags =
+            PageFlag::rw        () | // Readable and Writable.
+            PageFlag::present   () ;
+
+        let addr = PageFlag::from(p2() as *const _ as u64);
+
+        p3e.data_rewrite(flags | addr);
     }
 
     unsafe {
         // Each P2 entry covers 2MiB region.
+        let p2e = p2().entry_handle(0).unwrap();
 
-        let mut p2e = P2ERef::default();
-        p2e.set_rw(true);
-        p2e.set_us(false);
-        p2e.set_addr(p1() as *const _ as u64);
-        p2e.set_present(true);
+        let mut val = P2ERef::default();
 
-        *p2().entry_mut(0) = p2e.into();
+        let flags =
+            PageFlag::rw        () |
+            PageFlag::present   () ;
+
+        let addr = PageFlag::from(p1() as *const _ as u64);
+
+        val.data_rewrite(flags | addr);
+
+        p2e.set_ref(val);
     }
 
     unsafe {
         // 0x00000 - 0x00FFF
-        let p = p1().entry_mut(0);
-        p.set_rw(true);
-        p.set_us(false);
-        p.set_present(true);
-        p.set_addr(0x00000);
+        let p = match p1().entry_handle(0).unwrap().variant() {
+            P1EVariant::P1E(a) => a
+        };
+
+        let flags =
+            PageFlag::rw        () |
+            PageFlag::present   () ;
+
+        let addr = PageFlag::from(0x00000);
+
+        p.data_rewrite(flags | addr);
 
         // 0x01000 - 0x01FFF: APIC registers.
+        // Assertion fail when memory map was changed by someone.
+        // Code below must be reviewed in such a case and changed too.
         assert!(super::map::APIC_BASE_ADDRESS == 0x01000);
-        let p = p1().entry_mut(1);
-        p.set_rw(true);
-        p.set_pwt(true); // Write-through.
-        p.set_pcd(true); // Disable caching.
-        p.set_present(true);
-        p.set_addr(0x01000);
+        let p = match p1().entry_handle(1).unwrap().variant() {
+            P1EVariant::P1E(a) => a
+        };
+
+        let flags =
+            PageFlag::rw        () |
+            PageFlag::pwt       () | // Write-through.
+            PageFlag::pcd       () | // Disbale caching.
+            PageFlag::present   () ;
+
+        let addr = PageFlag::from(0x01000);
+
+        p.data_rewrite(flags | addr);
+
+        let flags =
+            PageFlag::rw        () |
+            PageFlag::present   () ;
 
         // Conventional memory.
         for i in 0x02..0x9F {
-            let p = p1().entry_mut(i);
-            p.set_rw(true);
-            p.set_present(true);
-            p.set_addr(0x01000 * i as u64);
+            let p = match p1().entry_handle(i).unwrap().variant() {
+                P1EVariant::P1E(a) => a
+            };
+
+            let addr = PageFlag::from(0x1000 * i as u64);
+
+            p.data_rewrite(flags | addr);
         }
+
+        let flags =
+            PageFlag::rw        () |
+            PageFlag::pwt       () |
+            PageFlag::pcd       () |
+            PageFlag::present   () ;
 
         // I/O devices are mapped in this region.
         for i in 0xA0..0xFF {
-            let p = p1().entry_mut(i);
-            p.set_rw(true);
-            p.set_present(true);
-            p.set_pwt(true);
-            p.set_pcd(true);
-            p.set_addr(0x1000 * i as u64);
+            let p = match p1().entry_handle(i).unwrap().variant() {
+                P1EVariant::P1E(a) => a
+            };
+
+            let addr = PageFlag::from(0x1000 * i as u64);
+
+            p.data_rewrite(flags | addr);
         }
+
+        let flags =
+            PageFlag::rw        () |
+            PageFlag::present   () ;
 
         // Map second megabyte where OS code is stored.
         for i in 0x100..0x200 {
-            let p = p1().entry_mut(i);
-            p.set_rw(true);
-            p.set_present(true);
-            p.set_addr(0x1000 * i as u64);
+            let p = match p1().entry_handle(i).unwrap().variant() {
+                P1EVariant::P1E(a) => a
+            };
+
+            let addr: PageFlag = (0x1000 * i as u64).into();
+
+            p.data_rewrite(flags | addr);
         }
     }
 
