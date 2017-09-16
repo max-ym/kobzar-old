@@ -5,6 +5,11 @@ mod arch;
 mod lists;
 use self::lists::*;
 
+/// Signals are used to transfer messages between objects. Also signal
+/// are used to handle service execution transfer. Scheduler also
+/// uses signals to interrupt service that has execution time out.
+mod signals;
+
 #[derive(Clone, Copy)]
 /// CCS Service handle.
 pub struct Service {
