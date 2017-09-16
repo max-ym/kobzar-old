@@ -9,7 +9,8 @@
 #![allow(dead_code)]
 
 // Contains some functions that perform same operations that otherwise would
-// require using asm! macro.
+// require usage of asm! macro.
+// Also contain modules related to architecture.
 #[cfg(target_arch = "x86_64")]
 extern crate asm_x86_64;
 
