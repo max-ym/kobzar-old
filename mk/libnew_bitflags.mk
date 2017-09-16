@@ -16,4 +16,4 @@ $(OBJNEW_BITFLAGS-DOWNDIR):
 	@git -C $(DOWNDIR) clone $(NEW_BITFLAGS-GITREPO) --branch master
 
 $(OBJNEW_BITFLAGS): $(OBJNEW_BITFLAGS-DOWNDIR)
-	$(RUSTCF) --crate-type=rlib --out-dir=$(OBJBDIR) $(OBJNEW_BITFLAGS-DOWNDIR)src/lib.rs --extern std=$(OBJCORE)
+	$(RUSTCF) --crate-name $(NEW_BITFLAGS-NAME) --crate-type=rlib --out-dir=$(OBJBDIR) $(OBJNEW_BITFLAGS-DOWNDIR)src/lib.rs --extern std=$(OBJCORE)
