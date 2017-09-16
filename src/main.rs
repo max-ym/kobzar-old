@@ -8,6 +8,9 @@
 
 #![allow(dead_code)]
 
+#[cfg(target_arch = "x86_64")]
+extern crate new_bitflags;
+
 // Contains some functions that perform same operations that otherwise would
 // require usage of asm! macro.
 // Also contain modules related to architecture.
