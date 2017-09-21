@@ -46,6 +46,12 @@ trait ProcessHandle {
     /// list.
     fn save_as_vacant(&mut self) -> Option<()>;
 
+    /// Remove the process from the scheduler.
+    /// Method consumes the process handle.
+    /// It can be removed only if process state is End.
+    /// Otherwise, the process handle will be returned back in Option.
+    fn remove(self) -> Option<Self>;
+
     /// Check if process can be stored either in paused or vacant process
     /// list.
     fn is_saveable(&self) -> bool {
