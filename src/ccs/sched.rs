@@ -64,11 +64,15 @@ trait ProcessHandle {
 
 /// The core mechanisms of scheduler which are not visible outside this
 /// module.
-trait SchedulerCore {
+trait SchedulerCore : Scheduler {
 
     /// Process handle of this scheduler.
     type P : ProcessHandle;
 
     /// Get next process to run and remove it from vacant process list.
     fn next_vacant_process(&mut self) -> Self::P;
+}
+
+/// External visible part of scheduler.
+pub trait Scheduler {
 }
