@@ -68,21 +68,6 @@ trait ProcessHandle : Sized {
     /// Method can be used with explicit check whether removing is safe.
     unsafe fn remove(self);
 
-    /// Check if process can be stored either in paused or vacant process
-    /// list.
-    fn is_saveable(&self) -> bool {
-        use self::ProcessState::*;
-        match self.state() {
-            Running         => true,
-            Pause           => true,
-            SchedulerPause  => true,
-
-            End             => false,
-            Wait            => false,
-            TimedWait       => false,
-        }
-    }
-
     /// Check if process can be removed from scheduler.
     /// It can be removed only if process state is End.
     fn is_removable(&self) -> bool {
