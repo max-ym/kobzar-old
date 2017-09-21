@@ -9,6 +9,9 @@ use self::lists::*;
 /// objects or single object with itself.
 mod chan;
 
+/// Scheduler and it's related traits and structs.
+mod sched;
+
 #[derive(Clone, Copy)]
 /// CCS Service handle.
 pub struct Service {
