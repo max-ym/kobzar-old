@@ -50,7 +50,23 @@ trait ProcessHandle {
     /// Method consumes the process handle.
     /// It can be removed only if process state is End.
     /// Otherwise, the process handle will be returned back in Option.
-    fn remove(self) -> Option<Self>;
+    fn try_remove(self) -> Option<Self> {
+        if self.is_removable() {
+            unsafe { self.remove(); }
+            None
+        } else {
+            Some(self)
+        }
+    }
+
+    /// Remove the process from the scheduler.
+    /// Method consumes the process handle.
+    ///
+    /// # Safety
+    /// This method does not check if it is allowed to remove the process.
+    /// It can break scheduler or cause undefined behaviour.
+    /// Method can be used with explicit check whether removing is safe.
+    unsafe fn remove(self);
 
     /// Check if process can be stored either in paused or vacant process
     /// list.
