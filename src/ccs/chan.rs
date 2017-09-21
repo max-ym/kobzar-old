@@ -14,5 +14,4 @@ pub trait Channel {
 /// Buffer is used by the channel to save the transfered data for each
 /// process.
 pub trait Buffer {
-
 }
