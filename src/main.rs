@@ -36,6 +36,9 @@ mod ccs;
 /// Interrupt-handling module.
 mod ints;
 
+/// Module to provide system timer implementation.
+mod timer;
+
 macro_rules! panic {
     () => {{
         use early::logger;
