@@ -5,11 +5,6 @@ mod arch;
 mod lists;
 use self::lists::*;
 
-/// Signals are used to transfer messages between objects. Also signal
-/// are used to handle service execution transfer. Scheduler also
-/// uses signals to interrupt service that has execution time out.
-mod signals;
-
 /// Module related to channels and communication between two or multiple
 /// objects or single object with itself.
 mod chan;
