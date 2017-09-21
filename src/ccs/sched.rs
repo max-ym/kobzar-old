@@ -39,12 +39,12 @@ trait ProcessHandle {
     /// Store this process in paused list if possible.
     /// If process is terminated, finished etc. it cannot be stored in the
     /// list.
-    fn save_as_paused(&mut self) -> Option<()>;
+    fn save_as_paused(&mut self) -> Result<(),()>;
 
     /// Store this process in vacant process list if possible.
     /// If process is terminated, finished etc. it cannot be stored in the
     /// list.
-    fn save_as_vacant(&mut self) -> Option<()>;
+    fn save_as_vacant(&mut self) -> Result<(),()>;
 
     /// Remove the process from the scheduler.
     /// Method consumes the process handle.
