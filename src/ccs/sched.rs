@@ -2,6 +2,9 @@
 /// Process is a runnable instance of some service with allocated
 /// metadata and working environment.
 pub trait Process {
+
+    /// Process current state.
+    pub state(&self) -> ProcessState;
 }
 
 /// All process states.
