@@ -28,7 +28,7 @@ pub enum ProcessState {
 }
 
 /// Handle of process for specific sheduler implementation.
-trait ProcessHandle {
+trait ProcessHandle : Sized {
 
     /// Process that trait handles.
     type P : Process;
@@ -86,7 +86,10 @@ trait ProcessHandle {
     /// Check if process can be removed from scheduler.
     /// It can be removed only if process state is End.
     fn is_removable(&self) -> bool {
-        self.state() == ProcessState::End
+        match self.state() {
+            ProcessState::End => true,
+            _                 => false,
+        }
     }
 }
 
