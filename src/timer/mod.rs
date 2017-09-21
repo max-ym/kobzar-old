@@ -9,6 +9,7 @@ pub struct TimeSplit {
 
 impl TimeSplit {
 
+    /// Create new TimeSplit. All overflows are corrected automatically.
     pub fn new(hours: u32, minutes: u32, seconds: u32, nanos: u32) -> Self {
         let nanos_overflow  = nanos / 1000_000_000;
         let nanos           = nanos % 1000_000_000;
@@ -37,6 +38,7 @@ impl TimeSplit {
         self.nanos
     }
 
+    /// Get seconds.
     pub fn seconds(&self) -> u8 {
         self.seconds
     }
@@ -50,6 +52,7 @@ impl TimeSplit {
     }
 }
 
+/// Any structure that implements this trait contains time value.
 pub trait Time {
 
     /// Count of nanoseconds. Remainder from full time divided by 1000_000_000.
@@ -80,12 +83,15 @@ pub trait Time {
         self.seconds() / 60 / 60
     }
 
+    /// Split this time into hours, minutes, seconds and nanoseconds that
+    /// do not overflow.
     fn split(&self) -> TimeSplit {
-        // All overflows are automatically corrected.
+        // All overflows are automatically corrected by constructor.
         TimeSplit::new(0, 0, self.seconds(), self.nanos())
     }
 }
 
+/// System timer that can run specified functions when time events occur.
 pub trait Timer {
 
     type T : Time;
