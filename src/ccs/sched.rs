@@ -66,6 +66,12 @@ trait ProcessHandle {
             TimedWait       => false,
         }
     }
+
+    /// Check if process can be removed from scheduler.
+    /// It can be removed only if process state is End.
+    fn is_removable(&self) -> bool {
+        self.state() == ProcessState::End
+    }
 }
 
 /// The core mechanisms of scheduler which are not visible outside this
