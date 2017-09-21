@@ -1,18 +1,18 @@
 use super::*;
 
-/// Channel is used to connect two objects and perform inter-object
+/// Channel is used to connect processes and perform inter-process
 /// communication. This creates peer-to-peer like connection.
-/// Services of objects can send and receive data through the channel.
+/// Processe can send and receive data through the channel.
 /// They can wait for new data to come or for event that can appear in
 /// connected object.
-pub struct Channel<'a, 'b> {
+pub trait Channel {
 
-    /// Object that requested some service.
-    requester   : &'b Object,
+    /// The buffer type that is used by this channel.
+    type B : Buffer;
+}
 
-    /// Object that responded for service request.
-    responder   : &'a Object,
+/// Buffer is used by the channel to save the transfered data for each
+/// process.
+pub trait Buffer {
 
-    /// Service that was requested. Is a service of 'responder' object.
-    rsp_service : &'a Service,
 }
