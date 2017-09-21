@@ -34,6 +34,7 @@ impl TimeSplit {
         }
     }
 
+    /// Get nanoseconds.
     pub fn nanos(&self) -> u32 {
         self.nanos
     }
@@ -43,10 +44,12 @@ impl TimeSplit {
         self.seconds
     }
 
+    /// Get minutes.
     pub fn minutes(&self) -> u8 {
         self.minutes
     }
 
+    /// Get hours.
     pub fn hours(&self) -> u32 {
         self.hours
     }
@@ -94,6 +97,7 @@ pub trait Time {
 /// System timer that can run specified functions when time events occur.
 pub trait Timer {
 
+    /// Time type that this timer can use.
     type T : Time;
 
     /// Set callback function which will be called when specified
