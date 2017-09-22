@@ -32,3 +32,10 @@ pub struct ProcessListNode<PH : super::ProcessHandle> {
     /// Pointer to Process Handle.
     ptr: *mut PH,
 }
+
+/// Process List.
+pub struct ProcessList<PH : super::ProcessHandle> {
+
+    /// The top of the list. May be NULL if list is empty.
+    top: *mut ProcessListNode<PH>
+}
