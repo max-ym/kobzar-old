@@ -20,6 +20,11 @@ pub trait MemoryAllocator<T> {
 
     /// Allocated elements count.
     fn count(&self) -> usize;
+
+    /// Release previously allocated memory by given address.
+    /// If successfully, then Ok will be returned. Otherwise,
+    /// pointer is given back.
+    fn free(&mut self, ptr: *mut T) -> Result<(), *mut T>;
 }
 
 impl<T, MA> LinkedList<T, MA>
