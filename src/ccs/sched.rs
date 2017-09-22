@@ -1,9 +1,4 @@
 
-/// Process is a runnable instance of some service with allocated
-/// metadata and working environment.
-trait Process {
-}
-
 /// All process states.
 enum ProcessState {
 
@@ -29,9 +24,6 @@ enum ProcessState {
 
 /// Handle of process for specific sheduler implementation.
 trait ProcessHandle : Sized {
-
-    /// Process that trait handles.
-    type P : Process;
 
     /// Process current state.
     fn state(&self) -> ProcessState;
@@ -87,4 +79,7 @@ trait Scheduler {
 
     /// Get next process to run and remove it from vacant process list.
     fn next_vacant_process(&mut self) -> Self::P;
+
+    /// Get next task to run and remove it from vacant task list.
+    fn next_vacant_task(&mut self) -> Self::P;
 }
