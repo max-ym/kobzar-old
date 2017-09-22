@@ -1,11 +1,11 @@
 
 /// Process is a runnable instance of some service with allocated
 /// metadata and working environment.
-pub trait Process {
+trait Process {
 }
 
 /// All process states.
-pub enum ProcessState {
+enum ProcessState {
 
     /// Process is currently running.
     Running,
@@ -80,15 +80,11 @@ trait ProcessHandle : Sized {
 
 /// The core mechanisms of scheduler which are not visible outside this
 /// module.
-trait SchedulerCore : Scheduler {
+trait Scheduler {
 
     /// Process handle of this scheduler.
     type P : ProcessHandle;
 
     /// Get next process to run and remove it from vacant process list.
     fn next_vacant_process(&mut self) -> Self::P;
-}
-
-/// External visible part of scheduler.
-pub trait Scheduler {
 }
