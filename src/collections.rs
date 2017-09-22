@@ -188,10 +188,10 @@ impl<T, MA> LinkedList<T, MA>
 }
 
 /// Iterator over linked list.
-pub struct LinkedListIterator<T, MA>
-        where MA: MemoryAllocator<LinkedListNode<T>> {
-    cur     : *mut LinkedListNode<T>,
-    list    : LinkedList<T, MA>,
+pub struct LinkedListIterator<'a, T, MA> where
+        T: 'a,
+        MA: MemoryAllocator<LinkedListNode<T>> + 'a {
+    iter: LinkedListNodeIterator<'a, T, MA>,
 }
 
 /// Iterator over linked list nodes.
