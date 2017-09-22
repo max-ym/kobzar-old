@@ -142,6 +142,15 @@ impl<T, MA> LinkedList<T, MA>
         }
     }
 
+    /// Provide a reference to the back element, or None if the list is empty.
+    pub fn back(&self) -> Option<&T> {
+        if self.is_empty() {
+            None
+        } else {
+            Some(unsafe { &(*self.bot).data })
+        }
+    }
+
     /// Check if list is empty.
     ///
     /// This operation should compute in O(1) time.
