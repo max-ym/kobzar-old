@@ -194,10 +194,17 @@ pub struct LinkedListIterator<T, MA>
     list    : LinkedList<T, MA>,
 }
 
-impl<T, MA> Iterator for LinkedListIterator<T, MA>
+/// Iterator over linked list nodes.
+pub struct LinkedListNodeIterator<T, MA>
+        where MA: MemoryAllocator<LinkedListNode<T>> {
+    cur     : *mut LinkedListNode<T>,
+    list    : LinkedList<T, MA>,
+}
+
+impl<T, MA> Iterator for LinkedListNodeIterator<T, MA>
         where MA: MemoryAllocator<LinkedListNode<T>> {
 
-    type Item = *mut T;
+    type Item = *mut LinkedListNode<T>;
 
     fn next(&mut self) -> Option<Self::Item> {
         // Check if current node exists.
@@ -213,38 +220,14 @@ impl<T, MA> Iterator for LinkedListIterator<T, MA>
             return None;
         }
 
-        unsafe { Some(&mut (*self.cur).data) }
+        Some(self.cur)
     }
 
     fn last(self) -> Option<Self::Item> {
         if self.list.is_empty() {
             None
         } else {
-            unsafe { Some(&mut (*self.list.bot).data) }
+            Some(self.list.bot)
         }
-    }
-}
-
-impl<T, MA> LinkedListIterator<T, MA>
-        where MA: MemoryAllocator<LinkedListNode<T>> {
-
-    /// Create linked list iterator from linked list.
-    pub fn new(ll: LinkedList<T, MA>) -> Self {
-        LinkedListIterator {
-            cur     : ll.top,
-            list    : ll,
-        }
-    }
-}
-
-impl<T, MA> IntoIterator for LinkedList<T, MA>
-        where MA: MemoryAllocator<LinkedListNode<T>> {
-
-    type Item = *mut T;
-
-    type IntoIter = LinkedListIterator<T, MA>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        LinkedListIterator::new(self)
     }
 }
