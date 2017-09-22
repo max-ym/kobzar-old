@@ -39,6 +39,9 @@ mod ints;
 /// Module to provide system timer implementation.
 mod timer;
 
+/// Collections that are abscent in 'core' crate but are useful.
+mod collections;
+
 macro_rules! panic {
     () => {{
         use early::logger;
