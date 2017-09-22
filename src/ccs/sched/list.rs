@@ -22,3 +22,13 @@ trait HandleSet {
     /// TODO errors that may occur.
     fn new_process(&mut self) -> Result<Self::P, ()>;
 }
+
+/// Process List Node.
+struct ProcessListNode<PH : super::ProcessHandle> {
+
+    /// Next node of the list.
+    next: *mut ProcessListNode<PH>,
+
+    /// Pointer to Process Handle.
+    ptr: *mut PH,
+}
