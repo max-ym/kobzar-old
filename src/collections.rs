@@ -175,7 +175,7 @@ impl<T, MA> LinkedList<T, MA>
     ///
     /// This operation should compute in O(1) time.
     pub fn is_empty(&self) -> bool {
-        self.top as u64 == 0
+        self.top as usize == 0
     }
 
     /// Length of the list.
