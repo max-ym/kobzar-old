@@ -39,3 +39,18 @@ pub struct ProcessList<PH : super::ProcessHandle> {
     /// The top of the list. May be NULL if list is empty.
     top: *mut ProcessListNode<PH>
 }
+
+/// Scheduler Process List Controller.
+/// Process List Controller store all processes that are registered in
+/// scheduler with all metadata that is required to identify
+/// the process, it's state, set up process environment, save process data on
+/// context switches etc.
+pub struct ProcessListController<PH : super::ProcessHandle> {
+    paused_tasks    : ProcessList<PH>,
+    queued_tasks    : ProcessList<PH>,
+    running_tasks   : ProcessList<PH>,
+
+    paused_procs    : ProcessList<PH>,
+    vacant_procs    : ProcessList<PH>,
+    running_procs   : ProcessList<PH>,
+}
