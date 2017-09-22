@@ -236,3 +236,15 @@ impl<T, MA> LinkedListIterator<T, MA>
         }
     }
 }
+
+impl<T, MA> IntoIterator for LinkedList<T, MA>
+        where MA: MemoryAllocator<LinkedListNode<T>> {
+
+    type Item = *mut T;
+
+    type IntoIter = LinkedListIterator<T, MA>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        LinkedListIterator::new(self)
+    }
+}
