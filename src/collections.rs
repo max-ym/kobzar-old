@@ -148,3 +148,33 @@ impl<T, MA> LinkedList<T, MA>
         self.mem.count()
     }
 }
+
+/// Iterator over linked list.
+pub struct LinkedListIterator<T, MA>
+        where MA: MemoryAllocator<LinkedListNode<T>> {
+    cur     : *mut LinkedListNode<T>,
+    list    : LinkedList<T, MA>,
+}
+
+impl<T, MA> Iterator for LinkedListIterator<T, MA>
+        where MA: MemoryAllocator<LinkedListNode<T>> {
+
+    type Item = *mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        // Check if current node exists.
+        if self.cur as usize == 0 {
+            return None;
+        }
+
+        // Move to next node.
+        self.cur = unsafe { (*self.cur).next };
+
+        // Check if new node exists.
+        if self.cur as usize == 0 {
+            return None;
+        }
+
+        unsafe { Some(&mut (*self.cur).data) }
+    }
+}
