@@ -23,6 +23,8 @@ impl<T, MA> LinkedList<T, MA>
         where MA: MemoryAllocator<LinkedListNode<T>> {
 
     /// Create empty linked list.
+    /// Argument: memory allocator that will allocate space for list nodes
+    /// and release when nodes get deallocated.
     pub fn new(ma: MA) -> Self {
         LinkedList {
             mem : ma,
