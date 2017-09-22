@@ -69,6 +69,38 @@ impl<T, MA> LinkedList<T, MA>
         self.top = ptr;
     }
 
+    /// Replace data in the node with uninitialized value.
+    /// Used to take the data from the node before deleting it.
+    ///
+    /// # Safety
+    /// This function may corrupt data in the node so do not
+    /// use it after this function call.
+    unsafe fn replace_data(lln: *mut LinkedListNode<T>) -> T {
+        use core::mem::{replace, uninitialized};
+
+        replace(&mut (*lln).data, uninitialized())
+    }
+
+    /// Removes the first element and returns it, or None if the list is empty.
+    ///
+    /// This operation should compute in O(1) time.
+    pub fn pop_front(&mut self) -> Option<T> {
+        if self.is_empty() {
+            return None;
+        }
+
+        let next_top = unsafe { (*self.top).next };
+        let data = unsafe { Self::replace_data(self.top) };
+
+        // Release memory from old node.
+        self.mem.free(self.top).unwrap();
+
+        // Set new list top.
+        self.top = next_top;
+
+        Some(data)
+    }
+
     /// Check if list is empty.
     ///
     /// This operation should compute in O(1) time.
