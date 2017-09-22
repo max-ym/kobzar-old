@@ -45,4 +45,14 @@ impl<T, MA> LinkedList<T, MA>
             self.bot = ptr;
         }
     }
+
+    /// Add element first in the list.
+    pub fn push_front(&mut self, t: T) {
+        let ptr = self.mem.next(LinkedListNode {
+            next: self.top,
+            data: t,
+        });
+
+        self.top = ptr;
+    }
 }
