@@ -244,6 +244,13 @@ impl<'a, T, MA> Iterator for LinkedListIterator<'a, T, MA>
             None       => None,
         }
     }
+
+    fn last(self) -> Option<Self::Item> {
+        match self.iter.last() {
+            Some(node) => unsafe { Some(&(*node).data) },
+            None       => None,
+        }
+    }
 }
 
 impl<'a, T, MA> LinkedListNodeIterator<'a, T, MA>
