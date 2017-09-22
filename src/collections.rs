@@ -1,6 +1,8 @@
 
 /// Linked List implementation.
-pub struct LinkedList<T> {
+pub struct LinkedList<T, MA : MemoryAllocator<LinkedListNode<T>>> {
+    mem     : MA,
+
     top     : *mut LinkedListNode<T>,
     bot     : *mut LinkedListNode<T>,
 }
@@ -17,20 +19,21 @@ pub trait MemoryAllocator<T> {
     fn next(&mut self, t: T) -> *mut T;
 }
 
-impl<T> LinkedList<T> {
+impl<T, MA> LinkedList<T, MA>
+        where MA: MemoryAllocator<LinkedListNode<T>> {
 
     /// Create empty linked list.
-    pub fn new() -> Self {
+    pub fn new(ma: MA) -> Self {
         LinkedList {
+            mem : ma,
             top : ::core::ptr::null_mut::<LinkedListNode<T>>(),
             bot : ::core::ptr::null_mut::<LinkedListNode<T>>(),
         }
     }
 
     /// Add element last in the list.
-    pub fn push_back<MA : MemoryAllocator<LinkedListNode<T>>>
-            (&mut self, mem: &mut MA, t: T) {
-        let ptr = mem.next(LinkedListNode {
+    pub fn push_back (&mut self, t: T) {
+        let ptr = self.mem.next(LinkedListNode {
             next: ::core::ptr::null_mut::<LinkedListNode<T>>(),
             data: t,
         });
