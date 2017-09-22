@@ -185,12 +185,11 @@ impl<T, MA> LinkedList<T, MA>
     pub fn len(&self) -> usize {
         self.mem.count()
     }
-}
 
-impl<T, MA> Drop for LinkedList<T, MA>
-        where MA: MemoryAllocator<LinkedListNode<T>> {
-
-    fn drop(&mut self) {
+    /// Removes all elements from the LinkedList.
+    ///
+    /// This operation should compute in O(n) time.
+    pub fn clear(&mut self) {
         let mut ptr = self.top;
         while ptr as usize != 0 {
             unsafe {
@@ -199,6 +198,14 @@ impl<T, MA> Drop for LinkedList<T, MA>
                 ptr = next;
             }
         }
+    }
+}
+
+impl<T, MA> Drop for LinkedList<T, MA>
+        where MA: MemoryAllocator<LinkedListNode<T>> {
+
+    fn drop(&mut self) {
+        self.clear();
     }
 }
 
