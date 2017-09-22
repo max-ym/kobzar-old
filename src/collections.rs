@@ -101,6 +101,38 @@ impl<T, MA> LinkedList<T, MA>
         Some(data)
     }
 
+    /// Removes the last element from a list and returns it, or None if it is
+    /// empty.
+    pub fn pop_back(&mut self) -> Option<T> {
+        if self.is_empty() {
+            return None;
+        }
+
+        // Find previous node before last element.
+        let mut prev = ::core::ptr::null();
+        let mut ptr = self.top;
+        loop {
+            if self.bot == ptr {
+                break;
+            }
+
+            prev = ptr;
+            ptr = unsafe { (*ptr).next };
+        };
+        // This is node before last one.
+        let prev = prev;
+
+        let data = unsafe { Self::replace_data(self.bot) };
+
+        // Release memory used by old node.
+        self.mem.free(self.bot).unwrap(); // TODO proper error check.
+
+        // Set new bottom node.
+        self.bot = prev as _;
+
+        Some(data)
+    }
+
     /// Check if list is empty.
     ///
     /// This operation should compute in O(1) time.
