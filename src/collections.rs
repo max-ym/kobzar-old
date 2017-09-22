@@ -133,6 +133,15 @@ impl<T, MA> LinkedList<T, MA>
         Some(data)
     }
 
+    /// Provide a reference to the front element, or None if the list is empty.
+    pub fn front(&self) -> Option<&T> {
+        if self.is_empty() {
+            None
+        } else {
+            Some(unsafe { &(*self.top).data })
+        }
+    }
+
     /// Check if list is empty.
     ///
     /// This operation should compute in O(1) time.
