@@ -34,6 +34,8 @@ impl<T, MA> LinkedList<T, MA>
     }
 
     /// Add element last in the list.
+    ///
+    /// This operation should compute in O(1) time.
     pub fn push_back(&mut self, t: T) {
         let ptr = self.mem.next(LinkedListNode {
             next: ::core::ptr::null_mut::<LinkedListNode<T>>(),
@@ -47,6 +49,8 @@ impl<T, MA> LinkedList<T, MA>
     }
 
     /// Add element first in the list.
+    ///
+    /// This operation should compute in O(1) time.
     pub fn push_front(&mut self, t: T) {
         let ptr = self.mem.next(LinkedListNode {
             next: self.top,
@@ -57,6 +61,8 @@ impl<T, MA> LinkedList<T, MA>
     }
 
     /// Check if list is empty.
+    ///
+    /// This operation should compute in O(1) time.
     pub fn is_empty(&self) -> bool {
         self.top as u64 == 0
     }
