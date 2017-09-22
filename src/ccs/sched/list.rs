@@ -1,1 +1,24 @@
 //! Process List Controller module.
+
+/// Process Handle Set. This set stores all process handles. Different
+/// scheduler process lists point to process handles in this set.
+trait HandleSet {
+
+    /// Process Handle type that is stored in this Process Handle Set.
+    type P : super::ProcessHandle;
+
+    /// Get process with given ID.
+    fn process_by_id(&self, id: u32) -> Option<Self::P>;
+
+    /// Remove process with given ID.
+    ///
+    /// # Safery
+    /// External controller must ensure no more pointers for this
+    /// process exist. Otherwise, remain pointers will become dangling.
+    unsafe fn remove_id(&mut self, id: u32);
+
+    /// Create new process entry in this set.
+    ///
+    /// TODO errors that may occur.
+    fn new_process(&mut self) -> Result<Self::P, ()>;
+}
