@@ -2,7 +2,7 @@ mod list;
 use self::list::*;
 
 /// All process states.
-enum ProcessState {
+pub enum ProcessState {
 
     /// Process is currently running.
     Running,
@@ -25,7 +25,7 @@ enum ProcessState {
 }
 
 /// Handle of process for specific sheduler implementation.
-trait ProcessHandle : Sized {
+pub trait ProcessHandle : Sized {
 
     /// Process current state.
     fn state(&self) -> ProcessState;

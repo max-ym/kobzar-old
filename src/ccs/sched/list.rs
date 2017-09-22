@@ -2,7 +2,7 @@
 
 /// Process Handle Set. This set stores all process handles. Different
 /// scheduler process lists point to process handles in this set.
-trait HandleSet {
+pub trait HandleSet {
 
     /// Process Handle type that is stored in this Process Handle Set.
     type P : super::ProcessHandle;
@@ -24,7 +24,7 @@ trait HandleSet {
 }
 
 /// Process List Node.
-struct ProcessListNode<PH : super::ProcessHandle> {
+pub struct ProcessListNode<PH : super::ProcessHandle> {
 
     /// Next node of the list.
     next: *mut ProcessListNode<PH>,
