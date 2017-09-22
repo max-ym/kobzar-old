@@ -142,6 +142,16 @@ impl<T, MA> LinkedList<T, MA>
         }
     }
 
+    /// Provides a mutable reference to the front element, or None if the list
+    /// is empty.
+    pub fn front_mut(&mut self) -> Option<&mut T> {
+        if self.is_empty() {
+            None
+        } else {
+            Some(unsafe { &mut (*self.top).data })
+        }
+    }
+
     /// Provide a reference to the back element, or None if the list is empty.
     pub fn back(&self) -> Option<&T> {
         if self.is_empty() {
