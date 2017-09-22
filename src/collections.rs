@@ -34,7 +34,7 @@ impl<T, MA> LinkedList<T, MA>
     }
 
     /// Add element last in the list.
-    pub fn push_back (&mut self, t: T) {
+    pub fn push_back(&mut self, t: T) {
         let ptr = self.mem.next(LinkedListNode {
             next: ::core::ptr::null_mut::<LinkedListNode<T>>(),
             data: t,
