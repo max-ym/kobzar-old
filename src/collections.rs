@@ -233,6 +233,19 @@ impl<'a, T, MA> Iterator for LinkedListNodeIterator<'a, T, MA>
     }
 }
 
+impl<'a, T, MA> Iterator for LinkedListIterator<'a, T, MA>
+        where MA: MemoryAllocator<LinkedListNode<T>> {
+
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.iter.next() {
+            Some(node) => unsafe { Some(&(*node).data) },
+            None       => None,
+        }
+    }
+}
+
 impl<'a, T, MA> LinkedListNodeIterator<'a, T, MA>
         where MA: MemoryAllocator<LinkedListNode<T>> {
 
