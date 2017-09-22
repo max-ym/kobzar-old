@@ -55,4 +55,9 @@ impl<T, MA> LinkedList<T, MA>
 
         self.top = ptr;
     }
+
+    /// Check if list is empty.
+    pub fn is_empty(&self) -> bool {
+        self.top as u64 == 0
+    }
 }
