@@ -16,6 +16,7 @@ pub struct LinkedListNode<T> {
 /// Memory Allocator for specified type.
 pub trait MemoryAllocator<T> {
 
+    /// Allocate next element.
     fn next(&mut self, t: T) -> *mut T;
 
     /// Allocated elements count.
