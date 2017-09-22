@@ -17,6 +17,9 @@ pub struct LinkedListNode<T> {
 pub trait MemoryAllocator<T> {
 
     fn next(&mut self, t: T) -> *mut T;
+
+    /// Allocated elements count.
+    fn count(&self) -> usize;
 }
 
 impl<T, MA> LinkedList<T, MA>
@@ -65,5 +68,13 @@ impl<T, MA> LinkedList<T, MA>
     /// This operation should compute in O(1) time.
     pub fn is_empty(&self) -> bool {
         self.top as u64 == 0
+    }
+
+    /// Length of the list.
+    ///
+    /// This operation compute time depends on memory manager element count
+    /// time.
+    pub fn len(&self) -> usize {
+        self.mem.count()
     }
 }
