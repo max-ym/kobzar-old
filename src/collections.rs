@@ -215,4 +215,12 @@ impl<T, MA> Iterator for LinkedListIterator<T, MA>
 
         unsafe { Some(&mut (*self.cur).data) }
     }
+
+    fn last(self) -> Option<Self::Item> {
+        if self.list.is_empty() {
+            None
+        } else {
+            unsafe { Some(&mut (*self.list.bot).data) }
+        }
+    }
 }
