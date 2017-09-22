@@ -27,7 +27,8 @@ impl<T> LinkedList<T> {
         }
     }
 
-    pub fn push_front<MA : MemoryAllocator<LinkedListNode<T>>>
+    /// Add element last in the list.
+    pub fn push_back<MA : MemoryAllocator<LinkedListNode<T>>>
             (&mut self, mem: &mut MA, t: T) {
         let ptr = mem.next(LinkedListNode {
             next: ::core::ptr::null_mut::<LinkedListNode<T>>(),
