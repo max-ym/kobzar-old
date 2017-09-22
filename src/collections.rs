@@ -195,13 +195,14 @@ pub struct LinkedListIterator<T, MA>
 }
 
 /// Iterator over linked list nodes.
-pub struct LinkedListNodeIterator<T, MA>
-        where MA: MemoryAllocator<LinkedListNode<T>> {
+pub struct LinkedListNodeIterator<'a, T, MA> where
+        T: 'a,
+        MA: MemoryAllocator<LinkedListNode<T>> + 'a {
     cur     : *mut LinkedListNode<T>,
-    list    : LinkedList<T, MA>,
+    list    : &'a LinkedList<T, MA>,
 }
 
-impl<T, MA> Iterator for LinkedListNodeIterator<T, MA>
+impl<'a, T, MA> Iterator for LinkedListNodeIterator<'a, T, MA>
         where MA: MemoryAllocator<LinkedListNode<T>> {
 
     type Item = *mut LinkedListNode<T>;
@@ -232,11 +233,11 @@ impl<T, MA> Iterator for LinkedListNodeIterator<T, MA>
     }
 }
 
-impl<T, MA> LinkedListNodeIterator<T, MA>
+impl<'a, T, MA> LinkedListNodeIterator<'a, T, MA>
         where MA: MemoryAllocator<LinkedListNode<T>> {
 
     /// Create linked list iterator from linked list.
-    pub fn new(ll: LinkedList<T, MA>) -> Self {
+    pub fn new(ll: &'a LinkedList<T, MA>) -> Self {
         LinkedListNodeIterator {
             cur     : ll.top,
             list    : ll,
@@ -244,12 +245,12 @@ impl<T, MA> LinkedListNodeIterator<T, MA>
     }
 }
 
-impl<T, MA> IntoIterator for LinkedList<T, MA>
+impl<'a, T, MA> IntoIterator for &'a LinkedList<T, MA>
         where MA: MemoryAllocator<LinkedListNode<T>> {
 
     type Item = *mut LinkedListNode<T>;
 
-    type IntoIter = LinkedListNodeIterator<T, MA>;
+    type IntoIter = LinkedListNodeIterator<'a, T, MA>;
 
     fn into_iter(self) -> Self::IntoIter {
         LinkedListNodeIterator::new(self)
