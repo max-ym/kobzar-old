@@ -187,6 +187,21 @@ impl<T, MA> LinkedList<T, MA>
     }
 }
 
+impl<T, MA> Drop for LinkedList<T, MA>
+        where MA: MemoryAllocator<LinkedListNode<T>> {
+
+    fn drop(&mut self) {
+        let mut ptr = self.top;
+        while ptr as usize != 0 {
+            unsafe {
+                let next = (*ptr).next;
+                self.mem.free(ptr).unwrap();
+                ptr = next;
+            }
+        }
+    }
+}
+
 /// Iterator over linked list.
 pub struct LinkedListIterator<'a, T, MA> where
         T: 'a,
