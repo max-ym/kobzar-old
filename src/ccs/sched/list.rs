@@ -46,11 +46,24 @@ pub struct ProcessList<PH : super::ProcessHandle> {
 /// the process, it's state, set up process environment, save process data on
 /// context switches etc.
 pub struct ProcessListController<PH : super::ProcessHandle> {
+
+    /// Paused Tasks that were paused by something external and will continue
+    /// executing when someone unpause them back.
     paused_tasks    : ProcessList<PH>,
+
+    /// Tasks that wait their turn in execution queue.
     queued_tasks    : ProcessList<PH>,
+
+    /// Tasks that got their processor time and are currently running.
     running_tasks   : ProcessList<PH>,
 
+    /// Processes that were paused by something external. They will
+    /// continue executing when someone gets them unpaused again.
     paused_procs    : ProcessList<PH>,
+
+    /// Processes that wait when scheduler gives them processor time.
     vacant_procs    : ProcessList<PH>,
+
+    /// Processes that got their processor time and are currently running.
     running_procs   : ProcessList<PH>,
 }
