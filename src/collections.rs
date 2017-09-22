@@ -224,3 +224,15 @@ impl<T, MA> Iterator for LinkedListIterator<T, MA>
         }
     }
 }
+
+impl<T, MA> LinkedListIterator<T, MA>
+        where MA: MemoryAllocator<LinkedListNode<T>> {
+
+    /// Create linked list iterator from linked list.
+    pub fn new(ll: LinkedList<T, MA>) -> Self {
+        LinkedListIterator {
+            cur     : ll.top,
+            list    : ll,
+        }
+    }
+}
