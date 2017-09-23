@@ -370,6 +370,10 @@ impl<T> Array<T> {
         }
     }
 
+    fn out_of_bounds(&self, index: usize) -> bool {
+        self.len <= index
+    }
+
     /// Get mutable element reference by given index without bound check.
     ///
     /// # Safety
@@ -402,5 +406,22 @@ impl<T> Array<T> {
     /// function returns, or else it will end up pointing to garbage.
     pub fn as_mut_ptr(&mut self) -> *mut T {
         self.start
+    }
+
+    /// Swaps two elements in an array.
+    pub fn swap(&mut self, a: usize, b: usize) -> bool {
+        if self.out_of_bounds(a) || self.out_of_bounds(b) {
+            return false;
+        }
+
+        unsafe {
+            use core::mem::swap;
+            let ptr_a = self.as_ptr().offset(a as _) as *mut T;
+            let ptr_b = self.as_ptr().offset(b as _) as *mut T;
+
+            swap(&mut *ptr_a, &mut *ptr_b);
+        }
+
+        true
     }
 }
