@@ -95,25 +95,31 @@ impl Set2m {
         unimplemented!();
     }
 
+    /// Get reference to entry with given hash if any.
+    fn get_entry(&self, hash: usize) -> Option<&Set2mEntry> {
+        if self.arr[hash] == 0 {
+            return None;
+        }
+
+        let ptr = self.arr[hash] as *const Set2mEntry;
+        unsafe { Some(&*ptr) }
+    }
+
     /// Check if set contains given page.
     /// Return true if set really contains this page and
     /// false otherwise.
     pub fn contains(&self, page: &Page2m) -> bool {
         let hash = Self::page_to_hash(page);
 
-        if self.arr[hash] == 0 {
+        let option = self.get_entry(hash);
+        if option.is_none() {
             return false;
         }
+        let entry = option.unwrap();
 
-        let ptr = self.arr[hash] as *const Set2mEntry as *mut Set2mEntry;
-
-        unsafe {
-            let option = (*ptr).any_contains(page);
-            return if option.is_some() {
-                true
-            } else {
-                false
-            }
+        match entry.any_contains(page) {
+            Some(_) => true,
+            None    => false,
         }
     }
 }
