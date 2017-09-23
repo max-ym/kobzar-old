@@ -88,6 +88,12 @@ impl Set2m {
 
         (addr / page_size) % SET2M_LOAD
     }
+
+    /// Insert 2 MiB page to this set. The page is returned
+    /// back if it is already in the set.
+    pub fn insert(&mut self, page: Page2m) -> Option<Page2m> {
+        unimplemented!();
+    }
 }
 
 impl Set2mEntry {
