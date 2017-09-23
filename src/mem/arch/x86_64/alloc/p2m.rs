@@ -8,6 +8,15 @@ pub struct Stack {
     count   : u32,
 }
 
+/// Set of pages. Used to store allocated pages handles.
+/// Currently, set has size of 4KiB. Thus it can be put in a single
+/// 4KiB page. Set can contain pages that address up to 1GiB of memory
+/// without hash collisions of set entries.
+#[repr(packed)]
+pub struct Set2m {
+    arr: [u64; 512]
+}
+
 #[derive(Clone, Copy)]
 /// 2MiB page handle.
 pub struct Page2m {
@@ -51,5 +60,15 @@ impl Page2m {
 
     pub fn addr(&self) -> u64 {
         self.addr
+    }
+}
+
+impl Set2m {
+
+    /// Create an empty set.
+    pub fn new() -> Self {
+        Set2m {
+            arr: [0; 512]
+        }
     }
 }
