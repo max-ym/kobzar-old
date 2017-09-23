@@ -26,7 +26,7 @@ pub struct Set2mEntry {
     next    : *mut Set2mEntry,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 /// 2MiB page handle.
 pub struct Page2m {
 
@@ -104,5 +104,23 @@ impl Set2mEntry {
             page: page,
             next: ::core::ptr::null_mut(),
         }
+    }
+
+    /// Check if any entry in the entry chain starting from current entry
+    /// contains given page.
+    pub fn any_contains(&self, page: &Page2m) -> Option<&Self> {
+        let mut ptr = self as *const Self;
+
+        while ptr as usize != 0 {
+            unsafe {
+                if (*ptr).page == *page {
+                    return Some(&*ptr);
+                }
+
+                ptr = (*ptr).next;
+            }
+        }
+
+        None
     }
 }
