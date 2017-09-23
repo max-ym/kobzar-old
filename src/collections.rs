@@ -298,3 +298,67 @@ impl<'a, T, MA> IntoIterator for &'a LinkedList<T, MA>
         LinkedListNodeIterator::new(self)
     }
 }
+
+/// Contiguous heap-allocated fixed-size array.
+pub struct Array<T> {
+    start   : *mut T,
+    len     : usize,
+}
+
+impl<T> Array<T> {
+
+    /// Create array which starts at specified address and has defined
+    /// length. This function does not initialize array elements.
+    ///
+    /// # Safety
+    /// It is up to creator to ensure array address and length are correct.
+    /// Otherwise, array can read invalid data or even corrupt memory.
+    pub unsafe fn new_unititialized(start: *mut T, length: usize) -> Self {
+        Array {
+            start   : start,
+            len     : length,
+        }
+    }
+
+    /// Create array which starts at specified address and has defined
+    /// length. Elements of array will be initialized with given value.
+    ///
+    /// # Safety
+    /// It is up to creator to ensure array address and length are correct.
+    /// Otherwise, array can read invalid data or even corrupt memory.
+    pub unsafe fn new(start: *mut T, length: usize, t: T) -> Self
+            where T: Clone {
+        let mut arr = Self::new_unititialized(start, length);
+
+        // Fill array with initial value.
+        let mut i = 0;
+        while i < arr.len {
+            *arr.get_mut(i).unwrap() = t.clone();
+            i += 1;
+        }
+
+        arr
+    }
+
+    /// Get element reference by given index, if any.
+    pub fn get(&self, index: usize) -> Option<&T> {
+        if self.len <= index {
+            None
+        } else {
+            unsafe {
+                Some(&*self.start.offset(index as _))
+            }
+        }
+    }
+
+    /// Get mutable element reference by given index, if any.
+    pub fn get_mut(&mut self, index: usize) -> Option<&mut T> {
+        if self.len <= index {
+            None
+        } else {
+            unsafe {
+                Some(&mut *self.start.offset(index as _))
+            }
+        }
+    }
+}
