@@ -333,7 +333,7 @@ impl<T> Array<T> {
         // Fill array with initial value.
         let mut i = 0;
         while i < arr.len {
-            *arr.get_mut(i).unwrap() = t.clone();
+            *arr.get_unchecked_mut(i) = t.clone();
             i += 1;
         }
 
