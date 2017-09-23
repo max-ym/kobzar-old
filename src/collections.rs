@@ -361,4 +361,14 @@ impl<T> Array<T> {
             }
         }
     }
+
+    /// Array length.
+    pub fn length(&self) -> usize {
+        self.len
+    }
+
+    /// Array size in bytes.
+    pub fn bytes_length(&self) -> usize {
+        self.len * ::core::mem::size_of::<T>()
+    }
 }
