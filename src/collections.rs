@@ -365,7 +365,7 @@ impl<T> Array<T> {
             None
         } else {
             unsafe {
-                Some(&mut *self.start.offset(index as _))
+                Some(self.get_unchecked_mut(index))
             }
         }
     }
