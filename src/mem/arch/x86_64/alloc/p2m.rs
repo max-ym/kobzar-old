@@ -74,4 +74,12 @@ impl Set2m {
             arr: [0; SET2M_LOAD]
         }
     }
+
+    /// Get hash for given page.
+    fn page_to_hash(p: &Page2m) -> usize {
+        let addr = p.addr() as usize;
+        let page_size = 2048 * 2014;
+
+        (addr / page_size) % SET2M_LOAD
+    }
 }
