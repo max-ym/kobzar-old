@@ -8,13 +8,16 @@ pub struct Stack {
     count   : u32,
 }
 
+/// Load factor for hash set - Set2m.
+const SET2M_LOAD: usize = 512;
+
 /// Set of pages. Used to store allocated pages handles.
 /// Currently, set has size of 4KiB. Thus it can be put in a single
 /// 4KiB page. Set can contain pages that address up to 1GiB of memory
 /// without hash collisions of set entries.
 #[repr(packed)]
 pub struct Set2m {
-    arr: [u64; 512]
+    arr: [u64; SET2M_LOAD]
 }
 
 #[derive(Clone, Copy)]
@@ -68,7 +71,7 @@ impl Set2m {
     /// Create an empty set.
     pub fn new() -> Self {
         Set2m {
-            arr: [0; 512]
+            arr: [0; SET2M_LOAD]
         }
     }
 }
