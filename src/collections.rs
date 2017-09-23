@@ -351,6 +351,14 @@ impl<T> Array<T> {
         }
     }
 
+    /// Get element reference by given index without bound check.
+    ///
+    /// # Safety
+    /// Use it carefully and ensure bounds are not broken.
+    pub unsafe fn get_unchecked(&self, index: usize) -> &T {
+        &*self.start.offset(index as _)
+    }
+
     /// Get mutable element reference by given index, if any.
     pub fn get_mut(&mut self, index: usize) -> Option<&mut T> {
         if self.len <= index {
