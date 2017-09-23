@@ -346,7 +346,7 @@ impl<T> Array<T> {
             None
         } else {
             unsafe {
-                Some(&*self.start.offset(index as _))
+                Some(self.get_unchecked(index))
             }
         }
     }
