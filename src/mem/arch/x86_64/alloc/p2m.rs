@@ -20,6 +20,12 @@ pub struct Set2m {
     arr: [u64; SET2M_LOAD]
 }
 
+/// Entry of Set2m.
+pub struct Set2mEntry {
+    page    : Page2m,
+    next    : *mut Set2mEntry,
+}
+
 #[derive(Clone, Copy)]
 /// 2MiB page handle.
 pub struct Page2m {
@@ -81,5 +87,16 @@ impl Set2m {
         let page_size = 2048 * 2014;
 
         (addr / page_size) % SET2M_LOAD
+    }
+}
+
+impl Set2mEntry {
+
+    /// Create new set entry for given page.
+    pub fn new(page: Page2m) -> Self {
+        Set2mEntry {
+            page: page,
+            next: ::core::ptr::null_mut(),
+        }
     }
 }
