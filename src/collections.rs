@@ -370,6 +370,14 @@ impl<T> Array<T> {
         }
     }
 
+    /// Get mutable element reference by given index without bound check.
+    ///
+    /// # Safety
+    /// Use it carefully and ensure bounds are not broken.
+    pub unsafe fn get_unchecked_mut(&mut self, index: usize) -> &mut T {
+        &mut *self.start.offset(index as _)
+    }
+
     /// Array length.
     pub fn length(&self) -> usize {
         self.len
