@@ -134,21 +134,36 @@ impl Set2mEntry {
         }
     }
 
+    /// Get next entry reference if any.
+    pub fn next(&self) -> Option<&Self> {
+        if self.has_next() {
+            unsafe {
+                Some(&*self.next)
+            }
+        } else {
+            None
+        }
+    }
+
+    /// Check if this entry has pointer to next one.
+    pub fn has_next(&self) -> bool {
+        self.next as usize != 0
+    }
+
     /// Check if any entry in the entry chain starting from current entry
     /// contains given page.
     pub fn any_contains(&self, page: &Page2m) -> Option<&Self> {
-        let mut ptr = self as *const Self;
-
-        while ptr as usize != 0 {
-            unsafe {
-                if (*ptr).page == *page {
-                    return Some(&*ptr);
-                }
-
-                ptr = (*ptr).next;
-            }
+        if self.page == *page {
+            return Some(self);
         }
 
+        let mut r = self;
+        while r.has_next() {
+            r = r.next().unwrap();
+            if r.page == *page {
+                return Some(r);
+            }
+        }
         None
     }
 }
