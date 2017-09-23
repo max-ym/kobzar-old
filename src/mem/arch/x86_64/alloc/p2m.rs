@@ -94,6 +94,28 @@ impl Set2m {
     pub fn insert(&mut self, page: Page2m) -> Option<Page2m> {
         unimplemented!();
     }
+
+    /// Check if set contains given page.
+    /// Return true if set really contains this page and
+    /// false otherwise.
+    pub fn contains(&self, page: &Page2m) -> bool {
+        let hash = Self::page_to_hash(page);
+
+        if self.arr[hash] == 0 {
+            return false;
+        }
+
+        let ptr = self.arr[hash] as *const Set2mEntry as *mut Set2mEntry;
+
+        unsafe {
+            let option = (*ptr).any_contains(page);
+            return if option.is_some() {
+                true
+            } else {
+                false
+            }
+        }
+    }
 }
 
 impl Set2mEntry {
