@@ -424,4 +424,14 @@ impl<T> Array<T> {
 
         true
     }
+
+    /// Reverse the order of elements in an arra.
+    pub fn reverse(&mut self) {
+        let mut i = 0;
+        let len = self.len;
+        while i < len / 2 {
+            self.swap(i, len - 1 - i);
+            i += 1;
+        }
+    }
 }
