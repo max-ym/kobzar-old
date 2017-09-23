@@ -387,4 +387,20 @@ impl<T> Array<T> {
     pub fn bytes_length(&self) -> usize {
         self.len * ::core::mem::size_of::<T>()
     }
+
+    /// Raw pointer to the slice's buffer.
+    ///
+    /// The caller must ensure that the slice outlives the pointer this
+    /// function returns, or else it will end up pointing to garbage.
+    pub fn as_ptr(&self) -> *const T {
+        self.start
+    }
+
+    /// Unsafe mutable pointer to the slice's buffer.
+    ///
+    /// The caller must ensure that the slice outlives the pointer this
+    /// function returns, or else it will end up pointing to garbage.
+    pub fn as_mut_ptr(&mut self) -> *mut T {
+        self.start
+    }
 }
