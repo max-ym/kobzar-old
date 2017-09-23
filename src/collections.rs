@@ -342,7 +342,7 @@ impl<T> Array<T> {
 
     /// Get element reference by given index, if any.
     pub fn get(&self, index: usize) -> Option<&T> {
-        if self.len <= index {
+        if self.out_of_bounds(index) {
             None
         } else {
             unsafe {
@@ -361,7 +361,7 @@ impl<T> Array<T> {
 
     /// Get mutable element reference by given index, if any.
     pub fn get_mut(&mut self, index: usize) -> Option<&mut T> {
-        if self.len <= index {
+        if self.out_of_bounds(index) {
             None
         } else {
             unsafe {
