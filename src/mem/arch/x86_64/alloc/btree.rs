@@ -17,6 +17,11 @@ pub struct BTreeLeaf {
 
 impl BTreeLeaf {
 
+    /// Create empty leaf.
+    pub fn new() -> Self {
+        Default::default()
+    }
+
     /// Get given page status structure pointer if it is stored in this
     /// leaf.
     pub fn get_page(&self, p: &Page2m) -> Option<*mut Page2mStatus> {
