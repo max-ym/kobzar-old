@@ -16,14 +16,20 @@ pub struct BTreeNode {
 /// So each leaf stores 4 pointers to page status structures in the heap.
 #[repr(packed)]
 pub struct BTreeLeaf {
-    arr     : [*mut Page2mStatus; 4]
+    arr     : [*mut Page2mStatus; 4],
+    base    : u64,
 }
 
 impl BTreeLeaf {
 
-    /// Create empty leaf.
-    pub fn new() -> Self {
-        Default::default()
+    /// Create leaf with given page status structure pointer.
+    pub fn new(ps: &Page2mStatus) -> Self {
+        let base = Self::page_to_base(ps.page());
+
+        BTreeLeaf {
+            arr     : [0 as *const Page2mStatus as *mut _; 4],
+            base    : base,
+        }
     }
 
     /// Get given page status structure pointer if it is stored in this
@@ -48,6 +54,12 @@ impl BTreeLeaf {
     /// Index of array entry for this page.
     fn page_to_index(p: &Page2m) -> usize {
         (p.addr() / (1024 * 2048) % 4) as _
+    }
+
+    /// Base address of the leaf that stores given page.
+    fn page_to_base(p: &Page2m) -> u64 {
+        let i = p.addr() / 0x800000;
+        i * 0x800000
     }
 
     /// Link given page status to this leaf.
@@ -76,28 +88,18 @@ impl BTreeLeaf {
     pub fn unlink3(&mut self) {
         self.arr[3] = ::core::ptr::null_mut();
     }
-
-}
-
-impl Default for BTreeLeaf {
-
-    fn default() -> Self {
-        BTreeLeaf {
-            arr: [0 as *const Page2mStatus as *mut _; 4],
-        }
-    }
 }
 
 impl BTreeNode {
 
-    /// Create new empty BTreeNode.
-    pub fn new() -> Self {
+    /// Create new BTreeNode that stores pointer to given page status.
+    pub fn new(ps: &Page2mStatus) -> Self {
         use core::ptr::null_mut;
 
         BTreeNode {
             above   : null_mut(),
             below   : null_mut(),
-            data    : Default::default()
+            data    : BTreeLeaf::new(ps),
         }
     }
 
