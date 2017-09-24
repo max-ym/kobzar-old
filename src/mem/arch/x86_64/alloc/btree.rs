@@ -5,7 +5,11 @@ use super::p2m::Page2mStatus;
 pub struct PageBTree {
 }
 
+/// Node of B-tree of 2MiB pages.
 pub struct BTreeNode {
+    data    : BTreeLeaf,
+    below   : *mut BTreeNode,
+    above   : *mut BTreeNode,
 }
 
 /// Leaf of B-tree. It was calculated that optimal leaf element count is 4.
