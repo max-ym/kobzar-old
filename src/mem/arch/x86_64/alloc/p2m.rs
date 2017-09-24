@@ -115,4 +115,9 @@ impl Page2mStatus {
     pub fn is_free(&self) -> bool {
         self.used == 0
     }
+
+    /// Address of a page that this status was created for.
+    pub fn page_address(&self) -> u64 {
+        self.page.addr
+    }
 }
