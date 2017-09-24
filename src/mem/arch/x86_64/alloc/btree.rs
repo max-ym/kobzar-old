@@ -52,6 +52,27 @@ impl BTreeLeaf {
 
         self.arr[index] = p as *const Page2mStatus as *mut _;
     }
+
+    /// Unlink page status in array at position 0, if any.
+    pub fn unlink0(&mut self) {
+        self.arr[0] = ::core::ptr::null_mut();
+    }
+
+    /// Unlink page status in array at position 1, if any.
+    pub fn unlink1(&mut self) {
+        self.arr[1] = ::core::ptr::null_mut();
+    }
+
+    /// Unlink page status in array at position 2, if any.
+    pub fn unlink2(&mut self) {
+        self.arr[2] = ::core::ptr::null_mut();
+    }
+
+    /// Unlink page status in array at position 3, if any.
+    pub fn unlink3(&mut self) {
+        self.arr[3] = ::core::ptr::null_mut();
+    }
+
 }
 
 impl Default for BTreeLeaf {
