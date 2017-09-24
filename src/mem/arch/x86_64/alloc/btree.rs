@@ -6,7 +6,9 @@ pub struct BTree {
     root    : *mut BTreeNode,
 }
 
-/// Node of B-tree of 2MiB pages.
+/// Node of B-tree of 2MiB pages. Is size of 128 bytes. Thus it
+/// fits cache lines of 64 bytes. First 24 bytes contain
+/// above and below node pointers and base of this node.
 #[repr(packed)]
 pub struct BTreeNode {
     below   : *mut BTreeNode,
