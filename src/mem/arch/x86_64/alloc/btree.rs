@@ -25,7 +25,7 @@ impl BTreeLeaf {
     /// Get given page status structure pointer if it is stored in this
     /// leaf.
     pub fn get_page(&self, p: &Page2m) -> Option<*mut Page2mStatus> {
-        let index = p.addr() / (1024 * 2048) % 4;
+        let index = Self::page_to_index(p);
         let ptr = self.arr[index as usize];
 
         if ptr as usize == 0 {
