@@ -21,6 +21,16 @@ pub struct BTreeLeaf {
     base    : u64,
 }
 
+impl BTree {
+
+    /// Create new empty B-tree.
+    pub fn new() -> Self {
+        BTree {
+            root    : ::core::ptr::null_mut(),
+        }
+    }
+}
+
 impl BTreeLeaf {
 
     /// Create leaf with given page status structure pointer.
