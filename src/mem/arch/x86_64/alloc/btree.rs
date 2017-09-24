@@ -122,4 +122,23 @@ impl BTreeNode {
     pub fn get_page_from_node(&self, p: &Page2m) -> Option<*mut Page2mStatus> {
         self.data.get_page(p)
     }
+
+    /// Get page status structure pointer from this node or it's children.
+    pub fn get_page(&self, p: &Page2m) -> Option<*mut Page2mStatus> {
+        if self.data.is_above(p) {
+            if self.above as usize == 0 {
+                None
+            } else {
+                unsafe { (*self.above).get_page(p) }
+            }
+        } else if self.data.is_below(p) {
+            if self.below as usize == 0 {
+                None
+            } else {
+                unsafe { (*self.below).get_page(p) }
+            }
+        } else {
+            self.get_page_from_node(p)
+        }
+    }
 }
