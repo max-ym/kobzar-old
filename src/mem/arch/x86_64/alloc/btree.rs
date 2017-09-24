@@ -1,11 +1,11 @@
 /// B-Tree of 2MiB pages.
-struct PageBTree {
+pub struct PageBTree {
 }
 
-struct BTreeNode {
+pub struct BTreeNode {
 }
 
 #[repr(packed)]
-struct BTreeLeaf {
+pub struct BTreeLeaf {
 
 }
