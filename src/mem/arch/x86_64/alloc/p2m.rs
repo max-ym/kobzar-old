@@ -16,6 +16,16 @@ pub struct Page2m {
     addr    : u64
 }
 
+/// Metadata for page that is needed to allocate and free it.
+pub struct Page2mStatus {
+
+    /// Original page data.
+    page    : Page2m,
+
+    /// How many tables use this page currently.
+    used    : u32,
+}
+
 impl Stack {
 
     /// Remove last value from the stack and return it.
@@ -51,5 +61,44 @@ impl Page2m {
 
     pub fn addr(&self) -> u64 {
         self.addr
+    }
+}
+
+impl Page2mStatus {
+
+    /// Create new status for given page.
+    pub fn new(page: Page2m) -> Self {
+        Page2mStatus {
+            page    : page,
+            used    : 0,
+        }
+    }
+
+    /// How many tables use this page.
+    pub fn use_count(&self) -> u32 {
+        self.used
+    }
+
+    /// Notify that one more table uses this page now.
+    /// Increments user counter.
+    ///
+    /// Returns new user counter value.
+    pub fn inc_user(&mut self) -> u32 {
+        self.used += 1;
+        self.used
+    }
+
+    /// Notify that one table released this page now.
+    /// Decrements user counter.
+    ///
+    /// Returns new user counter value.
+    pub fn dec_user(&mut self) -> u32 {
+        self.used -= 1;
+        self.used
+    }
+
+    /// Set given user counter value.
+    pub fn set_user(&mut self, val: u32) {
+        self.used = val;
     }
 }
