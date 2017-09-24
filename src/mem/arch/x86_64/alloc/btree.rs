@@ -45,6 +45,13 @@ impl BTreeLeaf {
     fn page_to_index(p: &Page2m) -> usize {
         (p.addr() / (1024 * 2048) % 4) as _
     }
+
+    /// Link given page status to this leaf.
+    pub fn link_status(&mut self, p: &Page2mStatus) {
+        let index = Self::page_to_index(p.page());
+
+        self.arr[index] = p as *const Page2mStatus as *mut _;
+    }
 }
 
 impl Default for BTreeLeaf {
