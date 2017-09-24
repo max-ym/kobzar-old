@@ -87,3 +87,17 @@ impl Default for BTreeLeaf {
         }
     }
 }
+
+impl BTreeNode {
+
+    /// Create new empty BTreeNode.
+    pub fn new() -> Self {
+        use core::ptr::null_mut;
+
+        BTreeNode {
+            above   : null_mut(),
+            below   : null_mut(),
+            data    : Default::default()
+        }
+    }
+}
