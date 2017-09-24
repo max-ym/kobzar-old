@@ -2,7 +2,8 @@ use super::p2m::Page2m;
 use super::p2m::Page2mStatus;
 
 /// B-Tree of 2MiB pages.
-pub struct PageBTree {
+pub struct BTree {
+    root    : *mut BTreeNode,
 }
 
 /// Node of B-tree of 2MiB pages.
