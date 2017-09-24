@@ -118,7 +118,7 @@ impl BTreeNode {
         }
     }
 
-    /// Get page from this node immediately.
+    /// Get page status structure poiunter from this node immediately.
     pub fn get_page_from_node(&self, p: &Page2m) -> Option<*mut Page2mStatus> {
         self.data.get_page(p)
     }
