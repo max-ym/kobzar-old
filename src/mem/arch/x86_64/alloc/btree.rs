@@ -98,6 +98,11 @@ impl BTreeLeaf {
     pub fn is_below(&self, p: &Page2m) -> bool {
         self.base > p.addr()
     }
+
+    /// Whether given page is in this leaf's range.
+    pub fn is_in_range(&self, p: &Page2m) -> bool {
+        !self.is_above(p) && !self.is_below(p)
+    }
 }
 
 impl BTreeNode {
