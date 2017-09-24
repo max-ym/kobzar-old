@@ -36,3 +36,12 @@ impl BTreeLeaf {
         }
     }
 }
+
+impl Default for BTreeLeaf {
+
+    fn default() -> Self {
+        BTreeLeaf {
+            arr: [0 as *const Page2mStatus as *mut _; 4],
+        }
+    }
+}
