@@ -101,4 +101,18 @@ impl Page2mStatus {
     pub fn set_user(&mut self, val: u32) {
         self.used = val;
     }
+
+    /// Whether this page is allocated for some page table.
+    ///
+    /// Opposite to fn `is_free`.
+    pub fn is_used(&self) -> bool {
+        self.used > 0
+    }
+
+    /// Whether this page is free to be allocated.
+    ///
+    /// Opposite to fn `is_used`.
+    pub fn is_free(&self) -> bool {
+        self.used == 0
+    }
 }
