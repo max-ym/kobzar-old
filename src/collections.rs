@@ -300,12 +300,12 @@ impl<'a, T, MA> IntoIterator for &'a LinkedList<T, MA>
 }
 
 /// Contiguous heap-allocated fixed-size array.
-pub struct Array<T> {
+pub struct FixedArray<T> {
     start   : *mut T,
     len     : usize,
 }
 
-impl<T> Array<T> {
+impl<T> FixedArray<T> {
 
     /// Create array which starts at specified address and has defined
     /// length. This function does not initialize array elements.
@@ -314,7 +314,7 @@ impl<T> Array<T> {
     /// It is up to creator to ensure array address and length are correct.
     /// Otherwise, array can read invalid data or even corrupt memory.
     pub unsafe fn new_unititialized(start: *mut T, length: usize) -> Self {
-        Array {
+        FixedArray {
             start   : start,
             len     : length,
         }
