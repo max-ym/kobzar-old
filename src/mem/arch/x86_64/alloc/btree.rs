@@ -100,4 +100,9 @@ impl BTreeNode {
             data    : Default::default()
         }
     }
+
+    /// Get page from this node immediately.
+    pub fn get_page_from_node(&self, p: &Page2m) -> Option<*mut Page2mStatus> {
+        unimplemented!()
+    }
 }
