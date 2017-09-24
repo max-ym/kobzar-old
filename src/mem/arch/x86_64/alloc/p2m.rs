@@ -120,4 +120,9 @@ impl Page2mStatus {
     pub fn page_address(&self) -> u64 {
         self.page.addr
     }
+
+    /// Original page data.
+    pub fn page(&self) -> &Page2m {
+        &self.page
+    }
 }
