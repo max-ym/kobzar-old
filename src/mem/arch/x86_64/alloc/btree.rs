@@ -40,6 +40,11 @@ impl BTreeLeaf {
             }
         }
     }
+
+    /// Index of array entry for this page.
+    fn page_to_index(p: &Page2m) -> usize {
+        (p.addr() / (1024 * 2048) % 4) as _
+    }
 }
 
 impl Default for BTreeLeaf {
