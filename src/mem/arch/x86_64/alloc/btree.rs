@@ -13,11 +13,13 @@ pub struct BTreeNode {
     above   : *mut BTreeNode,
 }
 
+const BTREE_KEY_COUNT: u64 = 4;
+
 /// Leaf of B-tree. It was calculated that optimal leaf element count is 4.
 /// So each leaf stores 4 pointers to page status structures in the heap.
 #[repr(packed)]
 pub struct BTreeLeaf {
-    arr     : [*mut Page2mStatus; 4],
+    arr     : [*mut Page2mStatus; BTREE_KEY_COUNT as _],
     base    : u64,
 }
 
@@ -38,7 +40,8 @@ impl BTreeLeaf {
         let base = Self::page_to_base(ps.page());
 
         BTreeLeaf {
-            arr     : [0 as *const Page2mStatus as *mut _; 4],
+            arr     : [0 as *const Page2mStatus as *mut _;
+                            BTREE_KEY_COUNT as _],
             base    : base,
         }
     }
@@ -64,7 +67,7 @@ impl BTreeLeaf {
 
     /// Index of array entry for this page.
     fn page_to_index(p: &Page2m) -> usize {
-        (p.addr() / (1024 * 2048) % 4) as _
+        (p.addr() / (1024 * 2048) % BTREE_KEY_COUNT) as _
     }
 
     /// Base address of the leaf that stores given page.
@@ -102,7 +105,7 @@ impl BTreeLeaf {
 
     /// Whether given page is above the range of pages in the leaf.
     pub fn is_above(&self, p: &Page2m) -> bool {
-        self.base + 0x200000 * 4 <= p.addr()
+        self.base + 0x200000 * BTREE_KEY_COUNT <= p.addr()
     }
 
     /// Whether given page is below the range of pages in the leaf.
