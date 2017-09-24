@@ -13,7 +13,7 @@ pub struct BTreeNode {
     above   : *mut BTreeNode,
 }
 
-const BTREE_KEY_COUNT: u64 = 4;
+const BTREE_KEY_COUNT: u64 = 13;
 
 /// Leaf of B-tree.
 #[repr(packed)]
