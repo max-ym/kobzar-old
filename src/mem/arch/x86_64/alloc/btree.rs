@@ -88,6 +88,16 @@ impl BTreeLeaf {
     pub fn unlink3(&mut self) {
         self.arr[3] = ::core::ptr::null_mut();
     }
+
+    /// Whether given page is above the range of pages in the leaf.
+    pub fn is_above(&self, p: &Page2m) -> bool {
+        self.base + 0x200000 * 4 <= p.addr()
+    }
+
+    /// Whether given page is below the range of pages in the leaf.
+    pub fn is_below(&self, p: &Page2m) -> bool {
+        self.base > p.addr()
+    }
 }
 
 impl BTreeNode {
