@@ -15,8 +15,7 @@ pub struct BTreeNode {
 
 const BTREE_KEY_COUNT: u64 = 4;
 
-/// Leaf of B-tree. It was calculated that optimal leaf element count is 4.
-/// So each leaf stores 4 pointers to page status structures in the heap.
+/// Leaf of B-tree.
 #[repr(packed)]
 pub struct BTreeLeaf {
     arr     : [*mut Page2mStatus; BTREE_KEY_COUNT as _],
@@ -83,24 +82,13 @@ impl BTreeLeaf {
         self.arr[index] = p as *const Page2mStatus as *mut _;
     }
 
-    /// Unlink page status in array at position 0, if any.
-    pub fn unlink0(&mut self) {
-        self.arr[0] = ::core::ptr::null_mut();
-    }
-
-    /// Unlink page status in array at position 1, if any.
-    pub fn unlink1(&mut self) {
-        self.arr[1] = ::core::ptr::null_mut();
-    }
-
-    /// Unlink page status in array at position 2, if any.
-    pub fn unlink2(&mut self) {
-        self.arr[2] = ::core::ptr::null_mut();
-    }
-
-    /// Unlink page status in array at position 3, if any.
-    pub fn unlink3(&mut self) {
-        self.arr[3] = ::core::ptr::null_mut();
+    /// Unlink page status in array at given position, if any.
+    ///
+    /// # Safety
+    /// Intex bounds are not checked before array access. Ensure
+    /// index has valid value.
+    pub unsafe fn unlink_unchecked(&mut self, index: usize) {
+        self.arr[index] = ::core::ptr::null_mut();
     }
 
     /// Whether given page is above the range of pages in the leaf.
