@@ -7,10 +7,11 @@ pub struct BTree {
 }
 
 /// Node of B-tree of 2MiB pages.
+#[repr(packed)]
 pub struct BTreeNode {
-    data    : BTreeLeaf,
     below   : *mut BTreeNode,
     above   : *mut BTreeNode,
+    data    : BTreeLeaf,
 }
 
 const BTREE_KEY_COUNT: u64 = 13;
@@ -18,8 +19,8 @@ const BTREE_KEY_COUNT: u64 = 13;
 /// Leaf of B-tree.
 #[repr(packed)]
 pub struct BTreeLeaf {
-    arr     : [*mut Page2mStatus; BTREE_KEY_COUNT as _],
     base    : u64,
+    arr     : [*mut Page2mStatus; BTREE_KEY_COUNT as _],
 }
 
 impl BTree {
