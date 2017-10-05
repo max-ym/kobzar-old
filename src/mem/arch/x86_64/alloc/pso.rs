@@ -125,6 +125,22 @@ impl ::core::ops::IndexMut<u64> for PSAArray {
     }
 }
 
+impl ::core::ops::Index<Page2m> for PSAArray {
+
+    type Output = PSArray;
+
+    fn index(&self, page: Page2m) -> &Self::Output {
+        unsafe { self.array_with_page_unsafe(page) }
+    }
+}
+
+impl ::core::ops::IndexMut<Page2m> for PSAArray {
+
+    fn index_mut(&mut self, page: Page2m) -> &mut Self::Output {
+        unsafe { self.array_with_page_mut_unsafe(page) }
+    }
+}
+
 impl PSAArray {
 
     /// Find array that contains this page.
