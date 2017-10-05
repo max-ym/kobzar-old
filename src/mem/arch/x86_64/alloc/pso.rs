@@ -12,6 +12,12 @@ pub struct PSArray {
     arr     : *mut PageStatus,
 }
 
+/// PSA array.
+pub struct PSAArray {
+    length  : u32,
+    arr     : *mut PSArray,
+}
+
 impl Range {
 
     /// Create new range.
@@ -59,5 +65,21 @@ impl PSArray {
     pub fn page_at_index(&self, index: u64) -> Page2m {
         let addr = self.range.low + index * 0x200000;
         Page2m::new(addr)
+    }
+}
+
+impl ::core::ops::Index<u64> for PSAArray {
+
+    type Output = PSArray;
+
+    fn index(&self, index: u64) -> &Self::Output {
+        unsafe { &*self.arr.offset(index as _) }
+    }
+}
+
+impl ::core::ops::IndexMut<u64> for PSAArray {
+
+    fn index_mut(&mut self, index: u64) -> &mut Self::Output {
+        unsafe { &mut *self.arr.offset(index as _) }
     }
 }
