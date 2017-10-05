@@ -15,7 +15,7 @@ struct Range {
     pub hi      : u64,
 }
 
-pub struct PSOArray {
+pub struct PSArray {
     range   : Range,
     arr     : *mut PageStatus,
 }
