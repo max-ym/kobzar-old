@@ -17,15 +17,15 @@ struct Range {
 }
 
 /// Page Status array.
-pub struct PSArray {
+pub struct PsArray {
     range   : Range,
     arr     : *mut PageStatus,
 }
 
 /// PSA array. Contains all Page Status arrays of the system.
-pub struct PSAArray {
+pub struct PsaArray {
     length  : u32,
-    arr     : *mut PSArray,
+    arr     : *mut PsArray,
 }
 
 impl PageStatus {
@@ -104,7 +104,7 @@ impl Range {
     }
 }
 
-impl ::core::ops::Index<u64> for PSArray {
+impl ::core::ops::Index<u64> for PsArray {
 
     type Output = PageStatus;
 
@@ -113,14 +113,14 @@ impl ::core::ops::Index<u64> for PSArray {
     }
 }
 
-impl ::core::ops::IndexMut<u64> for PSArray {
+impl ::core::ops::IndexMut<u64> for PsArray {
 
     fn index_mut(&mut self, index: u64) -> &mut Self::Output {
         unsafe { &mut *self.arr.offset(index as _) }
     }
 }
 
-impl ::core::ops::Index<Page2m> for PSArray {
+impl ::core::ops::Index<Page2m> for PsArray {
 
     type Output = PageStatus;
 
@@ -129,14 +129,14 @@ impl ::core::ops::Index<Page2m> for PSArray {
     }
 }
 
-impl ::core::ops::IndexMut<Page2m> for PSArray {
+impl ::core::ops::IndexMut<Page2m> for PsArray {
 
     fn index_mut(&mut self, page: Page2m) -> &mut Self::Output {
         unsafe { self.page_status_mut_for(page) }
     }
 }
 
-impl PSArray {
+impl PsArray {
 
     /// Get page that page status at given position is saving status for.
     pub fn page_at_index(&self, index: u64) -> Page2m {
@@ -163,46 +163,46 @@ impl PSArray {
     }
 }
 
-impl ::core::ops::Index<u64> for PSAArray {
+impl ::core::ops::Index<u64> for PsaArray {
 
-    type Output = PSArray;
+    type Output = PsArray;
 
     fn index(&self, index: u64) -> &Self::Output {
         unsafe { &*self.arr.offset(index as _) }
     }
 }
 
-impl ::core::ops::IndexMut<u64> for PSAArray {
+impl ::core::ops::IndexMut<u64> for PsaArray {
 
     fn index_mut(&mut self, index: u64) -> &mut Self::Output {
         unsafe { &mut *self.arr.offset(index as _) }
     }
 }
 
-impl ::core::ops::Index<Page2m> for PSAArray {
+impl ::core::ops::Index<Page2m> for PsaArray {
 
-    type Output = PSArray;
+    type Output = PsArray;
 
     fn index(&self, page: Page2m) -> &Self::Output {
         unsafe { self.array_with_page_unsafe(page) }
     }
 }
 
-impl ::core::ops::IndexMut<Page2m> for PSAArray {
+impl ::core::ops::IndexMut<Page2m> for PsaArray {
 
     fn index_mut(&mut self, page: Page2m) -> &mut Self::Output {
         unsafe { self.array_with_page_mut_unsafe(page) }
     }
 }
 
-impl PSAArray {
+impl PsaArray {
 
     /// Find array that contains this page.
     ///
     /// # Safety
     /// This method outputs reference even when no array contains this page.
     /// The reference will be null in this case and must not be used.
-    pub unsafe fn array_with_page_unsafe(&self, page: Page2m) -> &PSArray {
+    pub unsafe fn array_with_page_unsafe(&self, page: Page2m) -> &PsArray {
         for i in 0..self.length {
             let i = i as u64;
             if self[i].contains(page) {
@@ -214,11 +214,11 @@ impl PSAArray {
     }
 
     pub unsafe fn array_with_page_mut_unsafe(&mut self, page: Page2m)
-            -> &mut PSArray {
+            -> &mut PsArray {
         let notmut = self.array_with_page_unsafe(page);
 
         // Convert to mutable reference
-        &mut *(notmut as *const PSArray as *mut PSArray)
+        &mut *(notmut as *const PsArray as *mut PsArray)
     }
 
     /// Page Status entry for given page.
