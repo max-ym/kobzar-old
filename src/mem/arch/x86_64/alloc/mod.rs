@@ -1,7 +1,7 @@
-/// Allocator for 2MiB pages.
+/// Structures related to 2MiB pages.
 pub mod p2m;
 
-/// Allocator for 4KiB pages.
+/// Structures related to 4KiB pages.
 pub mod p4k;
 
 /// Page Status Object module.
