@@ -8,3 +8,6 @@ pub mod p4k;
 
 /// Page Status Object module.
 pub mod pso;
+
+/// Page Map Heap module.
+pub mod map_heap;
