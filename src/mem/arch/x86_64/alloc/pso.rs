@@ -66,6 +66,11 @@ impl PSArray {
         let addr = self.range.low + index * 0x200000;
         Page2m::new(addr)
     }
+
+    /// Whether this page is within the range.
+    pub fn is_page_included(&self, page: Page2m) -> bool {
+        unimplemented!()
+    }
 }
 
 impl ::core::ops::Index<u64> for PSAArray {
@@ -81,5 +86,24 @@ impl ::core::ops::IndexMut<u64> for PSAArray {
 
     fn index_mut(&mut self, index: u64) -> &mut Self::Output {
         unsafe { &mut *self.arr.offset(index as _) }
+    }
+}
+
+impl PSAArray {
+
+    /// Find array that contains this page.
+    ///
+    /// # Safety
+    /// This method outputs reference even when no array contains this page.
+    /// The reference will be null in this case and must not be used.
+    pub unsafe fn containing_array_unsafe(&self, page: Page2m) -> &PSArray {
+        for i in 0..self.length {
+            let i = i as u64;
+            if self[i].is_page_included(page) {
+                return &self[i];
+            }
+        }
+
+        &*::core::ptr::null()
     }
 }
