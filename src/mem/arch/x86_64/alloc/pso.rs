@@ -7,12 +7,13 @@ struct Range {
     pub hi      : u64,
 }
 
+/// Page Status array.
 pub struct PSArray {
     range   : Range,
     arr     : *mut PageStatus,
 }
 
-/// PSA array.
+/// PSA array. Contains all Page Status arrays of the system.
 pub struct PSAArray {
     length  : u32,
     arr     : *mut PSArray,
@@ -43,7 +44,7 @@ impl Range {
     }
 
     /// Whether this page is within the range.
-    pub fn is_page_included(&self, page: Page2m) -> bool {
+    pub fn contains(&self, page: Page2m) -> bool {
         let addr = page.addr();
         self.low >= addr && self.hi <= addr
     }
@@ -74,8 +75,8 @@ impl PSArray {
     }
 
     /// Whether this page is within the range.
-    pub fn is_page_included(&self, page: Page2m) -> bool {
-        self.range.is_page_included(page)
+    pub fn contains(&self, page: Page2m) -> bool {
+        self.range.contains(page)
     }
 }
 
@@ -102,10 +103,10 @@ impl PSAArray {
     /// # Safety
     /// This method outputs reference even when no array contains this page.
     /// The reference will be null in this case and must not be used.
-    pub unsafe fn containing_array_unsafe(&self, page: Page2m) -> &PSArray {
+    pub unsafe fn contains_array_unsafe(&self, page: Page2m) -> &PSArray {
         for i in 0..self.length {
             let i = i as u64;
-            if self[i].is_page_included(page) {
+            if self[i].contains(page) {
                 return &self[i];
             }
         }
