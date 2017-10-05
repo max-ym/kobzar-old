@@ -6,7 +6,7 @@ use super::p2m::Page2m;
 ///
 /// 2048 - 2MiB page size; divided by 4 - 4KiB page size that this bigger
 /// page was split into; divided by 8 - bits count in one byte.
-pub const P4KS_IN_P2M: usize = 2048 / 4 / 8;
+pub const P4KS_IN_P2M   : usize = 2048 / 4 / 8;
 
 const PAGE_ALLOCATED    : bool = false;
 const PAGE_FREE         : bool = true;
