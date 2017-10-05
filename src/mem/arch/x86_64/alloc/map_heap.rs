@@ -75,6 +75,12 @@ impl Bitmap {
 
         (qword_index, bit_index)
     }
+
+    /// Find first set bit and get it's indices. These are: first for qword
+    /// which hold set bit and next is bit's index in this qword.
+    pub fn first_set_bit(&self) -> (usize, usize) {
+        unimplemented!()
+    }
 }
 
 impl HeapEntry {
