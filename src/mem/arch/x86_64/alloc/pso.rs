@@ -71,14 +71,14 @@ impl ::core::ops::Index<Page2m> for PSArray {
     type Output = PageStatus;
 
     fn index(&self, page: Page2m) -> &Self::Output {
-        self.page_status_for(page)
+        unsafe { self.page_status_for(page) }
     }
 }
 
 impl ::core::ops::IndexMut<Page2m> for PSArray {
 
     fn index_mut(&mut self, page: Page2m) -> &mut Self::Output {
-        self.page_status_mut_for(page)
+        unsafe { self.page_status_mut_for(page) }
     }
 }
 
@@ -95,12 +95,17 @@ impl PSArray {
         self.range.contains(page)
     }
 
-    pub fn page_status_for(&self, page: Page2m) -> &PageStatus {
-        unimplemented!()
+    pub unsafe fn page_status_for(&self, page: Page2m) -> &PageStatus {
+        &*self.arr.offset(self.page_to_index(page) as _)
     }
 
-    pub fn page_status_mut_for(&mut self, page: Page2m) -> &mut PageStatus {
-        unimplemented!()
+    pub unsafe fn page_status_mut_for(&mut self, page: Page2m)
+            -> &mut PageStatus {
+        &mut *self.arr.offset(self.page_to_index(page) as _)
+    }
+
+    unsafe fn page_to_index(&self, page: Page2m) -> u64 {
+        self.range.abs_to_index(page.addr())
     }
 }
 
