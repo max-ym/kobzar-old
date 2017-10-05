@@ -13,6 +13,7 @@ pub struct Bitmap {
     pub arr     : [u8; P4KS_IN_P2M],
 }
 
+/// 4KiB page status array heap entry.
 pub struct HeapEntry {
     bitmap      : Bitmap,
     status_arr  : [Page2mStatus; P4KS_IN_P2M],
@@ -24,5 +25,13 @@ impl Default for Bitmap {
         Bitmap {
             arr     : [0; P4KS_IN_P2M]
         }
+    }
+}
+
+impl HeapEntry {
+
+    /// Check if all 4KiB pages are free.
+    pub fn is_free(&self) -> bool {
+        unimplemented!()
     }
 }
