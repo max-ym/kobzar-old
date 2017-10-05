@@ -8,6 +8,9 @@ use super::p2m::Page2m;
 /// page was split into; divided by 8 - bits count in one byte.
 pub const P4KS_IN_P2M: usize = 2048 / 4 / 8;
 
+const PAGE_ALLOCATED    : bool = false;
+const PAGE_FREE         : bool = true;
+
 /// Qword to be used in bitmap.
 #[repr(packed)]
 #[derive(Default, Clone, Copy, PartialEq, PartialOrd)]
@@ -132,10 +135,14 @@ impl HeapEntry {
         unimplemented!()
     }
 
+    fn first_free_page(&self) -> Option<(usize, usize)> {
+        self.bitmap.first_set_bit()
+    }
+
     /// Allocate new 4KiB page.
     pub fn alloc(&mut self) -> Option<RelativeAddress> {
         // Find set bit in bitmap.
-        let set_bit = self.bitmap.first_set_bit();
+        let set_bit = self.first_free_page();
         if set_bit.is_none() {
             return None;
         }
@@ -145,7 +152,7 @@ impl HeapEntry {
         let rel_addr = RelativeAddress::new_by_count(bit_index);
 
         // Mark given page as used.
-        self.bitmap.set_qword_bit(set_bit.0, set_bit.1, false);
+        self.bitmap.set_qword_bit(set_bit.0, set_bit.1, PAGE_ALLOCATED);
         self.status_arr[bit_index].inc_user();
 
         Some(rel_addr)
@@ -159,7 +166,7 @@ impl HeapEntry {
     /// forcely marks page as free.
     pub unsafe fn dealloc(&mut self, reladdr: RelativeAddress) {
         let bit_index = reladdr.count();
-        self.bitmap.set_bit(bit_index, true);
+        self.bitmap.set_bit(bit_index, PAGE_FREE);
         self.status_arr[bit_index].set_user(0);
     }
 }
