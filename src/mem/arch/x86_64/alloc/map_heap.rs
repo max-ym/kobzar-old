@@ -82,7 +82,7 @@ impl RelativeAddress {
     }
 
     /// Convert relative address to absolute by supplying base page.
-    pub fn to_absolute(self, base: Page2m) -> Page4k {
+    pub fn into_absolute(self, base: Page2m) -> Page4k {
         Page4k::new_by_index(base, self.val as _)
     }
 
