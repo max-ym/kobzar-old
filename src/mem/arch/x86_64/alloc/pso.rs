@@ -44,3 +44,19 @@ impl Range {
         (absolute - self.low) / 0x200000
     }
 }
+
+impl ::core::ops::Index<u64> for PSArray {
+
+    type Output = PageStatus;
+
+    fn index(&self, index: u64) -> &Self::Output {
+        unsafe { &*self.arr.offset(index as _) }
+    }
+}
+
+impl ::core::ops::IndexMut<u64> for PSArray {
+
+    fn index_mut(&mut self, index: u64) -> &mut Self::Output {
+        unsafe { &mut *self.arr.offset(index as _) }
+    }
+}
