@@ -25,7 +25,7 @@ pub struct RelativeAddress {
 
 /// Bitmap of allocated/free 4KiB pages.
 #[repr(packed)]
-pub struct Bitmap {
+struct Bitmap {
     /// Array of bytes of the bitmap.
     arr     : [Qword; P4KS_IN_P2M / 8],
 }
