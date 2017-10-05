@@ -23,7 +23,7 @@ pub struct PSOArray {
 impl Range {
 
     /// Create new range.
-    pub fn new(top: u32, bottom: u32) -> Self {
+    pub fn new(top: u64, bottom: u64) -> Self {
         Range {
             hi  : top,
             low : bottom,
