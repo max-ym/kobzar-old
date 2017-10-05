@@ -13,7 +13,7 @@ const PAGE_FREE         : bool = true;
 
 /// Qword to be used in bitmap.
 #[repr(packed)]
-#[derive(Default, Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, PartialEq, PartialOrd)]
 struct Qword {
     pub val     : u64,
 }
@@ -41,6 +41,15 @@ impl Default for Bitmap {
     fn default() -> Self {
         Bitmap {
             arr     : [Default::default(); P4KS_IN_P2M / 8]
+        }
+    }
+}
+
+impl Default for Qword {
+
+    fn default() -> Self {
+        Qword {
+            val: !0
         }
     }
 }
