@@ -60,3 +60,12 @@ impl ::core::ops::IndexMut<u64> for PSArray {
         unsafe { &mut *self.arr.offset(index as _) }
     }
 }
+
+impl PSArray {
+
+    /// Get page that page status at given position is saving status for.
+    pub fn page_at_index(&self, index: u64) -> Page2m {
+        let addr = self.range.low + index * 0x200000;
+        Page2m::new(addr)
+    }
+}
