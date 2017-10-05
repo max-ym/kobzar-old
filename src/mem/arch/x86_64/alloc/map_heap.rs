@@ -1,4 +1,4 @@
-use super::Page2mStatus;
+use super::pso::PageStatus;
 
 /// Number of 4KiB pages in one split 2MiB page.
 ///
@@ -16,7 +16,7 @@ pub struct Bitmap {
 /// 4KiB page status array heap entry.
 pub struct HeapEntry {
     bitmap      : Bitmap,
-    status_arr  : [Page2mStatus; P4KS_IN_P2M],
+    status_arr  : [PageStatus; P4KS_IN_P2M],
 }
 
 impl Default for Bitmap {

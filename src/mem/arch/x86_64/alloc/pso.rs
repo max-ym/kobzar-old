@@ -1,5 +1,14 @@
 use super::Page2m;
-use super::Page2mStatus as PageStatus;
+
+/// Page Status. Holds the state of individual 2MiB or 4KiB pages.
+/// Stores whether it is allocated or free.
+#[derive(Default)]
+pub struct PageStatus {
+
+    /// Counter of how many table entries contain this page.
+    /// When counter is zero, this page is free.
+    used    : u32,
+}
 
 /// Page ranges.
 struct Range {
@@ -17,6 +26,51 @@ pub struct PSArray {
 pub struct PSAArray {
     length  : u32,
     arr     : *mut PSArray,
+}
+
+impl PageStatus {
+
+    /// How many tables use this page.
+    pub fn use_count(&self) -> u32 {
+        self.used
+    }
+
+    /// Notify that one more table uses this page now.
+    /// Increments user counter.
+    ///
+    /// Returns new user counter value.
+    pub fn inc_user(&mut self) -> u32 {
+        self.used += 1;
+        self.used
+    }
+
+    /// Notify that one table released this page now.
+    /// Decrements user counter.
+    ///
+    /// Returns new user counter value.
+    pub fn dec_user(&mut self) -> u32 {
+        self.used -= 1;
+        self.used
+    }
+
+    /// Set given user counter value.
+    pub fn set_user(&mut self, val: u32) {
+        self.used = val;
+    }
+
+    /// Whether this page is allocated for some page table.
+    ///
+    /// Opposite to fn `is_free`.
+    pub fn is_used(&self) -> bool {
+        self.used > 0
+    }
+
+    /// Whether this page is free to be allocated.
+    ///
+    /// Opposite to fn `is_used`.
+    pub fn is_free(&self) -> bool {
+        self.used == 0
+    }
 }
 
 impl Range {
