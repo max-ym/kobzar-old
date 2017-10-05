@@ -1,13 +1,5 @@
 use super::Page2m;
-
-/// Page Status. Holds the state of individual 2MiB pages.
-/// Stores whether it is allocated or free.
-#[derive(Default)]
-pub struct PageStatus {
-    /// Counter of how many table entries contain this page.
-    /// When counter is zero, this page is free.
-    used    : u32,
-}
+use super::Page2mStatus as PageStatus;
 
 /// Page ranges.
 struct Range {

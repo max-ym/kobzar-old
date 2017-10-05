@@ -16,13 +16,13 @@ pub struct Page2m {
     addr    : u64
 }
 
-/// Metadata for page that is needed to allocate and free it.
+/// Page Status. Holds the state of individual 2MiB pages.
+/// Stores whether it is allocated or free.
+#[derive(Default)]
 pub struct Page2mStatus {
 
-    /// Original page data.
-    page    : Page2m,
-
-    /// How many tables use this page currently.
+    /// Counter of how many table entries contain this page.
+    /// When counter is zero, this page is free.
     used    : u32,
 }
 
@@ -66,14 +66,6 @@ impl Page2m {
 
 impl Page2mStatus {
 
-    /// Create new status for given page.
-    pub fn new(page: Page2m) -> Self {
-        Page2mStatus {
-            page    : page,
-            used    : 0,
-        }
-    }
-
     /// How many tables use this page.
     pub fn use_count(&self) -> u32 {
         self.used
@@ -114,15 +106,5 @@ impl Page2mStatus {
     /// Opposite to fn `is_used`.
     pub fn is_free(&self) -> bool {
         self.used == 0
-    }
-
-    /// Address of a page that this status was created for.
-    pub fn page_address(&self) -> u64 {
-        self.page.addr
-    }
-
-    /// Original page data.
-    pub fn page(&self) -> &Page2m {
-        &self.page
     }
 }
