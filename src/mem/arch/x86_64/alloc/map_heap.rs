@@ -73,6 +73,11 @@ impl RelativeAddress {
     pub fn to_absolute(self, base: Page2m) -> Page4k {
         Page4k::new_by_index(base, self.val as _)
     }
+
+    /// Count of pages relative to base address of 2MiB page.
+    pub fn count(&self) -> usize {
+        self.val
+    }
 }
 
 impl Bitmap {
@@ -144,5 +149,17 @@ impl HeapEntry {
         self.status_arr[bit_index].inc_user();
 
         Some(rel_addr)
+    }
+
+    /// Deallocate 4KiB page. Change related bit in bitmap and set
+    /// user counter to zero in related page status entry.
+    ///
+    /// # Safety
+    /// Does not check whether this page is not used elsewere and
+    /// forcely marks page as free.
+    pub unsafe fn dealloc(&mut self, reladdr: RelativeAddress) {
+        let bit_index = reladdr.count();
+        self.bitmap.set_bit(bit_index, true);
+        self.status_arr[bit_index].set_user(0);
     }
 }
