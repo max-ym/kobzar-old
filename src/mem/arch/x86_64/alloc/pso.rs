@@ -66,6 +66,22 @@ impl ::core::ops::IndexMut<u64> for PSArray {
     }
 }
 
+impl ::core::ops::Index<Page2m> for PSArray {
+
+    type Output = PageStatus;
+
+    fn index(&self, page: Page2m) -> &Self::Output {
+        self.page_status_for(page)
+    }
+}
+
+impl ::core::ops::IndexMut<Page2m> for PSArray {
+
+    fn index_mut(&mut self, page: Page2m) -> &mut Self::Output {
+        self.page_status_mut_for(page)
+    }
+}
+
 impl PSArray {
 
     /// Get page that page status at given position is saving status for.
@@ -77,6 +93,14 @@ impl PSArray {
     /// Whether this page is within the range.
     pub fn contains(&self, page: Page2m) -> bool {
         self.range.contains(page)
+    }
+
+    pub fn page_status_for(&self, page: Page2m) -> &PageStatus {
+        unimplemented!()
+    }
+
+    pub fn page_status_mut_for(&mut self, page: Page2m) -> &mut PageStatus {
+        unimplemented!()
     }
 }
 
@@ -103,7 +127,7 @@ impl PSAArray {
     /// # Safety
     /// This method outputs reference even when no array contains this page.
     /// The reference will be null in this case and must not be used.
-    pub unsafe fn contains_array_unsafe(&self, page: Page2m) -> &PSArray {
+    pub unsafe fn array_with_page_unsafe(&self, page: Page2m) -> &PSArray {
         for i in 0..self.length {
             let i = i as u64;
             if self[i].contains(page) {
@@ -112,5 +136,15 @@ impl PSAArray {
         }
 
         &*::core::ptr::null()
+    }
+
+    /// Page Status entry for given page.
+    ///
+    /// # Safety
+    /// Does not check whether this page has status entry or not. Entry
+    /// presence must be guaranteed by caller.
+    pub unsafe fn page_status_for(&self, page: Page2m) -> &PageStatus {
+        let psa = self.array_with_page_unsafe(page);
+        &psa[page]
     }
 }
