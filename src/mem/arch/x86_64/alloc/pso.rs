@@ -41,6 +41,12 @@ impl Range {
     pub unsafe fn abs_to_index(&self, absolute: u64) -> u64 {
         (absolute - self.low) / 0x200000
     }
+
+    /// Whether this page is within the range.
+    pub fn is_page_included(&self, page: Page2m) -> bool {
+        let addr = page.addr();
+        self.low >= addr && self.hi <= addr
+    }
 }
 
 impl ::core::ops::Index<u64> for PSArray {
@@ -69,7 +75,7 @@ impl PSArray {
 
     /// Whether this page is within the range.
     pub fn is_page_included(&self, page: Page2m) -> bool {
-        unimplemented!()
+        self.range.is_page_included(page)
     }
 }
 
