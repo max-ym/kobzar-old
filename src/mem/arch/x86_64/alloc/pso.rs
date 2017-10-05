@@ -143,6 +143,14 @@ impl PSAArray {
         &*::core::ptr::null()
     }
 
+    pub unsafe fn array_with_page_mut_unsafe(&mut self, page: Page2m)
+            -> &mut PSArray {
+        let notmut = self.array_with_page_unsafe(page);
+
+        // Convert to mutable reference
+        &mut *(notmut as *const PSArray as *mut PSArray)
+    }
+
     /// Page Status entry for given page.
     ///
     /// # Safety
@@ -151,5 +159,16 @@ impl PSAArray {
     pub unsafe fn page_status_for(&self, page: Page2m) -> &PageStatus {
         let psa = self.array_with_page_unsafe(page);
         &psa[page]
+    }
+
+    /// Page Status entry for given page.
+    ///
+    /// # Safety
+    /// Does not check whether this page has status entry or not. Entry
+    /// presence must be guaranteed by caller.
+    pub unsafe fn page_status_mut_for(&mut self, page: Page2m)
+            -> &mut PageStatus {
+        let psa = self.array_with_page_mut_unsafe(page);
+        &mut psa[page]
     }
 }
