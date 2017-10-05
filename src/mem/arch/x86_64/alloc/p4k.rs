@@ -53,7 +53,7 @@ impl Page4kMap {
 
             let page_index = biti + iter_counter * 64;
 
-            return Some(Page4k::new_by_index(&self.base, page_index as u16));
+            return Some(Page4k::new_by_index(self.base, page_index as u16));
         }
 
         None
@@ -127,7 +127,7 @@ impl Page4k {
         (diff / 4096) as u16
     }
 
-    pub fn new_by_index(base: &Page2m, index: u16) -> Self {
+    pub fn new_by_index(base: Page2m, index: u16) -> Self {
         Page4k {
             base    : base.clone(),
             addr    : index as u64 * 4096 + base.addr()

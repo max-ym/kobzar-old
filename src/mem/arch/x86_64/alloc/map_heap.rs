@@ -1,4 +1,6 @@
 use super::pso::PageStatus;
+use super::p4k::Page4k;
+use super::p2m::Page2m;
 
 /// Number of 4KiB pages in one split 2MiB page.
 ///
@@ -11,6 +13,11 @@ pub const P4KS_IN_P2M: usize = 2048 / 4 / 8;
 #[derive(Default, Clone, Copy, PartialEq, PartialOrd)]
 struct Qword {
     pub val     : u64,
+}
+
+/// Struct that helps to find absolute allocated page address.
+pub struct RelativeAddress {
+    val     : usize,
 }
 
 /// Bitmap of allocated/free 4KiB pages.
@@ -52,6 +59,22 @@ impl Qword {
     }
 }
 
+impl RelativeAddress {
+
+    /// Create new relative address by given count of pages relative to
+    /// base address of 2MiB page.
+    pub fn new_by_count(count: usize) -> Self {
+        RelativeAddress {
+            val     : count
+        }
+    }
+
+    /// Convert relative address to absolute by supplying base page.
+    pub fn to_absolute(self, base: Page2m) -> Page4k {
+        Page4k::new_by_index(base, self.val as _)
+    }
+}
+
 impl Bitmap {
 
     /// Given bit value.
@@ -63,6 +86,12 @@ impl Bitmap {
     /// Set bit by given index to specified value.
     pub fn set_bit(&mut self, index: usize, val: bool) {
         let (qword_index, bit_index) = Self::index_split(index);
+        self.set_qword_bit(qword_index, bit_index, val);
+    }
+
+    /// Set bit by given index to specified value.
+    pub fn set_qword_bit
+            (&mut self, qword_index: usize, bit_index: usize, val: bool) {
         self.arr[qword_index].set_bit(bit_index, val);
     }
 
@@ -76,9 +105,17 @@ impl Bitmap {
         (qword_index, bit_index)
     }
 
+    /// Unite qword and it's bit indices into absolute index of bitmap bit.
+    ///
+    /// # Safety
+    /// Does not check if provided indices are in bounds.
+    pub unsafe fn unite_index(qword_index: usize, bit_index: usize) -> usize {
+        qword_index * 64 + bit_index
+    }
+
     /// Find first set bit and get it's indices. These are: first for qword
     /// which hold set bit and next is bit's index in this qword.
-    pub fn first_set_bit(&self) -> (usize, usize) {
+    pub fn first_set_bit(&self) -> Option<(usize, usize)> {
         unimplemented!()
     }
 }
@@ -88,5 +125,24 @@ impl HeapEntry {
     /// Check if all 4KiB pages are free.
     pub fn is_free(&self) -> bool {
         unimplemented!()
+    }
+
+    /// Allocate new 4KiB page.
+    pub fn alloc(&mut self) -> Option<RelativeAddress> {
+        // Find set bit in bitmap.
+        let set_bit = self.bitmap.first_set_bit();
+        if set_bit.is_none() {
+            return None;
+        }
+        let set_bit = set_bit.unwrap();
+
+        let bit_index = unsafe { Bitmap::unite_index(set_bit.0, set_bit.1) };
+        let rel_addr = RelativeAddress::new_by_count(bit_index);
+
+        // Mark given page as used.
+        self.bitmap.set_qword_bit(set_bit.0, set_bit.1, false);
+        self.status_arr[bit_index].inc_user();
+
+        Some(rel_addr)
     }
 }
