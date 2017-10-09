@@ -10,7 +10,7 @@ pub struct PageStatus {
     used    : u32,
 }
 
-/// Page ranges.
+/// 2MiB page ranges.
 struct Range {
     pub low     : u64,
     pub hi      : u64,
