@@ -16,6 +16,7 @@ pub mod pso;
 pub mod map_heap;
 
 pub use self::p2m::Page2m;
+pub use self::p2m::Range as Range2m;
 pub use self::p2m::Stack as Stack2m;
 
 pub use self::p4k::Page4k;

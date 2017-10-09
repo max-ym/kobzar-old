@@ -16,6 +16,12 @@ pub struct Page2m {
     addr    : u64
 }
 
+/// 2MiB page ranges.
+pub struct Range {
+    low     : u64,
+    hi      : u64,
+}
+
 impl Stack {
 
     /// Remove last value from the stack and return it.
@@ -51,5 +57,46 @@ impl Page2m {
 
     pub fn addr(&self) -> u64 {
         self.addr
+    }
+}
+
+impl Range {
+
+    /// Create new range.
+    pub fn new(top: u64, bottom: u64) -> Self {
+        Range {
+            hi  : top,
+            low : bottom,
+        }
+    }
+
+    /// How many entries this range contains.
+    pub fn length(&self) -> u64 {
+        (self.hi - self.low) / 0x200000
+    }
+
+    /// Get index of a page status entry for this page address.
+    ///
+    /// # Safety
+    /// It is expected that given absolute address of a page is
+    /// within this range.
+    pub unsafe fn abs_to_index(&self, absolute: u64) -> u64 {
+        (absolute - self.low) / 0x200000
+    }
+
+    /// Whether this page is within the range.
+    pub fn contains(&self, page: Page2m) -> bool {
+        let addr = page.addr();
+        self.low >= addr && self.hi <= addr
+    }
+
+    /// Top value of the range.
+    pub fn top(&self) -> u64 {
+        self.hi
+    }
+
+    /// Bottom value of the range.
+    pub fn bottom(&self) -> u64 {
+        self.low
     }
 }

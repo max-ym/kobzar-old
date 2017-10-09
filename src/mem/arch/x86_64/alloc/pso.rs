@@ -1,4 +1,5 @@
 use super::Page2m;
+use super::Range2m;
 
 /// Page Status. Holds the state of individual 2MiB or 4KiB pages.
 /// Stores whether it is allocated or free.
@@ -10,15 +11,9 @@ pub struct PageStatus {
     used    : u32,
 }
 
-/// 2MiB page ranges.
-struct Range {
-    pub low     : u64,
-    pub hi      : u64,
-}
-
 /// Page Status array.
 pub struct PsArray {
-    range   : Range,
+    range   : Range2m,
     arr     : *mut PageStatus,
 }
 
@@ -73,37 +68,6 @@ impl PageStatus {
     }
 }
 
-impl Range {
-
-    /// Create new range.
-    pub fn new(top: u64, bottom: u64) -> Self {
-        Range {
-            hi  : top,
-            low : bottom,
-        }
-    }
-
-    /// How many entries this range contains.
-    pub fn length(&self) -> u64 {
-        (self.hi - self.low) / 0x200000
-    }
-
-    /// Get index of a page status entry for this page address.
-    ///
-    /// # Safety
-    /// It is expected that given absolute address of a page is
-    /// within this range.
-    pub unsafe fn abs_to_index(&self, absolute: u64) -> u64 {
-        (absolute - self.low) / 0x200000
-    }
-
-    /// Whether this page is within the range.
-    pub fn contains(&self, page: Page2m) -> bool {
-        let addr = page.addr();
-        self.low >= addr && self.hi <= addr
-    }
-}
-
 impl ::core::ops::Index<u64> for PsArray {
 
     type Output = PageStatus;
@@ -140,7 +104,7 @@ impl PsArray {
 
     /// Get page that page status at given position is saving status for.
     pub fn page_at_index(&self, index: u64) -> Page2m {
-        let addr = self.range.low + index * 0x200000;
+        let addr = self.range.bottom() + index * 0x200000;
         Page2m::new(addr)
     }
 
