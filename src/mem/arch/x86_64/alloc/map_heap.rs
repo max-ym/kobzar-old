@@ -1,6 +1,6 @@
-use super::pso::PageStatus;
-use super::p4k::Page4k;
-use super::p2m::Page2m;
+use super::PageStatus;
+use super::Page4k;
+use super::Page2m;
 
 /// Number of 4KiB pages in one split 2MiB page.
 ///
