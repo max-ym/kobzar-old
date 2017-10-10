@@ -36,6 +36,11 @@ pub struct HeapEntry {
     status_arr  : [PageStatus; P4KS_IN_P2M],
 }
 
+/// Heap of page maps that store 4KiB page status of divided 2MiB page.
+pub struct Heap {
+    // TODO
+}
+
 impl Default for Bitmap {
 
     fn default() -> Self {
@@ -177,5 +182,22 @@ impl HeapEntry {
         let bit_index = reladdr.count();
         self.bitmap.set_bit(bit_index, PAGE_FREE);
         self.status_arr[bit_index].set_user(0);
+    }
+}
+
+impl Heap {
+
+    /// Store given page in the heap.
+    pub fn store(&mut self, page: Page2m) -> &mut HeapEntry {
+        unimplemented!()
+    }
+
+    /// Remove given heap entry by it's reference.
+    ///
+    /// # Safety
+    /// Ensure that given reference is created for the entry of this heap.
+    /// Otherwise behaviour of the function is undefined.
+    pub unsafe fn remove(&mut self, entry: &HeapEntry) {
+        unimplemented!()
     }
 }
