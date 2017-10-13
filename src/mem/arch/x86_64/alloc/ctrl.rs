@@ -1,10 +1,14 @@
 use super::Page4k;
 use super::Page2m;
+use super::Stack2m;
 
 type Result<T> = ::core::result::Result<T, AllocError>;
 
 /// Pages allocator.
 pub struct Alloc {
+
+    /// Stack that contains all 2MiB pages that are free for allocation.
+    stk2    : Stack2m,
     // TODO
 }
 
