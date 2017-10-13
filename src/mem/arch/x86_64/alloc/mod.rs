@@ -1,3 +1,7 @@
+/// Main controller that uses all submodules to provide interface for
+/// allocating and releasing pages of memory.
+pub mod ctrl;
+
 /// Structures related to 2MiB pages.
 pub mod p2m;
 
