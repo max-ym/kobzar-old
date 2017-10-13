@@ -1,6 +1,7 @@
 use super::Page4k;
 use super::Page2m;
 use super::Stack2m;
+use super::PageStatus;
 
 type Result<T> = ::core::result::Result<T, AllocError>;
 
@@ -12,18 +13,54 @@ pub struct Alloc {
     // TODO
 }
 
+/// Handle that allows to control the 2MiB page status and get page address.
+pub struct Page2mHandle {
+    page    : Page2m,
+    stat    : *mut PageStatus,
+}
+
+/// Handle that allows to control the 4KiB page status and get page address.
+pub struct Page4kHandle {
+    page    : Page4k,
+    stat    : *mut PageStatus,
+}
+
 /// Errors that allocator can return when some action cannot be
 /// performed for any reason.
 pub enum AllocError {
 }
 
+macro_rules! impl_page_handle {
+    ($p:ty) => (
+        pub fn page(&self) -> $p {
+            self.page
+        }
+
+        pub fn status(&self) -> &PageStatus {
+            unsafe { &*self.stat }
+        }
+
+        pub fn status_mut(&mut self) -> &mut PageStatus {
+            unsafe { &mut *self.stat }
+        }
+    )
+}
+
+impl Page2mHandle {
+    impl_page_handle!(Page2m);
+}
+
+impl Page4kHandle {
+    impl_page_handle!(Page4k);
+}
+
 impl Alloc {
 
-    pub fn alloc4k(&mut self) -> Result<Page4k> {
+    pub fn alloc4k(&mut self) -> Result<Page4kHandle> {
         unimplemented!()
     }
 
-    pub fn alloc2m(&mut self) -> Result<Page2m> {
+    pub fn alloc2m(&mut self) -> Result<Page2mHandle> {
         unimplemented!()
     }
 
