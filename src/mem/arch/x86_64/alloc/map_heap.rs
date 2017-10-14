@@ -36,9 +36,30 @@ pub struct HeapEntry {
     status_arr  : [PageStatus; P4KS_IN_P2M],
 }
 
+/// Map stores data about which cells of the array are used and which are
+/// empty. Is used by Heap.
+struct HeapMap {
+    arr     : *mut Qword,
+}
+
 /// Heap of page maps that store 4KiB page status of divided 2MiB page.
 pub struct Heap {
-    // TODO
+
+    /// Array that stores heap entries.
+    arr     : *mut HeapEntry,
+
+    /// Next heap entry that is free. Null when free entry is unknown.
+    next_free   : *mut HeapEntry,
+
+    /// Length of the array of heap entries.
+    len     : u32,
+
+    /// How many array entries are free.
+    free    : u32,
+
+    /// Map stores data about which cells of the array are used and which are
+    /// empty.
+    map     : HeapMap,
 }
 
 impl Default for Bitmap {
