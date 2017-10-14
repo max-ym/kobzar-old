@@ -2,6 +2,7 @@ use super::Page4k;
 use super::Page2m;
 use super::Stack2m;
 use super::PageStatus;
+use super::PsaArray;
 
 type AlResult<T> = ::core::result::Result<T, AllocError>;
 type ReResult<T> = ::core::result::Result<T, ReleaseError>;
