@@ -42,8 +42,8 @@ struct HeapMap {
     arr     : *mut Qword,
 }
 
-/// Heap of page maps that store 4KiB page status of divided 2MiB page.
-pub struct Heap {
+/// Array that stores heap entries. Used by the Heap.
+struct HeapArray {
 
     /// Array that stores heap entries.
     arr     : *mut HeapEntry,
@@ -56,6 +56,13 @@ pub struct Heap {
 
     /// How many array entries are free.
     free    : u32,
+}
+
+/// Heap of page maps that store 4KiB page status of divided 2MiB page.
+pub struct Heap {
+
+    /// Array that stores heap entries.
+    arr     : HeapArray,
 
     /// Map stores data about which cells of the array are used and which are
     /// empty.
