@@ -252,10 +252,14 @@ impl HeapArray {
             self.find_next_free();
         }
 
+        // Next free entry
         let entry = &mut *self.next_free;
+        self.next_free = null_mut();
+        // TODO optimize
 
-        // TODO save changes to bitmap
-        unimplemented!();
+        // Save changes to bitmap.
+        let index = self.ref_to_index(entry);
+        self.map.set_bit(index, PAGE_ALLOCATED);
 
         entry
     }
