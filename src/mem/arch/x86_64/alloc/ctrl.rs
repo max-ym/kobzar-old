@@ -64,11 +64,11 @@ impl Alloc {
         unimplemented!()
     }
 
-    pub unsafe fn release4k(&mut self, page: Page4k) -> Result<()> {
+    pub unsafe fn release4k(&mut self, page: Page4kHandle) -> Result<()> {
         unimplemented!()
     }
 
-    pub unsafe fn release2m(&mut self, page: Page2m) -> Result<()> {
+    pub unsafe fn release2m(&mut self, page: Page2mHandle) -> Result<()> {
         unimplemented!()
     }
 
