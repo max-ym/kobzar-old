@@ -218,6 +218,27 @@ impl HeapEntry {
     }
 }
 
+impl HeapMap {
+
+    pub fn set_bit(&mut self, index: usize, val: bool) {
+        let ptrs = self.qword_by_bit_index_mut(index);
+        ptrs.0.set_bit(ptrs.1, val);
+    }
+
+    /// Index of qword that stores given bit index. And index of a bit
+    /// in the qword that corresponds to provided absolute index.
+    fn qword_index(&self, bit_index: usize) -> (usize, usize) {
+        let bits_in_qword = 64;
+        (bit_index / bits_in_qword, bit_index % bits_in_qword)
+    }
+
+    /// Qword mutable reference with bit with given index.
+    fn qword_by_bit_index_mut(&mut self, index: usize) -> (&mut Qword, usize) {
+        let indices = self.qword_index(index);
+        unsafe { (&mut *self.arr.offset(indices.0 as _), indices.1) }
+    }
+}
+
 impl HeapArray {
 
     /// Allocate new heap entry in the heap array.
