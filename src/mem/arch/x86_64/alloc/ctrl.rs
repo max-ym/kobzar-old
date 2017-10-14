@@ -3,7 +3,8 @@ use super::Page2m;
 use super::Stack2m;
 use super::PageStatus;
 
-type Result<T> = ::core::result::Result<T, AllocError>;
+type AlResult<T> = ::core::result::Result<T, AllocError>;
+type ReResult<T> = ::core::result::Result<T, ReleaseError>;
 
 /// Pages allocator.
 pub struct Alloc {
@@ -28,6 +29,16 @@ pub struct Page4kHandle {
 /// Errors that allocator can return when some action cannot be
 /// performed for any reason.
 pub enum AllocError {
+
+    /// No more pages are available for allocation.
+    NoMorePages
+}
+
+pub enum ReleaseError {
+
+    /// Page usage counter is not zero. Maybe the page is still used by some
+    /// tables and thus cannot be released.
+    UsageCounterNonzero,
 }
 
 macro_rules! impl_page_handle {
@@ -56,19 +67,19 @@ impl Page4kHandle {
 
 impl Alloc {
 
-    pub fn alloc4k(&mut self) -> Result<Page4kHandle> {
+    pub fn alloc4k(&mut self) -> AlResult<Page4kHandle> {
         unimplemented!()
     }
 
-    pub fn alloc2m(&mut self) -> Result<Page2mHandle> {
+    pub fn alloc2m(&mut self) -> AlResult<Page2mHandle> {
         unimplemented!()
     }
 
-    pub unsafe fn release4k(&mut self, page: Page4kHandle) -> Result<()> {
+    pub unsafe fn release4k(&mut self, page: Page4kHandle) -> ReResult<()> {
         unimplemented!()
     }
 
-    pub unsafe fn release2m(&mut self, page: Page2mHandle) -> Result<()> {
+    pub unsafe fn release2m(&mut self, page: Page2mHandle) -> ReResult<()> {
         unimplemented!()
     }
 
