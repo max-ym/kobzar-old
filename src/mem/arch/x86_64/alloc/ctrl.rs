@@ -74,18 +74,36 @@ impl Page4kHandle {
 
 impl Alloc {
 
+    /// Allocate new 4KiB page.
+    ///
+    /// # Errors
+    /// NoMorePages error occurs when no free pages of given type could be
+    /// allocated.
     pub fn alloc4k(&mut self) -> AlResult<Page4kHandle> {
         unimplemented!()
     }
 
+    /// Allocate new 2MiB page.
+    ///
+    /// # Errors
+    /// NoMorePages error occurs when no free pages of given type could be
+    /// allocated.
     pub fn alloc2m(&mut self) -> AlResult<Page2mHandle> {
         unimplemented!()
     }
 
+    /// Release previously allocated 4KiB Page.
+    ///
+    /// # Safety
+    /// Page handle must be the one created by this allocator instance.
     pub unsafe fn release4k(&mut self, page: Page4kHandle) -> ReResult<()> {
         unimplemented!()
     }
 
+    /// Release previously allocated 2MiB Page.
+    ///
+    /// # Safety
+    /// Page handle must be the one created by this allocator instance.
     pub unsafe fn release2m(&mut self, page: Page2mHandle) -> ReResult<()> {
         unimplemented!()
     }
