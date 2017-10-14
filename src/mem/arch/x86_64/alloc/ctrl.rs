@@ -13,7 +13,7 @@ pub struct Alloc {
     /// Stack that contains all 2MiB pages that are free for allocation.
     stk2    : Stack2m,
 
-    /// Array that contains page ranges that are controlled by memory
+    /// Array that contains 2MiB page ranges that are controlled by memory
     /// controller. Each range itself is a fixed size array with page status
     /// objects of individual pages.
     psa     : PsaArray,
