@@ -11,7 +11,7 @@ pub struct PageStatus {
     used    : u32,
 }
 
-/// Page Status array.
+/// Page Status array of 2MiB pages.
 pub struct PsArray {
     range   : Range2m,
     arr     : *mut PageStatus,
