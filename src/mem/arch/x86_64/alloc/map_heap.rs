@@ -95,6 +95,11 @@ impl Qword {
             self.val &= !(1 << index);
         }
     }
+
+    /// Find the first set bit in this Qword.
+    pub fn first_set_bit(&self) -> Option<u8> {
+        unimplemented!()
+    }
 }
 
 impl RelativeAddress {
