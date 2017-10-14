@@ -230,7 +230,7 @@ impl HeapArray {
     }
 
     /// Find next free entry and set HeapArray pointer to this value.
-    fn find_next_free(&self) {
+    fn find_next_free(&mut self) {
         unimplemented!()
     }
 
