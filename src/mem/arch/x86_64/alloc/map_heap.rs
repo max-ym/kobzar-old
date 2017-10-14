@@ -51,11 +51,15 @@ struct HeapArray {
     /// Next heap entry that is free. Null when free entry is unknown.
     next_free   : *mut HeapEntry,
 
-    /// Length of the array of heap entries.
-    len     : u32,
+    /// Length of the array in bytes.
+    byteslen    : u32,
 
     /// How many array entries are free.
     free    : u32,
+
+    /// Map stores data about which cells of the array are used and which are
+    /// empty.
+    map     : HeapMap,
 }
 
 /// Heap of page maps that store 4KiB page status of divided 2MiB page.
@@ -63,10 +67,6 @@ pub struct Heap {
 
     /// Array that stores heap entries.
     arr     : HeapArray,
-
-    /// Map stores data about which cells of the array are used and which are
-    /// empty.
-    map     : HeapMap,
 }
 
 impl Default for Bitmap {
@@ -215,6 +215,53 @@ impl HeapEntry {
         let bit_index = reladdr.count();
         self.bitmap.set_bit(bit_index, PAGE_FREE);
         self.status_arr[bit_index].set_user(0);
+    }
+}
+
+impl HeapArray {
+
+    /// Allocate new heap entry in the heap array.
+    ///
+    /// # Safety
+    /// Caller must ensure there is free space in the array. Otherwise
+    /// behaviour is undefined.
+    pub unsafe fn alloc(&mut self) -> &mut HeapEntry {
+        unimplemented!()
+    }
+
+    /// Find next free entry and set HeapArray pointer to this value.
+    fn find_next_free(&self) {
+        unimplemented!()
+    }
+
+    /// Delete this entry from the array.
+    ///
+    /// # Safety
+    /// Caller must ensure this entry exists. Otherwise behaviour undefined.
+    pub unsafe fn drop(&mut self, entry_ref: &HeapEntry) {
+        unimplemented!()
+    }
+
+    /// Check whether this array has free space.
+    pub fn has_space(&self) -> bool {
+        self.free != 0
+    }
+
+    /// Extend this array by given amount of bytes.
+    ///
+    /// # Safety
+    /// Caller must ensure that array gets extended to free memory region.
+    /// Otherwise some data may get corrupted.
+    pub unsafe fn extend(&mut self, by: usize) {
+        self.byteslen += by as _;
+
+        // TODO extend bitmap too.
+        unimplemented!()
+    }
+
+    /// Address of the array.
+    pub fn base(&self) -> usize {
+        self.arr as usize
     }
 }
 
