@@ -226,12 +226,33 @@ impl HeapArray {
     /// Caller must ensure there is free space in the array. Otherwise
     /// behaviour is undefined.
     pub unsafe fn alloc(&mut self) -> &mut HeapEntry {
-        unimplemented!()
+        use core::ptr::null_mut;
+        if self.next_free == null_mut() {
+            self.find_next_free();
+        }
+
+        let entry = &mut *self.next_free;
+
+        // TODO save changes to bitmap
+        unimplemented!();
+
+        entry
     }
 
     /// Find next free entry and set HeapArray pointer to this value.
     fn find_next_free(&mut self) {
         unimplemented!()
+    }
+
+    /// Convert entry reference to the array index of that element in array.
+    fn ref_to_index(&self, entry: &HeapEntry) -> usize {
+        use core::mem::size_of;
+
+        let entry_size = size_of::<HeapEntry>();
+        let base = self.base();
+        let addr = entry as *const _ as usize;
+
+        (addr - base) / entry_size
     }
 
     /// Delete this entry from the array.
