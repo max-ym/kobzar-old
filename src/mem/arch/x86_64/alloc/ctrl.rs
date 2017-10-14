@@ -91,23 +91,25 @@ impl Alloc {
     }
 
     /// Amount of free 2MiB pages.
-    pub fn free2m_size(&self) -> usize {
+    pub fn free2m_pages(&self) -> usize {
         unimplemented!()
     }
 
     /// Amount of free memory in bytes that are covered by 2MiB pages.
     pub fn free2m_bytes(&self) -> usize {
-        self.free2m_size() * 2048 * 1024
+        let page2m_size = 2048 * 1024;
+        self.free2m_pages() * page2m_size
     }
 
     /// Amount of free 4KiB pages.
-    pub fn free4k_size(&self) -> usize {
+    pub fn free4k_pages(&self) -> usize {
         unimplemented!()
     }
 
     /// Amount of free memory in bytes that are covered by 4KiB pages.
     pub fn free4k_bytes(&self) -> usize {
-        self.free4k_size() * 4096
+        let page4k_size = 4096;
+        self.free4k_pages() * page4k_size
     }
 
     /// Amount of free memory.
