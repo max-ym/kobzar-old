@@ -261,6 +261,9 @@ impl HeapArray {
         let index = self.ref_to_index(entry);
         self.map.set_bit(index, PAGE_ALLOCATED);
 
+        // Update free pages counter.
+        self.free -= 1;
+
         entry
     }
 
@@ -285,7 +288,12 @@ impl HeapArray {
     /// # Safety
     /// Caller must ensure this entry exists. Otherwise behaviour undefined.
     pub unsafe fn drop(&mut self, entry_ref: &HeapEntry) {
-        unimplemented!()
+        // Mark entry as free in heap map.
+        let index = self.ref_to_index(entry_ref);
+        self.map.set_bit(index, PAGE_FREE);
+
+        // Update free pages counter.
+        self.free += 1;
     }
 
     /// Check whether this array has free space.
