@@ -48,4 +48,11 @@ trait Core {
 
     /// Pop next task that is waiting in the queue for processor time.
     fn pop_next_task(&mut self) -> Self::PH;
+
+    /// Processor at specified position of processor array.
+    fn processor_by_id(&self, id: usize) -> Option<&ProcessorThread>;
+
+    /// Processor at specified position of processor array.
+    fn processor_by_id_mut(&mut self, id: usize)
+            -> Option<&mut ProcessorThread>;
 }
