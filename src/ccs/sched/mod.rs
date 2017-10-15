@@ -33,5 +33,5 @@ pub trait ProcessHandle : Sized {
 
 /// The core mechanisms of scheduler which are not visible outside this
 /// module.
-trait Scheduler {
+trait Core {
 }
