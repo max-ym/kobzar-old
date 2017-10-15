@@ -42,6 +42,60 @@ mod timer;
 /// Collections that are abscent in 'core' crate but are useful.
 mod collections;
 
+/// Simple wrapper for memory address.
+#[derive(Default, Clone, Copy, PartialEq, PartialOrd)]
+pub struct Address {
+    addr    : usize,
+}
+
+impl Into<usize> for Address {
+
+    fn into(self) -> usize {
+        self.addr
+    }
+}
+
+impl From<usize> for Address {
+
+    fn from(addr: usize) -> Self {
+        Address { addr:addr }
+    }
+}
+
+impl Address {
+
+    /// Convert this address to a pointer of a given type.
+    pub fn as_ptr<T>(&self) -> *const T {
+        self.addr as _
+    }
+
+    /// Convert this address to a mutable pointer of a given type.
+    pub fn as_mut_ptr<T>(&self) -> *mut T {
+        self.as_ptr::<T>() as _
+    }
+
+    /// Get reference to the value.
+    ///
+    /// # Safety
+    /// Caller must ensure that this address points to a valid value.
+    pub unsafe fn as_ref<T>(&self) -> &T {
+        &*self.as_ptr::<T>()
+    }
+
+    /// Get mutable reference to the value.
+    ///
+    /// # Safety
+    /// Caller must ensure that this address points to a valid value.
+    pub unsafe fn as_ref_mut<T>(&self) -> &mut T {
+        &mut *self.as_mut_ptr()
+    }
+
+    /// Get the address of a given value reference.
+    pub fn address_of<T>(t: &T) -> Self {
+        (t as *const T as usize).into()
+    }
+}
+
 macro_rules! panic {
     () => {{
         use early::logger;
