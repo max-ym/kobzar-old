@@ -68,4 +68,7 @@ trait Core {
     /// Processor at specified position of processor array.
     fn processor_by_id_mut(&mut self, id: usize)
             -> Option<&mut ProcessorThread>;
+
+    /// Count processor units used by this scheduler.
+    fn processor_count(&self) -> usize;
 }
