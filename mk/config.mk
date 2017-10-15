@@ -30,11 +30,17 @@ OBJBDIR := $(BUILDDIR)obj/
 # ISO root directory
 ISODIR := $(BUILDDIR)iso/
 
+# Generated documentation directory
+DOCSDIR := $(BUILDDIR)docs/
+
 # Rust libraries directory
 RUSTLIBDIR := ./rustlibs/
 
 # All rust sources list
 RSRCLIST := $(shell find $(SRCDIR) -type f -name '*.rs')
+
+# Kernel main rust file
+RURSTMAIN := $(SRCDIR)main.rs
 
 # Configuration scripts
 CONFIGDIR  ?= ./config/$(ARCH)/
