@@ -46,6 +46,23 @@ trait ProcessorThread {
     fn current_process(&self) -> &Self::PH;
 }
 
+/// Array of processor units. This array is stored in scheduler.
+/// It uses it to know which units it can access and which
+/// processes are assigned to any of these units.
+trait ProcessorArray<T> where T : ProcessorThread {
+
+    /// Count processors in this array.
+    fn count(&self) -> usize;
+
+    /// Get specific processor unit. If index is out of range None will
+    /// be returned.
+    fn get(&self, id: usize) -> Option<&T>;
+
+    /// Get specific processor unit. If index is out of range None will
+    /// be returned.
+    fn get_mut(&mut self, id: usize) -> Option<&mut T>;
+}
+
 /// The core mechanisms of scheduler which are not visible outside this
 /// module.
 trait Core {
@@ -62,13 +79,6 @@ trait Core {
     /// Pop next task that is waiting in the queue for processor time.
     fn pop_next_task(&mut self) -> Self::PH;
 
-    /// Processor at specified position of processor array.
-    fn processor_by_id(&self, id: usize) -> Option<&ProcessorThread>;
-
-    /// Processor at specified position of processor array.
-    fn processor_by_id_mut(&mut self, id: usize)
-            -> Option<&mut ProcessorThread>;
-
-    /// Count processor units used by this scheduler.
-    fn processor_count(&self) -> usize;
+    /// Array of processors used by this scheduler.
+    fn processors(&self) -> &ProcessorArray<Self::PT>;
 }
