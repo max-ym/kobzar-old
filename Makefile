@@ -1,6 +1,9 @@
 # Variables that are used in other rules. Configure building environment.
 include mk/config.mk
 
+# Rules to build rust kernel code HTML docs.
+include mk/kerndocs.mk
+
 # Rules to download and build binutils.
 include mk/binutils.mk
 
