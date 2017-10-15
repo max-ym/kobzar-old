@@ -34,6 +34,13 @@ pub trait ProcessHandle : Sized {
 /// The CPU unit that is running single thread. Used to assign to it
 /// tasks and processes.
 trait ProcessorThread {
+
+    /// The Process Handle of this Processor Thread implementation.
+    type PH : ProcessHandle;
+
+    /// Assign new process to execute on this unit. Old process is returned
+    /// back.
+    fn assign_process(&mut self, pr: &Self::PH) -> &Self::PH;
 }
 
 /// The core mechanisms of scheduler which are not visible outside this
