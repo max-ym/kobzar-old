@@ -41,6 +41,9 @@ trait ProcessorThread {
     /// Assign new process to execute on this unit. Old process is returned
     /// back.
     fn assign_process(&mut self, pr: &Self::PH) -> &Self::PH;
+
+    /// Current process assigned to this unit.
+    fn current_process(&self) -> &Self::PH;
 }
 
 /// The core mechanisms of scheduler which are not visible outside this
