@@ -62,6 +62,20 @@ impl From<usize> for Address {
     }
 }
 
+impl Into<isize> for Address {
+
+    fn into(self) -> isize {
+        self.addr as _
+    }
+}
+
+impl From<isize> for Address {
+
+    fn from(addr: isize) -> Self {
+        Address { addr:addr as _ }
+    }
+}
+
 impl Address {
 
     /// Convert this address to a pointer of a given type.
