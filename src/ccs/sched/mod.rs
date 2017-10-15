@@ -34,4 +34,10 @@ pub trait ProcessHandle : Sized {
 /// The core mechanisms of scheduler which are not visible outside this
 /// module.
 trait Core {
+
+    /// The Process Handle of the Scheduler implementation.
+    type PH : ProcessHandle;
+
+    /// Pop next process that is waiting in the queue for processor time.
+    fn pop_next_proc(&mut self) -> Self::PH;
 }
