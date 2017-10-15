@@ -33,9 +33,9 @@ pub trait ProcessHandle : Sized {
 
 /// The CPU unit that is running single thread. Used to assign to it
 /// tasks and processes.
-trait ProcessorThread {
+trait ProcessorUnit {
 
-    /// The Process Handle of this Processor Thread implementation.
+    /// The Process Handle of this Processor Unit implementation.
     type PH : ProcessHandle;
 
     /// Assign new process to execute on this unit. Old process is returned
@@ -49,7 +49,7 @@ trait ProcessorThread {
 /// Array of processor units. This array is stored in scheduler.
 /// It uses it to know which units it can access and which
 /// processes are assigned to any of these units.
-trait ProcessorArray<T> where T : ProcessorThread {
+trait ProcessorArray<T> where T : ProcessorUnit {
 
     /// Count processors in this array.
     fn count(&self) -> usize;
@@ -70,8 +70,8 @@ trait Core {
     /// The Process Handle of the Scheduler implementation.
     type PH : ProcessHandle;
 
-    /// The Processor Thread of the Scheduler implementation.
-    type PT : ProcessorThread;
+    /// The Processor Unit of the Scheduler implementation.
+    type PT : ProcessorUnit;
 
     /// Pop next process that is waiting in the queue for processor time.
     fn pop_next_proc(&mut self) -> Self::PH;
