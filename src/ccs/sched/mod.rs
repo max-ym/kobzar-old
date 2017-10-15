@@ -43,6 +43,9 @@ trait Core {
     /// The Process Handle of the Scheduler implementation.
     type PH : ProcessHandle;
 
+    /// The Processor Thread of the Scheduler implementation.
+    type PT : ProcessorThread;
+
     /// Pop next process that is waiting in the queue for processor time.
     fn pop_next_proc(&mut self) -> Self::PH;
 
