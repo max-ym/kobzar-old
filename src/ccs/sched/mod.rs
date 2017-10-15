@@ -31,6 +31,11 @@ pub trait ProcessHandle : Sized {
     fn state(&self) -> ProcessState;
 }
 
+/// The CPU unit that is running single thread. Used to assign to it
+/// tasks and processes.
+trait ProcessorThread {
+}
+
 /// The core mechanisms of scheduler which are not visible outside this
 /// module.
 trait Core {
