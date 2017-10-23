@@ -73,11 +73,11 @@ trait Core {
     /// The Processor Unit of the Scheduler implementation.
     type PT : ProcessorUnit;
 
-    /// Pop next process that is waiting in the queue for processor time.
-    fn pop_next_proc(&mut self) -> Self::PH;
+    /// Get next process that is waiting in the queue for processor time.
+    fn get_next_proc(&mut self) -> Self::PH;
 
-    /// Pop next task that is waiting in the queue for processor time.
-    fn pop_next_task(&mut self) -> Self::PH;
+    /// Get next task that is waiting in the queue for processor time.
+    fn get_next_task(&mut self) -> Self::PH;
 
     /// Array of processors used by this scheduler.
     fn processors(&self) -> &ProcessorArray<Self::PT>;
