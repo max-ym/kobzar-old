@@ -1,3 +1,4 @@
+mod arch;
 mod list;
 use self::list::*;
 
