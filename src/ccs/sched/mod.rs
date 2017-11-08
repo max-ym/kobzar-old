@@ -66,7 +66,7 @@ trait ProcessorArray<T> where T : ProcessorUnit {
 
 /// The core mechanisms of scheduler which are not visible outside this
 /// module.
-trait Core {
+trait SchedulerPriv {
 
     /// The Process Handle of the Scheduler implementation.
     type PH : ProcessHandle;
