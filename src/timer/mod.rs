@@ -1,3 +1,4 @@
+use Address;
 
 /// Time split into hours, minutes, seconds and nanos.
 pub struct TimeSplit {
@@ -101,6 +102,8 @@ pub trait Timer {
     type T : Time;
 
     /// Set callback function which will be called when specified
-    /// time goes out.
-    fn callback_on_timeout(&mut self, time: Self::T, callback: &Fn());
+    /// time goes out. Given optional argument address will be passed to the
+    /// callback function.
+    fn callback_on_timeout(&mut self, time: Self::T, args: Option<Address>,
+            callback: &Fn(Option<Address>));
 }
