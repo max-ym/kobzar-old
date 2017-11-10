@@ -1,5 +1,7 @@
 use Address;
 
+mod arch;
+
 /// Time split into hours, minutes, seconds and nanos.
 pub struct TimeSplit {
     hours   : u32,
