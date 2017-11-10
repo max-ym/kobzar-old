@@ -28,6 +28,10 @@ pub enum ProcessState {
 /// Handle of process for specific sheduler implementation.
 pub trait ProcessHandle : Sized {
 
+    // Data that must be saved when context switches. This can be registers,
+    // stack/code pointer etc.
+    type ProcData;
+
     /// Process current state.
     fn state(&self) -> ProcessState;
 }
