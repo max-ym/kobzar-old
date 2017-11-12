@@ -6,7 +6,7 @@ use arch::idt::*;
 /// by architecture specs and are not listed here.
 #[derive(Clone, Copy)]
 #[repr(u8)]
-pub enum KernelVectors {
+pub enum KernelVector {
 
     /// PIT timer interrupt.
     Pit = 32,
