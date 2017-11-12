@@ -10,6 +10,9 @@ pub enum KernelVectors {
 
     /// PIT timer interrupt.
     Pit = 32,
+
+    /// APIC spurious interrupt.
+    ApicSpurious = 255;
 }
 
 /// IDT reference.
@@ -30,5 +33,3 @@ fn init_idt() {
     // unexisting.
     mem::stosq(IDT_ADDR as _, 0, 4096 / 8);
 }
-
-
