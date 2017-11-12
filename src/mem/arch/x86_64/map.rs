@@ -20,8 +20,8 @@
 //! 04000:04FFF - Paging. Page Table Level 3.
 //! 05000:05FFF - Paging. Page Table Level 4.
 //! 06000:06FFF - IDT.
-//! 07000:09000 - GDT.
-//! 07000:7BFFF - free
+//! 07000:08FFF - GDT.
+//! 09000:7BFFF - free
 //! 7C000:7CFFF - Initial paging. Page Table Level 2.
 //! 7D000:7DFFF - Initial paging. Page Table Level 3.
 //! 7E000:7EFFF - Initial paging. Page Table Level 4.
