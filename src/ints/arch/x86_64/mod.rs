@@ -12,7 +12,7 @@ pub enum KernelVector {
     Pit = 32,
 
     /// APIC spurious interrupt.
-    ApicSpurious = 255;
+    ApicSpurious = 255,
 }
 
 /// IDT reference.
