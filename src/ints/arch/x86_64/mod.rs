@@ -12,6 +12,7 @@ pub enum KernelVector {
     Pit = 32,
 
     /// APIC spurious interrupt.
+    /// Must be 0xFF (255).
     ApicSpurious = 255,
 }
 
