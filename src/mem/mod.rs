@@ -28,6 +28,7 @@ pub trait TypedAllocator : Allocator {
 }
 
 /// Allocator that only allocates bytes. Even has no limit.
+#[derive(Clone, Copy)]
 pub struct SimpleAllocator {
 
     /// Current address.
