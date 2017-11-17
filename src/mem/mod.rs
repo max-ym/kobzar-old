@@ -26,3 +26,33 @@ pub trait TypedAllocator : Allocator {
         addr as *const Self::T as _
     }
 }
+
+/// Allocator that only allocates bytes. Even has no limit.
+pub struct SimpleAllocator {
+
+    /// Current address.
+    curaddr: Address,
+}
+
+impl Allocator for SimpleAllocator {
+
+    fn alloc(&mut self, size: usize) -> Address {
+        let addr = self.curaddr;
+        self.curaddr += size;
+        addr
+    }
+}
+
+impl SimpleAllocator {
+
+    /// Create new simple allocator which starts allocating from given
+    /// address.
+    pub fn new(start: Address) -> Self {
+        SimpleAllocator { curaddr : start }
+    }
+
+    /// Current allocator pointer on last free memory.
+    pub fn current_address(&self) -> Address {
+        self.curaddr
+    }
+}
