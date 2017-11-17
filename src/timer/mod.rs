@@ -1,4 +1,4 @@
-use Address;
+use mem::Address;
 
 mod arch;
 
