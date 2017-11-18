@@ -309,7 +309,7 @@ impl HeapArray {
     /// Caller must ensure that array gets extended to free memory region.
     /// Otherwise some data may get corrupted.
     pub unsafe fn extend(&mut self, by: usize) {
-        self.byteslen += by as _;
+        self.byteslen += by as u32;
 
         // TODO extend bitmap too.
         unimplemented!()
