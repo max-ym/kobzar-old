@@ -196,6 +196,10 @@ impl RemAssign<usize> for Address {
 
 impl Address {
 
+    pub const fn new_from_usize(addr: usize) -> Self {
+        Address { addr }
+    }
+
     /// Convert this address to a pointer of a given type.
     pub fn as_ptr<T>(&self) -> *const T {
         self.addr as _
@@ -228,7 +232,7 @@ impl Address {
     }
 
     /// New null address.
-    pub fn null() -> Self {
+    pub const fn null() -> Self {
         Address { addr : 0 }
     }
 }
