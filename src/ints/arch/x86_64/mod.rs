@@ -1,4 +1,5 @@
 use mem::map::IDT as IDT_ADDR;
+use mem::map::APIC_BASE_ADDRESS;
 use arch::mem;
 use arch::idt::*;
 use arch::apic;
@@ -73,5 +74,17 @@ fn init() {
     // Disable PIC. It is neccessary to properly use APIC.
     pic.disable();
 
-    unimplemented!()
+    unsafe {
+        // Remap APIC to defined base address.
+        apic_mut().set_base_addr(APIC_BASE_ADDRESS as _);
+    }
+
+    unimplemented!();
+
+    // Copy spurious interrupt register.
+    let mut spurious = apic().spurious_interrupt().clone();
+    // Set vector for spurious interrupts.
+    spurious.set_vector(KernelVector::ApicSpurious as _);
+    // Save changes.
+    *apic_mut().spurious_interrupt_mut() = spurious;
 }
