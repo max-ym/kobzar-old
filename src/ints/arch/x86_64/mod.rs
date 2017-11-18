@@ -2,6 +2,7 @@ use mem::map::IDT as IDT_ADDR;
 use arch::mem;
 use arch::idt::*;
 use arch::apic;
+use arch::apic::LocalApic;
 use arch::pic::Pic;
 
 static mut LAPIC_ADDR: ::mem::Address = ::mem::Address::null();
@@ -31,12 +32,12 @@ fn idt_mut() -> &'static mut Idt {
 }
 
 /// Local APIC reference.
-fn apic() -> &'static apic::LocalApic {
+fn apic() -> &'static LocalApic {
     unsafe { LAPIC_ADDR.as_ref() }
 }
 
 /// Local APIC mutbale reference.
-fn apic_mut() -> &'static mut apic::LocalApic {
+fn apic_mut() -> &'static mut LocalApic {
     unsafe { LAPIC_ADDR.as_ref_mut() }
 }
 
@@ -54,11 +55,11 @@ fn init() {
         use mem::{Allocator, AllocatorAlign, main_alloc_mut};
 
         main_alloc_mut().align(8);
-        LAPIC_ADDR = main_alloc_mut().alloc_for::<apic::LocalApic>();
+        LAPIC_ADDR = main_alloc_mut().alloc_for::<LocalApic>();
     }
 
     // Try to initialize APIC interface.
-    let option = apic::LocalApic::new();
+    let option = LocalApic::new();
     if option.is_none() {
         panic!("APIC is not supported but needed by Kobzar implementation");
     }
