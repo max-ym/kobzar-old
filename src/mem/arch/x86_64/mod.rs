@@ -14,7 +14,7 @@ use super::TopLimitedAllocator;
 
 /// Main kernel memory allocator.
 /// Is allowed to be used only when kernel paging was re-initialized.
-static MAIN_ALLOC: TopLimitedAllocator = new_main_alloc();
+static mut MAIN_ALLOC: TopLimitedAllocator = new_main_alloc();
 
 const fn new_main_alloc() -> TopLimitedAllocator {
     use super::super::Address;
@@ -26,5 +26,9 @@ const fn new_main_alloc() -> TopLimitedAllocator {
 /// Main kernel memory allocator reference.
 /// Is allowed to be used only when kernel paging was re-initialized.
 pub fn main_alloc() -> &'static TopLimitedAllocator {
-    &MAIN_ALLOC
+    unsafe { &MAIN_ALLOC }
+}
+
+pub fn main_alloc_mut() -> &'static mut TopLimitedAllocator {
+    unsafe { &mut MAIN_ALLOC }
 }
