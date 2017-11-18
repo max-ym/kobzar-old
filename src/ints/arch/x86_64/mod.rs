@@ -36,7 +36,7 @@ fn apic() -> &'static apic::LocalApic {
 }
 
 /// Local APIC mutbale reference.
-fn apic_mut() -> &'static apic::LocalApic {
+fn apic_mut() -> &'static mut apic::LocalApic {
     unsafe { LAPIC_ADDR.as_ref_mut() }
 }
 
@@ -59,6 +59,12 @@ fn init() {
         LAPIC_ADDR = main_alloc_mut().alloc_for::<apic::LocalApic>();
     }
 
-    //unsafe { apic::}
+    // Try to initialize APIC interface.
+    let option = apic::LocalApic::new();
+    if option.is_none() {
+        panic!("APIC is not supported but needed by Kobzar implementation");
+    }
+    *apic_mut() = option.unwrap();
+
     unimplemented!()
 }
