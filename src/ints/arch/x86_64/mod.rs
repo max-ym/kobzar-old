@@ -4,7 +4,7 @@ use arch::idt::*;
 use arch::apic;
 use arch::pic::Pic;
 
-static LAPIC_ADDR: ::mem::Address = ::mem::Address::null();
+static mut LAPIC_ADDR: ::mem::Address = ::mem::Address::null();
 
 /// Interrupt vectors of the kernel core. Vectors from 0 to 31 are defined
 /// by architecture specs and are not listed here.
@@ -51,5 +51,14 @@ fn init() {
     // Disable PIC. It is neccessary to properly use APIC.
     Pic::new().disable();
 
+    // Allocate APIC interface.
+    unsafe {
+        use mem::{Allocator, AllocatorAlign, main_alloc_mut};
+
+        main_alloc_mut().align(8);
+        LAPIC_ADDR = main_alloc_mut().alloc_for::<apic::LocalApic>();
+    }
+
     //unsafe { apic::}
+    unimplemented!()
 }
