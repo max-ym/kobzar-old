@@ -42,8 +42,6 @@ fn apic_mut() -> &'static mut apic::LocalApic {
 
 /// Initialize IDT and APIC.
 fn init() {
-    let idt = idt_mut();
-
     // Zero all bytes of IDT table. This makes all entries treated as
     // unexisting.
     mem::stosq(IDT_ADDR as _, 0, 4096 / 8);
