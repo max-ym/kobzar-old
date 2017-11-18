@@ -18,6 +18,14 @@ pub trait Allocator {
     }
 }
 
+pub trait AllocatorAlign : Allocator {
+
+    /// Align next allocation to given byte boundary. If any memory was
+    /// allocated for aligning, amount of allocated memory and it's address
+    /// is returned.
+    fn align(&mut self, val: usize) -> Option<(usize, Address)>;
+}
+
 /// Allocator for particular data type.
 pub trait TypedAllocator : Allocator {
 
@@ -69,6 +77,20 @@ impl Allocator for SimpleAllocator {
     }
 }
 
+impl AllocatorAlign for SimpleAllocator {
+
+    fn align(&mut self, val: usize) -> Option<(usize, Address)> {
+        let next_boundary = ((self.curaddr + val - 1) / val) * val;
+        let padding_size: usize = (next_boundary - self.curaddr).into();
+
+        if padding_size == 0 {
+            None // Memory is already aligned
+        } else {
+            Some((padding_size, self.alloc(padding_size)))
+        }
+    }
+}
+
 impl SimpleAllocator {
 
     /// Create new simple allocator which starts allocating from given
@@ -94,6 +116,25 @@ impl Allocator for TopLimitedAllocator {
         let addr = self.curaddr;
         self.curaddr += size;
         Address::from(addr)
+    }
+}
+
+impl AllocatorAlign for TopLimitedAllocator {
+
+    fn align(&mut self, val: usize) -> Option<(usize, Address)> {
+        let next_boundary = ((self.curaddr + val - 1) / val) * val;
+        let padding_size: usize = (next_boundary - self.curaddr).into();
+
+        if padding_size == 0 {
+            None // Memory is already aligned
+        } else {
+            let addr = self.alloc(padding_size);
+            if addr == Address::null() {
+                None // Could not allocate
+            } else {
+                Some((padding_size, addr))
+            }
+        }
     }
 }
 
