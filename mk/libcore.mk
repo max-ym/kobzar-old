@@ -7,7 +7,7 @@ OBJCORE ?= $(OBJBDIR)libcore.rlib
 # Rule to build libcore object file
 $(OBJCORE): $(RUSTDOWNDIR)src/libcore/lib.rs $(TARGETSPEC)
 	@mkdir -p $(dir $@)
-	$(RUSTCF) -C panic=abort --out-dir=$(OBJBDIR) --crate-type=lib --emit=link,dep-info $<
+	$(RUSTCF) --crate-name core -C panic=abort --out-dir=$(OBJBDIR) --crate-type=lib --emit=link,dep-info $<
 
 # Rule to get lib.rs if it is not available. This means that rust was not
 # downloaded and so this rule downloads rust.
