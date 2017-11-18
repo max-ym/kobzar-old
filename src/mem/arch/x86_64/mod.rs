@@ -22,3 +22,9 @@ const fn new_main_alloc() -> TopLimitedAllocator {
     TopLimitedAllocator::new(Address::new_from_usize(map::MEMALLOC_START),
             Address::new_from_usize(map::MEMALLOC_END))
 }
+
+/// Main kernel memory allocator reference.
+/// Is allowed to be used only when kernel paging was re-initialized.
+pub fn main_alloc() -> &'static TopLimitedAllocator {
+    &MAIN_ALLOC
+}
