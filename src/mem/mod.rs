@@ -67,7 +67,7 @@ impl SimpleAllocator {
 
     /// Create new simple allocator which starts allocating from given
     /// address.
-    pub fn new(start: Address) -> Self {
+    pub const fn new(start: Address) -> Self {
         SimpleAllocator { curaddr : start }
     }
 
@@ -101,7 +101,7 @@ impl AllocatorTopLimit for TopLimitedAllocator {
 impl TopLimitedAllocator {
 
     /// Create new allocator from given start address to given end address.
-    pub fn new(start: Address, end: Address) -> Self {
+    pub const fn new(start: Address, end: Address) -> Self {
         TopLimitedAllocator {
             maxaddr : end,
             curaddr : start,
