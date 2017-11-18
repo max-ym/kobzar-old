@@ -10,6 +10,12 @@ pub trait Allocator {
 
     /// Allocate next range of bytes.
     fn alloc(&mut self, size: usize) -> Address;
+
+    /// Allocate next range of bytes exactly as much as needed for given
+    /// type.
+    fn alloc_for<T>(&mut self) -> Address {
+        self.alloc(::core::mem::size_of::<T>())
+    }
 }
 
 /// Allocator for particular data type.
