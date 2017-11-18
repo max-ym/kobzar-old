@@ -4,6 +4,8 @@ use arch::idt::*;
 use arch::apic;
 use arch::pic::Pic;
 
+static LAPIC_ADDR: ::mem::Address = ::mem::Address::null();
+
 /// Interrupt vectors of the kernel core. Vectors from 0 to 31 are defined
 /// by architecture specs and are not listed here.
 #[derive(Clone, Copy)]
@@ -26,6 +28,16 @@ fn idt() -> &'static Idt {
 /// IDT mutable reference.
 fn idt_mut() -> &'static mut Idt {
     unsafe { &mut *(IDT_ADDR as *const Idt as *mut Idt) }
+}
+
+/// Local APIC reference.
+fn apic() -> &'static apic::LocalApic {
+    unsafe { LAPIC_ADDR.as_ref() }
+}
+
+/// Local APIC mutbale reference.
+fn apic_mut() -> &'static apic::LocalApic {
+    unsafe { LAPIC_ADDR.as_ref_mut() }
 }
 
 /// Initialize IDT and APIC.
