@@ -4,6 +4,7 @@
 	"llvm-target": "x86_64-unknown-none",
 	"target-endian": "little",
 	"target-pointer-width": "64",
+	"target-c-int-width" : "32",
 	"features": "-sse3,-ssse3",
 	"os": "kobzar",
 	"arch": "x86_64",
@@ -11,5 +12,6 @@
 		"no-compiler-rt": true,
 		"disable-redzone": true,
 		"eliminate-frame-pointer": false,
-	"morestack": false
+	"morestack": false,
+	"linker-flavor": "ld"
 }
