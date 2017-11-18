@@ -27,12 +27,31 @@ pub trait TypedAllocator : Allocator {
     }
 }
 
-/// Allocator that only allocates bytes. Even has no limit.
+/// Allocator that has memory amount limitation.
+pub trait AllocatorTopLimit : Allocator {
+
+    /// Maximal address value after which no memory can be allocated.
+    /// All memory allocations will result in NULL pointers.
+    /// This address is not included in allocatable memory.
+    fn top_limit(&self) -> Address;
+}
+
+/// Allocator that only allocates bytes. Even has no limits.
 #[derive(Clone, Copy)]
 pub struct SimpleAllocator {
 
     /// Current address.
     curaddr: Address,
+}
+
+#[derive(Clone, Copy)]
+pub struct TopLimitedAllocator {
+
+    /// Top limit of this allocator.
+    maxaddr     : Address,
+
+    /// Current address.
+    curaddr     : Address,
 }
 
 impl Allocator for SimpleAllocator {
@@ -50,6 +69,43 @@ impl SimpleAllocator {
     /// address.
     pub fn new(start: Address) -> Self {
         SimpleAllocator { curaddr : start }
+    }
+
+    /// Current allocator pointer on last free memory.
+    pub fn current_address(&self) -> Address {
+        self.curaddr
+    }
+}
+
+impl Allocator for TopLimitedAllocator {
+
+    fn alloc(&mut self, size: usize) -> Address {
+        // Check limits.
+        if self.curaddr + size >= self.top_limit() {
+            return Address::null();
+        }
+
+        let addr = self.curaddr;
+        self.curaddr += size;
+        Address::from(addr)
+    }
+}
+
+impl AllocatorTopLimit for TopLimitedAllocator {
+
+    fn top_limit(&self) -> Address {
+        self.maxaddr
+    }
+}
+
+impl TopLimitedAllocator {
+
+    /// Create new allocator from given start address to given end address.
+    pub fn new(start: Address, end: Address) -> Self {
+        TopLimitedAllocator {
+            maxaddr : end,
+            curaddr : start,
+        }
     }
 
     /// Current allocator pointer on last free memory.
