@@ -47,9 +47,6 @@ fn init() {
     // unexisting.
     mem::stosq(IDT_ADDR as _, 0, 4096 / 8);
 
-    // Disable PIC. It is neccessary to properly use APIC.
-    Pic::new().disable();
-
     // Allocate APIC interface.
     unsafe {
         use mem::{Allocator, AllocatorAlign, main_alloc_mut};
@@ -64,6 +61,17 @@ fn init() {
         panic!("APIC is not supported but needed by Kobzar implementation");
     }
     *apic_mut() = option.unwrap();
+
+    // Create PIC interface.
+    let pic = Pic::new();
+
+    // Remap PIC. PIC will be disabled but spurious interrupts still may be
+    // generated. Remap needed for spurious interrupts to be delivered in a
+    // place that does not overlap with software interrupts.
+    pic.remap(0x20, 0x28);
+
+    // Disable PIC. It is neccessary to properly use APIC.
+    pic.disable();
 
     unimplemented!()
 }
