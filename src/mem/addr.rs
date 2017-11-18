@@ -6,21 +6,7 @@ pub struct Address {
     addr    : usize,
 }
 
-/// Wrapper of address for specified type value.
-#[derive(Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct AddressOf<T> {
-    addr    : usize,
-    _t      : ::core::marker::PhantomData<T>,
-}
-
 impl Into<usize> for Address {
-
-    fn into(self) -> usize {
-        self.addr
-    }
-}
-
-impl<T> Into<usize> for AddressOf<T> {
 
     fn into(self) -> usize {
         self.addr
@@ -34,24 +20,7 @@ impl From<usize> for Address {
     }
 }
 
-impl<T> From<usize> for AddressOf<T>{
-
-    fn from(addr: usize) -> Self {
-        AddressOf {
-            addr    : addr,
-            _t      : Default::default(),
-        }
-    }
-}
-
 impl Into<isize> for Address {
-
-    fn into(self) -> isize {
-        self.addr as _
-    }
-}
-
-impl<T> Into<isize> for AddressOf<T> {
 
     fn into(self) -> isize {
         self.addr as _
@@ -65,46 +34,12 @@ impl From<isize> for Address {
     }
 }
 
-impl<T> From<isize> for AddressOf<T> {
-
-    fn from(addr: isize) -> Self {
-        AddressOf {
-            addr    : addr as _,
-            _t      : Default::default(),
-        }
-    }
-}
-
 impl Add for Address {
 
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
         Address { addr : self.addr + rhs.addr }
-    }
-}
-
-impl<T> Add for AddressOf<T> {
-
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        AddressOf {
-            addr : self.addr + rhs.addr,
-            _t   : Default::default(),
-        }
-    }
-}
-
-impl<T> Add<Address> for AddressOf<T> {
-
-    type Output = Self;
-
-    fn add(self, rhs: Address) -> Self::Output {
-        AddressOf {
-            addr : self.addr + rhs.addr,
-            _t   : Default::default(),
-        }
     }
 }
 
@@ -117,26 +52,7 @@ impl Add<usize> for Address {
     }
 }
 
-impl<T> Add<usize> for AddressOf<T> {
-
-    type Output = Self;
-
-    fn add(self, rhs: usize) -> Self::Output {
-        AddressOf {
-            addr : self.addr + rhs,
-            _t   : Default::default(),
-        }
-    }
-}
-
 impl AddAssign for Address {
-
-    fn add_assign(&mut self, rhs: Self) {
-        self.addr += rhs.addr;
-    }
-}
-
-impl<T> AddAssign for AddressOf<T> {
 
     fn add_assign(&mut self, rhs: Self) {
         self.addr += rhs.addr;
@@ -150,38 +66,12 @@ impl AddAssign<usize> for Address {
     }
 }
 
-impl<T> AddAssign<usize> for AddressOf<T> {
-
-    fn add_assign(&mut self, rhs: usize) {
-        self.addr += rhs;
-    }
-}
-
-impl<T> AddAssign<Address> for AddressOf<T> {
-
-    fn add_assign(&mut self, rhs: Address) {
-        self.addr += rhs.addr;
-    }
-}
-
 impl Sub for Address {
 
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
         Address { addr : self.addr - rhs.addr }
-    }
-}
-
-impl<T> Sub for AddressOf<T> {
-
-    type Output = Self;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        AddressOf {
-            addr    : self.addr - rhs.addr,
-            _t      : Default::default(),
-        }
     }
 }
 
@@ -194,30 +84,6 @@ impl Sub<usize> for Address {
     }
 }
 
-impl<T> Sub<usize> for AddressOf<T> {
-
-    type Output = Self;
-
-    fn sub(self, rhs: usize) -> Self::Output {
-        AddressOf {
-            addr    : self.addr - rhs,
-            _t      : Default::default(),
-        }
-    }
-}
-
-impl<T> Sub<Address> for AddressOf<T> {
-
-    type Output = Self;
-
-    fn sub(self, rhs: Address) -> Self::Output {
-        AddressOf {
-            addr    : self.addr - rhs.addr,
-            _t      : Default::default(),
-        }
-    }
-}
-
 impl SubAssign for Address {
 
     fn sub_assign(&mut self, rhs: Self) {
@@ -225,28 +91,7 @@ impl SubAssign for Address {
     }
 }
 
-impl<T> SubAssign for AddressOf<T> {
-
-    fn sub_assign(&mut self, rhs: Self) {
-        self.addr = rhs.addr;
-    }
-}
-
-impl<T> SubAssign<Address> for AddressOf<T> {
-
-    fn sub_assign(&mut self, rhs: Address) {
-        self.addr = rhs.addr;
-    }
-}
-
 impl SubAssign<usize> for Address {
-
-    fn sub_assign(&mut self, rhs: usize) {
-        self.addr = rhs;
-    }
-}
-
-impl<T> SubAssign<usize> for AddressOf<T> {
 
     fn sub_assign(&mut self, rhs: usize) {
         self.addr = rhs;
