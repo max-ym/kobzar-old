@@ -226,4 +226,9 @@ impl Address {
     pub fn address_of<T>(t: &T) -> Self {
         (t as *const T as usize).into()
     }
+
+    /// New null address.
+    pub fn null() -> Self {
+        Address { addr : 0 }
+    }
 }
