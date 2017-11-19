@@ -45,6 +45,29 @@ pub trait AllocatorTopLimit : Allocator {
     fn top_limit(&self) -> Address;
 }
 
+pub trait AllocatorRelease : Allocator {
+
+    /// Release given addresses provided they were allocated.
+    /// First address is inclusive but last is exclusive in range.
+    /// If any part of the memory region was not allocated, Err will
+    /// be returned and no changes to memory will be made.
+    fn release_range(&mut self, from: Address, to: Address) -> Result<(),()>;
+
+    /// Release value by given pointer provided it was allocated by
+    /// this allocator.
+    /// If any part of the memory region was not allocated, Err will
+    /// be returned and no changes to memory will be made.
+    fn release_ptr<T>(&mut self, t: *const T) -> Result<(),()> {
+        let start = Address::from(t as usize);
+        let end   = start + ::core::mem::size_of::<T>();
+
+        self.release_range(start, end)
+    }
+
+    /// Check if given address range can be released by `release_range`.
+    fn is_releasable_range(&self, from: Address, to: Address) -> bool;
+}
+
 /// Allocator that only allocates bytes. Even has no limits.
 #[derive(Clone, Copy)]
 pub struct SimpleAllocator {
