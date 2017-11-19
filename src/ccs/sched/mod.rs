@@ -25,7 +25,7 @@ pub enum ProcessState {
     TimedWait,
 }
 
-/// Handle of process for specific sheduler implementation.
+/// Handle of the process for specific scheduler implementation.
 pub trait ProcessHandle : Sized {
 
     // Data that must be saved when context switches. This can be registers,
