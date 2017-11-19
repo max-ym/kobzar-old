@@ -45,10 +45,13 @@ trait ProcessorUnit {
 
     /// Assign new process to execute on this unit. Old process is returned
     /// back.
-    fn assign_process(&mut self, pr: &Self::PH) -> &Self::PH;
+    fn assign_process(&mut self, pr: &Self::PH) -> Option<&Self::PH>;
 
     /// Current process assigned to this unit.
-    fn current_process(&self) -> &Self::PH;
+    fn current_process(&self) -> Option<&Self::PH>;
+
+    /// Halt the processor. Function returns assigned process if any.
+    fn halt(&mut self) -> Option<&Self::PH>;
 }
 
 /// Array of processor units. This array is stored in scheduler.
