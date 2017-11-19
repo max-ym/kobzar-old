@@ -59,7 +59,7 @@ fn apic_mut() -> &'static mut LocalApic {
 }
 
 /// Initialize IDT and APIC.
-fn init() {
+pub fn init() {
     // Zero all bytes of IDT table. This makes all entries treated as
     // unexisting.
     mem::stosq(IDT_ADDR as _, 0, 4096 / 8);
@@ -94,8 +94,6 @@ fn init() {
         // Remap APIC to defined base address.
         apic_mut().set_base_addr(APIC_BASE_ADDRESS as _);
     }
-
-    unimplemented!();
 
     // Copy spurious interrupt register.
     let mut spurious = apic().spurious_interrupt().clone();
