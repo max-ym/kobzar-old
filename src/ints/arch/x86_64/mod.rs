@@ -15,7 +15,23 @@ static mut LAPIC_ADDR: ::mem::Address = ::mem::Address::null();
 pub enum KernelVector {
 
     /// PIT timer interrupt.
-    Pit = 32,
+    Pit         = 32,
+    Keyboard    = 33,
+    Cascade     = 34, // Never raised.
+    Com2        = 35,
+    Com1        = 36,
+    Lpt2        = 37,
+    Floppy      = 38,
+    Spurious    = 39, // Also Lpt1.
+    CmosClock   = 40,
+    Scsi0       = 41,
+    Scsi1       = 42,
+    Scsi2       = 43,
+    Ps2Mouse    = 44,
+    Fpu         = 45,
+    AtaPrimary  = 46,
+    AtaSecond   = 47,
+
 
     /// APIC spurious interrupt.
     /// Must be 0xFF (255).
