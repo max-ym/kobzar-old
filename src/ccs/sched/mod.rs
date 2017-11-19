@@ -78,11 +78,11 @@ trait SchedulerPriv {
     /// The Processor Unit of the Scheduler implementation.
     type PT : ProcessorUnit;
 
-    /// Get next process that is waiting in the queue for processor time.
-    fn get_next_proc(&mut self) -> Self::PH;
+    /// Pull out of queue next process that is waiting for processor time.
+    fn pull_next_proc(&mut self) -> &mut Self::PH;
 
-    /// Get next task that is waiting in the queue for processor time.
-    fn get_next_task(&mut self) -> Self::PH;
+    /// Pull out of queue next task that is waiting for processor time.
+    fn pull_next_task(&mut self) -> &mut Self::PH;
 
     /// Array of processors used by this scheduler.
     fn processors(&self) -> &ProcessorArray<Self::PT>;
