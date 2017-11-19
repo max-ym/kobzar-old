@@ -84,6 +84,12 @@ trait SchedulerPriv {
     /// Array of processors used by this scheduler.
     fn processors(&self) -> &ProcessorArray<Self::PT>;
 
+    /// Array of processors used by this scheduler.
+    fn processors_mut(&mut self) -> &mut ProcessorArray<Self::PT> {
+        let p = self.processors() as *const ProcessorArray<Self::PT> as *mut _;
+        unsafe { &mut *p }
+    }
+
     /// This function meant to be called by system timer to change
     /// current processes that are running.
     fn change_proc_timer_signal(&mut self);
