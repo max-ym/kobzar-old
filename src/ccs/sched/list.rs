@@ -43,3 +43,31 @@ pub trait HandleSet {
     /// Create new process entry in this set.
     fn new_process(&mut self) -> Result<Self::P, ProcessAllocErr>;
 }
+
+/// Queue of processes. Processes in the queue are automatically
+/// sorted in the right order
+/// they are expected to be executed according to their properties like
+/// priority etc.
+pub trait ProcessQueue {
+
+    /// Process Handle type that is queued.
+    type P : ProcessHandle;
+
+    /// Peek current value in queue if any.
+    fn peek(&self) -> Option<&Self::P>;
+
+    /// Peek current value in queue if any.
+    fn peek_mut(&mut self) -> Option<&mut Self::P> {
+        match self.peek() {
+            Some(t) => Some(unsafe { &mut *(t as *const Self::P as *mut _)}),
+            None    => None
+        }
+    }
+
+    /// Take current value from the queue and move to the next one.
+    /// This value is moved out and will be not in queue anymore.
+    fn next(&mut self) -> Option<&mut Self::P>;
+
+    /// Append given value to the queue.
+    fn append(&mut self, p: &mut Self::P);
+}
