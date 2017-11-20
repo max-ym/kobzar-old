@@ -84,6 +84,9 @@ trait SchedulerPriv {
     /// The Processor Unit of the Scheduler implementation.
     type PT : ProcessorUnit;
 
+    /// Process lists and queues that are used by this scheduler architecture.
+    type SP : SchedProcesses;
+
     /// Array of processors used by this scheduler.
     fn processors(&self) -> &ProcessorArray<Self::PT>;
 
@@ -96,4 +99,12 @@ trait SchedulerPriv {
     /// This function meant to be called by system timer to change
     /// current processes that are running.
     fn change_proc_timer_signal(&mut self);
+
+    /// Process lists and queues that are used by this scheduler architecture.
+    fn processes(&self) -> &Self::SP;
+
+    /// Process lists and queues that are used by this scheduler architecture.
+    fn processes_mut(&mut self) -> &mut Self::SP {
+        unsafe { &mut *(self.processes() as *const Self::SP as *mut _) }
+    }
 }
