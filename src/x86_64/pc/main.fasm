@@ -81,6 +81,16 @@ gdt:
 
 section '.text' align 16
 
+use64
+; Interrupt handler of change process signal which is fired by scheduler and is
+; sent to appropriate processor cores. This ISR must save all registers
+; that were used, load new values to system registers to prepare for running
+; another process. Then this ISR launches other process or halt the CPU as
+; suggested by the scheduler.
+public isr_sched_process_change
+isr_sched_process_change:
+    ; TODO
+
 public _start
 use32
 _start:

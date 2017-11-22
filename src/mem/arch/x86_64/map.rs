@@ -21,7 +21,8 @@
 //! 05000:05FFF - Paging. Page Table Level 4.
 //! 06000:06FFF - IDT.
 //! 07000:08FFF - GDT.
-//! 09000:7BFFF - free
+//! 09000:097FF - Processor Data Table. Before changing the value see note 1.
+//! 09800:7BFFF - free
 //! 7C000:7CFFF - Initial paging. Page Table Level 2 OR allocator memory.
 //! 7D000:7DFFF - Initial paging. Page Table Level 3 OR allocator memory.
 //! 7E000:7EFFF - Initial paging. Page Table Level 4 OR allocator memory.
@@ -30,6 +31,11 @@
 //! Note that as soon as main paging tables are set,
 //! memory region of 7C000:7EFFF gets free and is used by kernel memory
 //! allocators.
+//!
+//! Note 1. Each entry of this table has a pointer to a corresponding
+//! processor data. This address is used in `main.fasm`, so if you change
+//! it here, you need to change the corresponding value in main.fasm too.
+//! This table stores 256 entries each 8 bytes long.
 
 /// Local APIC base registers address. They are moved from their default
 /// location here. Note that the registers are 4 KiB in size.
@@ -59,6 +65,9 @@ pub const IDT: usize = 0x6000;
 
 /// Address of Global Descriptor Table.
 pub const GDT: usize = 0x7000;
+
+/// Processor Data Table.
+pub const PDT: usize = 0x9000;
 
 /// Start of kernel memory allocator.
 pub const MEMALLOC_START: usize = 0x7C000;
