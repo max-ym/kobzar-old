@@ -23,6 +23,29 @@ pub struct ProcessorData {
     flags   : u32,
 }
 
+macro_rules! pdsaves_impl {
+    ($cons:ident, $check:ident, $set:ident, $unset:ident, $docs:expr) => (
+        #[doc=$docs]
+        pub fn $check(&self) -> bool {
+            self.flags & Self::$cons != 0
+        }
+
+        /// Set corresponding flag.
+        pub fn $set(&mut self) {
+            self.flags |= Self::$cons;
+        }
+
+        /// Clear corresponding flag.
+        pub fn $unset(&mut self) {
+            self.flags &= !Self::$cons;
+        }
+    );
+
+    ($cons:ident, $check:ident, $set:ident, $unset:ident) => (
+        pdsaves_impl!($cons, $check, $set, $unset)
+    );
+}
+
 impl ProcessorData {
 
     /// Flag to save SSE registers.
@@ -35,10 +58,28 @@ impl ProcessorData {
     /// that are not covered by MMX.
     const F_SAVE_MMX            : u32 = (1 << 0x01);
 
-    /// Flag to save FP registers.
+    /// Flag to save FP registers. If F_SAVE_SSE is set, this
+    /// flag state is ignored and treated as set.
     const F_SAVE_FP             : u32 = (1 << 0x02);
 
     /// Flag to save general purpose registers. May be off when
     /// core is halted and does not run particular process.
     const F_SAVE_GP             : u32 = (1 << 0x03);
+
+    pdsaves_impl!(F_SAVE_SSE, is_sse_saved,
+        do_save_sse, dont_save_sse,
+        "Check save SSE flag."
+    );
+    pdsaves_impl!(F_SAVE_MMX, is_mmx_saved,
+        do_save_mmx, dont_save_mmx,
+        "Check save MMX flag."
+    );
+    pdsaves_impl!(F_SAVE_FP, is_fp_saved,
+        do_save_fp, dont_save_fp,
+        "Check save FP flag."
+    );
+    pdsaves_impl!(F_SAVE_GP, is_gp_saved,
+        do_save_gp, dont_save_gp,
+        "Check save GP flag."
+    );
 }
