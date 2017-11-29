@@ -2,7 +2,9 @@ use super::*;
 use arch;
 
 /// Processor Data Table. Each entry corresponds to local APIC ID which
-/// identifies processor ID.
+/// identifies processor ID. This is Kobzar arhitectural struct, not
+/// related to Intel arch.
+/// It supports currently up to 256 processors or cores.
 #[repr(packed)]
 pub struct Pdt {
     arr     : [*mut ProcessorData; 256],
