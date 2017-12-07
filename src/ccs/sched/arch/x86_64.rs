@@ -16,8 +16,11 @@ pub struct Pdt {
 #[repr(packed)]
 pub struct ProcessorData {
 
-    /// Address for register file backup on context switch.
-    regs    : u64,
+    /// Address for XSAVE area.
+    xsave   : u64,
+
+    /// General purpose register file address.
+    gpregs  : *mut arch::regf::GeneralPurpose,
 
     /// Flags of kernel processor settings.
     flags   : u32,
@@ -82,4 +85,14 @@ impl ProcessorData {
         do_save_gp, dont_save_gp,
         "Check save GP flag."
     );
+}
+
+/// Rust part of IST that handles process change signal
+/// from the scheduler. Assembler routine saves GP registers
+/// (if corresponding flag is set) before calling
+/// this function so that GP regisers
+/// could be safely used here.
+#[no_mangle]
+pub extern fn rust_isr_sched_process_change() {
+    unimplemented!()
 }

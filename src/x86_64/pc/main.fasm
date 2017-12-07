@@ -31,6 +31,9 @@ PDPT        equ 0x7D000
 PML4        equ 0x7E000
 PAGE_END    equ 0x7F000
 
+PDT         equ 0x9000
+APIC        equ 0x1000
+
 ; Declare a header as required by the Multiboot Standard.
 section '.multiboot'
     dd      MAGIC
@@ -89,7 +92,51 @@ use64
 ; suggested by the scheduler.
 public isr_sched_process_change
 isr_sched_process_change:
-    ; TODO
+    ; Backup used by CPUID registers.
+    mov     [esp        ], rax
+    mov     [esp - 0x08 ], rbx
+    mov     [esp - 0x10 ], rcx
+    mov     [esp - 0x18 ], rdx
+
+    ; Get processor ID.
+    mov     eax, 1
+    cpuid
+                        ; ID stored in EBX in last byte.
+    shr     ebx, 24     ; Save in EBX processor ID.
+
+    mov     edx, [ebx * 8 + PDT] ; Load pointer of PDT to frame data.
+
+    ; Check whether GP register must be saved.
+    mov     eax, [edx + 8 * 2]  ; Load flags.
+    and     eax, 1 shl 3        ; Whether GP must be saved.
+    jz      @f                  ; Don't save.
+
+    ; Save GPs.
+    mov     rbx, [eax + 8]      ; Get address of GP file.
+    mov     [rbx + 8 * 0x4], rsi
+    mov     [rbx + 8 * 0x5], rdi
+    mov     [rbx + 8 * 0x6], rbp
+    mov     [rbx + 8 * 0x7], rsp
+    mov     [rbx + 8 * 0x8], r8
+    mov     [rbx + 8 * 0x9], r9
+    mov     [rbx + 8 * 0xA], r10
+    mov     [rbx + 8 * 0xB], r11
+    mov     [rbx + 8 * 0xC], r12
+    mov     [rbx + 8 * 0xD], r13
+    mov     [rbx + 8 * 0xE], r14
+    mov     [rbx + 8 * 0xF], r15
+    mov     r8 , [esp       ]
+    mov     r9 , [esp + 0x08]
+    mov     r10, [esp + 0x10]
+    mov     r11, [esp + 0x18]
+    mov     [rbx          ], r8
+    mov     [rbx + 8 * 0x1], r9
+    mov     [rbx + 8 * 0x2], r10
+    mov     [rbx + 8 * 0x3], r11
+@@:
+public rust_isr_sched_process_change
+    call rust_isr_sched_process_change
+    iret
 
 public _start
 use32
