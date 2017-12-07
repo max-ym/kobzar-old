@@ -125,16 +125,16 @@ isr_sched_process_change:
     mov     [rbx + 8 * 0xD], r13
     mov     [rbx + 8 * 0xE], r14
     mov     [rbx + 8 * 0xF], r15
-    mov     r8 , [esp       ]
+    mov     r8 , [esp       ]       ; Load backuped regs from stack.
     mov     r9 , [esp + 0x08]
     mov     r10, [esp + 0x10]
     mov     r11, [esp + 0x18]
-    mov     [rbx          ], r8
+    mov     [rbx          ], r8     ; Save backuped regs too.
     mov     [rbx + 8 * 0x1], r9
     mov     [rbx + 8 * 0x2], r10
     mov     [rbx + 8 * 0x3], r11
 @@:
-extrn rust_isr_sched_process_change
+extrn    rust_isr_sched_process_change
     call rust_isr_sched_process_change
     iret
 

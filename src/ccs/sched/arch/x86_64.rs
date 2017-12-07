@@ -5,6 +5,9 @@ use arch;
 /// identifies processor ID. This is Kobzar arhitectural struct, not
 /// related to Intel arch.
 /// It supports currently up to 256 processors or cores.
+///
+/// This struct is used by assebly routine isr_sched_process_change.
+/// When making changes don't forget to reflect them to FASM code.
 #[repr(packed)]
 pub struct Pdt {
     arr     : [*mut ProcessorData; 256],
@@ -12,7 +15,8 @@ pub struct Pdt {
 
 /// Processor-specific data. Struct stores processors environment
 /// variables and settings. This struct is accessed by assembly code so
-/// be careful with making changes to it. See 'main.fasm'.
+/// be careful with making changes to it. See 'main.fasm', routine
+/// isr_sched_process_change.
 #[repr(packed)]
 pub struct ProcessorData {
 
