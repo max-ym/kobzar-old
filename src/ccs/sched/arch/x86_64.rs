@@ -24,6 +24,9 @@ pub struct ProcessorData {
     /// Address for XSAVE area.
     xsave   : u64,
 
+    /// XSAVE mask to use for backup operations.
+    xmask   : xsave::Mask,
+
     /// General purpose register file address.
     gpregs  : *mut arch::regf::GeneralPurpose,
 
