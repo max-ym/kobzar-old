@@ -1,5 +1,6 @@
 use super::*;
 use arch;
+use arch::xsave;
 
 /// Processor Data Table. Each entry corresponds to local APIC ID which
 /// identifies processor ID. This is Kobzar arhitectural struct, not
@@ -97,6 +98,19 @@ impl ProcessorData {
 /// this function so that GP regisers
 /// could be safely used here.
 #[no_mangle]
-pub extern fn rust_isr_sched_process_change() {
+pub extern fn rust_isr_sched_process_change(data: *mut ProcessorData) {
+    // GP registers are already saved by assembler routine.
+
+    use self::xsave::Mask;
+    let pd = unsafe { &mut *data };
+
+    let mut mask = Mask::default();
+
+    if pd.is_sse_saved() {
+        mask.enable_sse();
+    }
+
+    // TODO impl more flags.
+
     unimplemented!()
 }
