@@ -2,6 +2,8 @@ mod arch;
 mod list;
 use self::list::*;
 
+pub use self::arch::rust_isr_sched_process_change;
+
 /// All process states.
 pub enum ProcessState {
 

@@ -134,7 +134,7 @@ isr_sched_process_change:
     mov     [rbx + 8 * 0x2], r10
     mov     [rbx + 8 * 0x3], r11
 @@:
-public rust_isr_sched_process_change
+extrn rust_isr_sched_process_change
     call rust_isr_sched_process_change
     iret
 

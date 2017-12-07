@@ -30,6 +30,8 @@ mod mem;
 /// Module to handle CCS networking of local objects (programs and threads).
 mod ccs;
 
+pub use self::ccs::rust_isr_sched_process_change;
+
 // Export global function 'memset'.
 // pub use arch::memset;
 

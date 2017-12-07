@@ -1,5 +1,7 @@
 mod arch;
 
+pub use self::sched::rust_isr_sched_process_change;
+
 // pub use self::arch::setup;
 
 mod lists;
