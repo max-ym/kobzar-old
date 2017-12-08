@@ -41,6 +41,29 @@ struct PdFlags {
     val     : u32
 }
 
+impl PdFlags {
+
+    /// Save general purpose registers on context switch. May be off
+    /// if there is no need to save this content like when processor
+    /// is halted.
+    const SAVE_GP       : u32 = 1 << 0x0;
+
+    /// Whether GP registers need to be saved.
+    pub fn need_gp_save(&self) -> bool {
+        self.val & Self::SAVE_GP != 0
+    }
+
+    /// Set flag to save GP registers.
+    pub fn set_gp_save(&mut self) {
+        self.val |= Self::SAVE_GP;
+    }
+
+    /// Unset flag so that GP registers wont be saved.
+    pub fn unset_gp_save(&mut self) {
+        self.val &= !Self::SAVE_GP;
+    }
+}
+
 impl ProcessorData {
 
 }
