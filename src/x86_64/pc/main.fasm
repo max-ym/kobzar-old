@@ -156,8 +156,8 @@ isr_sched_process_change:
 @@:
 extrn       rust_isr_sched_process_change
     ; RDX here must be equal to this processor data ptr.
-    lea     rcx, [rsp + ISRSTK_SS]  ; Pass ptr to backup stack values.
-    sub     rsp, 32                 ; Shadow space of calling convention.
+    mov     rdi, rdx
+    lea     rsi, [rsp + ISRSTK_SS]  ; Pass ptr to backup stack values.
     call    rust_isr_sched_process_change
     iret
 
