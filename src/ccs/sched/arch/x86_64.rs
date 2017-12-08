@@ -53,6 +53,25 @@ pub struct IsrStack {
     rip     : u64
 }
 
+macro_rules! impl_pdflags {
+    ($flag:ident, $get:ident, $set:ident, $unset:ident) => {
+        #[inline(always)]
+        pub fn $get(&self) -> bool {
+            self.val & Self::$flag != 0
+        }
+
+        #[inline(always)]
+        pub fn $set(&mut self) {
+            self.val |= Self::$flag;
+        }
+
+        #[inline(always)]
+        pub fn $unset(&mut self) {
+            self.val &= !Self::$flag;
+        }
+    };
+}
+
 impl PdFlags {
 
     /// Save general purpose registers on context switch. May be off
@@ -60,20 +79,12 @@ impl PdFlags {
     /// is halted.
     const SAVE_GP       : u32 = 1 << 0x0;
 
-    /// Whether GP registers need to be saved.
-    pub fn need_gp_save(&self) -> bool {
-        self.val & Self::SAVE_GP != 0
-    }
+    /// Save the state of FP and SSE registers and possibly other components
+    /// using XSAVE-family instructions.
+    const XSAVE         : u32 = 1 << 0x1;
 
-    /// Set flag to save GP registers.
-    pub fn set_gp_save(&mut self) {
-        self.val |= Self::SAVE_GP;
-    }
-
-    /// Unset flag so that GP registers wont be saved.
-    pub fn unset_gp_save(&mut self) {
-        self.val &= !Self::SAVE_GP;
-    }
+    impl_pdflags!(SAVE_GP, is_save_gp_set, set_save_gp, unset_save_gp);
+    impl_pdflags!(XSAVE, is_xsave_set, set_xsave, unset_xsave);
 }
 
 impl ProcessorData {
@@ -94,7 +105,7 @@ pub extern "C" fn rust_isr_sched_process_change(
     let stk  = unsafe { &mut *stk  };
 
     // Save current process state.
-    xsave::xsaves(data.xsave, data.xmask);
+    unsafe { xsave::xsaves(data.xsave, data.xmask) };
 
     // TODO load next process data.
 
