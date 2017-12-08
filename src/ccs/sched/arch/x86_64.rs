@@ -21,14 +21,17 @@ pub struct Pdt {
 #[repr(packed)]
 pub struct ProcessorData {
 
-    /// Address for XSAVE area.
+    /// Address for XSAVE area. State of current process on context switch
+    /// must be saved by this address.
     xsave   : u64,
 
     /// XSAVE mask to use for backup operations.
     xmask   : xsave::Mask,
 
-    /// General purpose register file address.
-    gpregs  : *mut arch::regf::GeneralPurpose,
+    /// General purpose register file and state file address.
+    /// State of current process on context switch
+    /// must be saved by this address.
+    gpregs  : *mut (arch::regf::GeneralPurpose, arch::regf::State),
 
     /// Flags of kernel processor settings.
     flags   : PdFlags,
@@ -39,6 +42,15 @@ pub struct ProcessorData {
 #[derive(Clone, Copy, Default)]
 struct PdFlags {
     val     : u32
+}
+
+#[repr(packed)]
+pub struct IsrStack {
+    ss      : u64,
+    rsp     : u64,
+    rflags  : u64,
+    cs      : u64,
+    rip     : u64
 }
 
 impl PdFlags {
@@ -74,13 +86,17 @@ impl ProcessorData {
 /// this function so that GP regisers
 /// could be safely used here.
 #[no_mangle]
-pub extern fn rust_isr_sched_process_change(data: *mut ProcessorData) {
+pub extern "C" fn rust_isr_sched_process_change(
+        stk: *mut IsrStack, data: *mut ProcessorData) {
     // GP registers are already saved by assembler routine.
 
-    use self::xsave::Mask;
-    let pd = unsafe { &mut *data };
+    let data = unsafe { &mut *data };
+    let stk  = unsafe { &mut *stk  };
 
-    // TODO impl more flags.
+    // Save current process state.
+    xsave::xsaves(data.xsave, data.xmask);
+
+    // TODO load next process data.
 
     unimplemented!()
 }
