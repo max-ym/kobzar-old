@@ -79,12 +79,7 @@ impl PdFlags {
     /// is halted.
     const SAVE_GP       : u32 = 1 << 0x0;
 
-    /// Save the state of FP and SSE registers and possibly other components
-    /// using XSAVE-family instructions.
-    const XSAVE         : u32 = 1 << 0x1;
-
     impl_pdflags!(SAVE_GP, is_save_gp_set, set_save_gp, unset_save_gp);
-    impl_pdflags!(XSAVE, is_xsave_set, set_xsave, unset_xsave);
 }
 
 impl ProcessorData {
@@ -104,8 +99,11 @@ pub extern "C" fn rust_isr_sched_process_change(
     let data = unsafe { &mut *data };
     let stk  = unsafe { &mut *stk  };
 
-    // Save current process state.
-    unsafe { xsave::xsaves(data.xsave, data.xmask) };
+    // Save state components if needed.
+    let xmask: u64 = data.xmask.into();
+    if xmask != 0 {
+        unsafe { xsave::xsaves(data.xsave, data.xmask); }
+    }
 
     // TODO load next process data.
 
