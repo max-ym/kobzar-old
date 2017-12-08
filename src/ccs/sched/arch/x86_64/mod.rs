@@ -10,3 +10,6 @@ pub mod sched;
 /// A thread that is run on processor core either physical or virtual.
 pub mod thread;
 pub use self::thread::rust_isr_sched_process_change;
+
+/// Process handle module.
+pub mod process;
