@@ -36,6 +36,7 @@ pub struct ProcessorData {
 
 /// Processor Data flags. Flags of kernel processor settings.
 #[repr(packed)]
+#[derive(Clone, Copy, Default)]
 struct PdFlags {
     val     : u32
 }
