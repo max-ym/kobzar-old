@@ -106,10 +106,10 @@ use64
 public isr_sched_process_change
 isr_sched_process_change:
     ; Backup used by CPUID registers.
-    mov     [esp - 0x08 ], rax
-    mov     [esp - 0x10 ], rbx
-    mov     [esp - 0x18 ], rcx
-    mov     [esp - 0x20 ], rdx
+    mov     [rsp - 0x08 ], rax
+    mov     [rsp - 0x10 ], rbx
+    mov     [rsp - 0x18 ], rcx
+    mov     [rsp - 0x20 ], rdx
 
     ; Get processor ID.
     mov     eax, 1
@@ -117,15 +117,15 @@ isr_sched_process_change:
                         ; ID stored in EBX in last byte.
     shr     ebx, 24     ; Save in EBX processor ID.
 
-    mov     edx, [ebx * 8 + PDT] ; Load pointer of PDT to frame data.
+    mov     rdx, [rbx * 8 + PDT] ; Load pointer of PDT to frame data.
 
     ; Check whether GP register must be saved.
-    mov     eax, [edx + PROCDATA_FLAGS]     ; Load flags.
+    mov     eax, [rdx + PROCDATA_FLAGS]     ; Load flags.
     and     eax, 1 shl 3                    ; Whether GP must be saved.
     jz      @f                              ; Don't save.
 
     ; Save GPs.
-    mov     rbx, [edx + PROCDATA_GPREGS]    ; Get address of GP file.
+    mov     rbx, [rdx + PROCDATA_GPREGS]    ; Get address of GP file.
     mov     [rbx + 8 * 0x4], rsi
     mov     [rbx + 8 * 0x5], rdi
     mov     [rbx + 8 * 0x6], rbp
@@ -137,13 +137,13 @@ isr_sched_process_change:
     mov     [rbx + 8 * 0xC], r13
     mov     [rbx + 8 * 0xD], r14
     mov     [rbx + 8 * 0xE], r15
-    mov     r8 , [esp - 0x08]           ; Load backup RAX to R8.
-    mov     r9 , [esp - 0x10]           ; Load backup RBX to R9.
-    mov     r10, [esp - 0x18]           ; Load backup RCX to R10.
-    mov     r11, [esp - 0x20]           ; Load backup RDX to R11.
-    mov     r12, [esp + ISRSTK_FLAGS]   ; Load FLAGSQ to R12.
-    mov     r13, [esp + ISRSTK_RIP]     ; Load RIP to R13.
-    mov     r14, [esp + ISRSTK_RSP]     ; Load RSP to R14.
+    mov     r8 , [rsp - 0x08]           ; Load backup RAX to R8.
+    mov     r9 , [rsp - 0x10]           ; Load backup RBX to R9.
+    mov     r10, [rsp - 0x18]           ; Load backup RCX to R10.
+    mov     r11, [rsp - 0x20]           ; Load backup RDX to R11.
+    mov     r12, [rsp + ISRSTK_FLAGS]   ; Load FLAGSQ to R12.
+    mov     r13, [rsp + ISRSTK_RIP]     ; Load RIP to R13.
+    mov     r14, [rsp + ISRSTK_RSP]     ; Load RSP to R14.
     mov     [rbx          ], r8         ; Save backup RAX.
     mov     [rbx + 8 * 0x1], r9         ; Save backup RBX.
     mov     [rbx + 8 * 0x2], r10        ; Save backup RCX.
@@ -154,8 +154,11 @@ isr_sched_process_change:
     mov     [rbx + 8 * 0x11], r14       ; Save RSP
 
 @@:
-extrn    rust_isr_sched_process_change
-    call rust_isr_sched_process_change
+extrn       rust_isr_sched_process_change
+    ; RDX here must be equal to this processor data ptr.
+    lea     rcx, [rsp + ISRSTK_SS]  ; Pass ptr to backup stack values.
+    sub     rsp, 32                 ; Shadow space of calling convention.
+    call    rust_isr_sched_process_change
     iret
 
 public _start
