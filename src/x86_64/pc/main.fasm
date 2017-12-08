@@ -40,6 +40,12 @@ PROCDATA_XMASK      equ 0x08
 PROCDATA_GPREGS     equ 0x10
 PROCDATA_FLAGS      equ 0x18
 
+; Offsets of stack data of IRQ handler after CPL change with no error on stack.
+ISRSTK_SS           equ 0x20
+ISRSTK_RSP          equ 0x18
+ISRSTK_FLAGS        equ 0x10
+ISRSTK_CS           equ 0x08
+ISRSTK_RIP          equ 0x00
 
 ; Declare a header as required by the Multiboot Standard.
 section '.multiboot'
@@ -100,10 +106,10 @@ use64
 public isr_sched_process_change
 isr_sched_process_change:
     ; Backup used by CPUID registers.
-    mov     [esp        ], rax
-    mov     [esp - 0x08 ], rbx
-    mov     [esp - 0x10 ], rcx
-    mov     [esp - 0x18 ], rdx
+    mov     [esp - 0x08 ], rax
+    mov     [esp - 0x10 ], rbx
+    mov     [esp - 0x18 ], rcx
+    mov     [esp - 0x20 ], rdx
 
     ; Get processor ID.
     mov     eax, 1
@@ -123,23 +129,30 @@ isr_sched_process_change:
     mov     [rbx + 8 * 0x4], rsi
     mov     [rbx + 8 * 0x5], rdi
     mov     [rbx + 8 * 0x6], rbp
-    mov     [rbx + 8 * 0x7], rsp
-    mov     [rbx + 8 * 0x8], r8
-    mov     [rbx + 8 * 0x9], r9
-    mov     [rbx + 8 * 0xA], r10
-    mov     [rbx + 8 * 0xB], r11
-    mov     [rbx + 8 * 0xC], r12
-    mov     [rbx + 8 * 0xD], r13
-    mov     [rbx + 8 * 0xE], r14
-    mov     [rbx + 8 * 0xF], r15
-    mov     r8 , [esp       ]       ; Load backuped regs from stack.
-    mov     r9 , [esp + 0x08]
-    mov     r10, [esp + 0x10]
-    mov     r11, [esp + 0x18]
-    mov     [rbx          ], r8     ; Save backuped regs too.
-    mov     [rbx + 8 * 0x1], r9
-    mov     [rbx + 8 * 0x2], r10
-    mov     [rbx + 8 * 0x3], r11
+    mov     [rbx + 8 * 0x7], r8
+    mov     [rbx + 8 * 0x8], r9
+    mov     [rbx + 8 * 0x9], r10
+    mov     [rbx + 8 * 0xA], r11
+    mov     [rbx + 8 * 0xB], r12
+    mov     [rbx + 8 * 0xC], r13
+    mov     [rbx + 8 * 0xD], r14
+    mov     [rbx + 8 * 0xE], r15
+    mov     r8 , [esp - 0x08]           ; Load backup RAX to R8.
+    mov     r9 , [esp - 0x10]           ; Load backup RBX to R9.
+    mov     r10, [esp - 0x18]           ; Load backup RCX to R10.
+    mov     r11, [esp - 0x20]           ; Load backup RDX to R11.
+    mov     r12, [esp + ISRSTK_FLAGS]   ; Load FLAGSQ to R12.
+    mov     r13, [esp + ISRSTK_RIP]     ; Load RIP to R13.
+    mov     r14, [esp + ISRSTK_RSP]     ; Load RSP to R14.
+    mov     [rbx          ], r8         ; Save backup RAX.
+    mov     [rbx + 8 * 0x1], r9         ; Save backup RBX.
+    mov     [rbx + 8 * 0x2], r10        ; Save backup RCX.
+    mov     [rbx + 8 * 0x3], r11        ; Save backup RDX.
+
+    mov     [rbx + 8 * 0x0F], r12       ; Save FLAGSQ
+    mov     [rbx + 8 * 0x10], r13       ; Save RIP
+    mov     [rbx + 8 * 0x11], r14       ; Save RSP
+
 @@:
 extrn    rust_isr_sched_process_change
     call rust_isr_sched_process_change
