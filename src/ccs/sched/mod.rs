@@ -5,6 +5,7 @@ use self::list::*;
 pub use self::arch::rust_isr_sched_process_change;
 
 /// All process states.
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum ProcessState {
 
     /// Process is currently running.
@@ -29,10 +30,6 @@ pub enum ProcessState {
 
 /// Handle of the process for specific scheduler implementation.
 pub trait ProcessHandle : Sized {
-
-    // Data that must be saved when context switches. This can be registers,
-    // stack/code pointer etc.
-    type ProcData;
 
     /// Process current state.
     fn state(&self) -> ProcessState;
