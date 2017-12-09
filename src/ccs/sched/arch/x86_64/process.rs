@@ -56,4 +56,20 @@ impl ProcessH {
     pub fn has_gp_regs(&self) -> bool {
         !self.csdata.regs.is_null()
     }
+
+    /// Check if this process requires to save the state components.
+    pub fn has_xsave(&self) -> bool {
+        let mask: u64 = self.csdata.xmask.into();
+        mask != 0
+    }
+
+    /// Address of XSAVE area.
+    pub fn xsave_area(&self) -> Address {
+        self.csdata.xsave
+    }
+
+    /// Mask for XSAVE.
+    pub fn xsave_mask(&self) -> xsave::Mask {
+        self.csdata.xmask
+    }
 }

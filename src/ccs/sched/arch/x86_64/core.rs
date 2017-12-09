@@ -69,5 +69,13 @@ pub extern "C" fn rust_isr_sched_process_change(
         dst.st.rflags = stk.rflags;
     }
 
+    // XSAVE if required.
+    if ph.has_xsave() {
+        let addr = ph.xsave_area();
+        let addr: usize = addr.into();
+        unsafe { xsave::xsaves(addr as u64, ph.xsave_mask()); }
+        // TODO check support of XSAVES. Is it always supported?
+    }
+
     unimplemented!()
 }
