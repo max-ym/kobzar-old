@@ -54,6 +54,6 @@ impl ProcessH {
     /// These registers may not be used in case this process
     /// is a halt process that causes processor to sleep.
     pub fn has_gp_regs(&self) -> bool {
-        self.csdata.regs.is_null()
+        !self.csdata.regs.is_null()
     }
 }
