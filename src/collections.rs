@@ -1,6 +1,11 @@
+use mem::{Address, Allocator, TypedAllocator, AllocatorRelease};
+
+pub trait LlnAllocator<T>
+        : TypedAllocator<LinkedListNode<T>> + AllocatorRelease {
+}
 
 /// Linked List implementation.
-pub struct LinkedList<T, MA : MemoryAllocator<LinkedListNode<T>>> {
+pub struct LinkedList<T, MA : LlnAllocator<T>> {
     mem     : MA,
 
     top     : *mut LinkedListNode<T>,
@@ -13,23 +18,8 @@ pub struct LinkedListNode<T> {
     data    : T,
 }
 
-/// Memory Allocator for specified type.
-pub trait MemoryAllocator<T> {
-
-    /// Allocate next element.
-    fn next(&mut self, t: T) -> *mut T;
-
-    /// Allocated elements count.
-    fn count(&self) -> usize;
-
-    /// Release previously allocated memory by given address.
-    /// If successfully, then Ok will be returned. Otherwise,
-    /// pointer is given back.
-    fn free(&mut self, ptr: *mut T) -> Result<(), *mut T>;
-}
-
 impl<T, MA> LinkedList<T, MA>
-        where MA: MemoryAllocator<LinkedListNode<T>> {
+        where MA: LlnAllocator<T> {
 
     /// Create empty linked list.
     /// Argument: memory allocator that will allocate space for list nodes
@@ -46,10 +36,12 @@ impl<T, MA> LinkedList<T, MA>
     ///
     /// This operation should compute in O(1) time.
     pub fn push_back(&mut self, t: T) {
-        let ptr = self.mem.next(LinkedListNode {
+        let ptr = self.mem.next(1);
+        let r   = unsafe { &mut *ptr };
+        *r = LinkedListNode {
             next: ::core::ptr::null_mut::<LinkedListNode<T>>(),
             data: t,
-        });
+        };
 
         unsafe {
             (*self.bot).next = ptr;
@@ -61,10 +53,12 @@ impl<T, MA> LinkedList<T, MA>
     ///
     /// This operation should compute in O(1) time.
     pub fn push_front(&mut self, t: T) {
-        let ptr = self.mem.next(LinkedListNode {
+        let ptr = self.mem.next(1);
+        let r   = unsafe { &mut *ptr };
+        *r = LinkedListNode {
             next: self.top,
             data: t,
-        });
+        };
 
         self.top = ptr;
     }
@@ -93,7 +87,7 @@ impl<T, MA> LinkedList<T, MA>
         let data = unsafe { Self::replace_data(self.top) };
 
         // Release memory from old node.
-        self.mem.free(self.top).unwrap();
+        self.mem.release_ptr(self.top).unwrap();
 
         // Set new list top.
         self.top = next_top;
@@ -125,7 +119,7 @@ impl<T, MA> LinkedList<T, MA>
         let data = unsafe { Self::replace_data(self.bot) };
 
         // Release memory used by old node.
-        self.mem.free(self.bot).unwrap(); // TODO proper error check.
+        self.mem.release_ptr(self.bot).unwrap(); // TODO proper error check.
 
         // Set new bottom node.
         self.bot = prev as _;
@@ -183,7 +177,16 @@ impl<T, MA> LinkedList<T, MA>
     /// This operation compute time depends on memory manager element count
     /// time.
     pub fn len(&self) -> usize {
-        self.mem.count()
+        let mut cur = self.top;
+        let mut count = 0;
+
+        while cur != self.bot {
+            let r = unsafe { &*cur };
+            cur = r.next;
+            count += 1;
+        }
+
+        count
     }
 
     /// Removes all elements from the LinkedList.
@@ -194,7 +197,7 @@ impl<T, MA> LinkedList<T, MA>
         while ptr as usize != 0 {
             unsafe {
                 let next = (*ptr).next;
-                self.mem.free(ptr).unwrap();
+                self.mem.release_ptr(ptr).unwrap();
                 ptr = next;
             }
         }
@@ -202,7 +205,7 @@ impl<T, MA> LinkedList<T, MA>
 }
 
 impl<T, MA> Drop for LinkedList<T, MA>
-        where MA: MemoryAllocator<LinkedListNode<T>> {
+        where MA: LlnAllocator<T> {
 
     fn drop(&mut self) {
         self.clear();
@@ -212,20 +215,20 @@ impl<T, MA> Drop for LinkedList<T, MA>
 /// Iterator over linked list.
 pub struct LinkedListIterator<'a, T, MA> where
         T: 'a,
-        MA: MemoryAllocator<LinkedListNode<T>> + 'a {
+        MA: LlnAllocator<T> + 'a {
     iter: LinkedListNodeIterator<'a, T, MA>,
 }
 
 /// Iterator over linked list nodes.
 pub struct LinkedListNodeIterator<'a, T, MA> where
         T: 'a,
-        MA: MemoryAllocator<LinkedListNode<T>> + 'a {
+        MA: LlnAllocator<T> + 'a {
     cur     : *mut LinkedListNode<T>,
     list    : &'a LinkedList<T, MA>,
 }
 
 impl<'a, T, MA> Iterator for LinkedListNodeIterator<'a, T, MA>
-        where MA: MemoryAllocator<LinkedListNode<T>> {
+        where MA: LlnAllocator<T> {
 
     type Item = *mut LinkedListNode<T>;
 
@@ -256,7 +259,7 @@ impl<'a, T, MA> Iterator for LinkedListNodeIterator<'a, T, MA>
 }
 
 impl<'a, T, MA> Iterator for LinkedListIterator<'a, T, MA>
-        where MA: MemoryAllocator<LinkedListNode<T>> {
+        where MA: LlnAllocator<T> {
 
     type Item = &'a T;
 
@@ -276,7 +279,7 @@ impl<'a, T, MA> Iterator for LinkedListIterator<'a, T, MA>
 }
 
 impl<'a, T, MA> LinkedListNodeIterator<'a, T, MA>
-        where MA: MemoryAllocator<LinkedListNode<T>> {
+        where MA: LlnAllocator<T> {
 
     /// Create linked list iterator from linked list.
     pub fn new(ll: &'a LinkedList<T, MA>) -> Self {
@@ -288,7 +291,7 @@ impl<'a, T, MA> LinkedListNodeIterator<'a, T, MA>
 }
 
 impl<'a, T, MA> IntoIterator for &'a LinkedList<T, MA>
-        where MA: MemoryAllocator<LinkedListNode<T>> {
+        where MA: LlnAllocator<T> {
 
     type Item = *mut LinkedListNode<T>;
 

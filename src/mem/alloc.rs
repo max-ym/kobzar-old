@@ -22,17 +22,14 @@ pub trait AllocatorAlign : Allocator {
 }
 
 /// Allocator for particular data type.
-pub trait TypedAllocator : Allocator {
-
-    /// The type of a value to be allocated.
-    type T;
+pub trait TypedAllocator<T> : Allocator {
 
     /// Allocate array of value type (uninitialized).
-    fn next(&mut self, count: usize) -> *mut Self::T {
+    fn next(&mut self, count: usize) -> *mut T {
         use ::core::mem::size_of;
 
-        let addr: usize = self.alloc(size_of::<Self::T>() * count).into();
-        addr as *const Self::T as _
+        let addr: usize = self.alloc(size_of::<T>() * count).into();
+        addr as *const T as _
     }
 }
 
