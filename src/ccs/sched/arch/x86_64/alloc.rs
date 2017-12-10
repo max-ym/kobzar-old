@@ -1,4 +1,5 @@
 use mem;
+use super::process::ProcessH;
 
 /// Process Handle Allocator.
 pub struct PHandleAlloc {
@@ -25,5 +26,8 @@ impl PHandleAlloc {
         unsafe { &mut *ptr }
     }
 
-
+    /// Allocate new process.
+    pub fn alloc(&mut self) -> &mut ProcessH {
+        unimplemented!()
+    }
 }
