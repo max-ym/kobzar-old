@@ -428,7 +428,7 @@ impl<T> FixedArray<T> {
         true
     }
 
-    /// Reverse the order of elements in an arra.
+    /// Reverse the order of elements in an array.
     pub fn reverse(&mut self) {
         let mut i = 0;
         let len = self.len;
