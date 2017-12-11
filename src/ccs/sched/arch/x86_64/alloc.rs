@@ -1,6 +1,7 @@
 use mem;
 use mem::Address;
 use super::process::ProcessH;
+use collections::Bitmap64;
 
 /// Process Handle Allocator.
 pub struct PHandleAlloc {
@@ -10,7 +11,7 @@ pub struct PHandleAlloc {
 /// A single frame of allocator that covers 64 entries
 /// process handles.
 pub struct PhAllocFrame {
-    bitmap  : u64,
+    bitmap  : Bitmap64,
     mem     : [ProcessH; 64],
 }
 
@@ -81,6 +82,11 @@ impl PhAllocFrame {
 
     /// Mark frame element by given index as free for allocation.
     fn mark_as_free(&mut self, index: usize) {
+        unimplemented!()
+    }
+
+    /// Deallocate process.
+    fn dealloc(&mut self, ph: *mut ProcessH) -> Result<(),()> {
         unimplemented!()
     }
 }
