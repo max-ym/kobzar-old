@@ -1,4 +1,5 @@
 use mem;
+use mem::Address;
 use super::process::ProcessH;
 
 /// Process Handle Allocator.
@@ -46,6 +47,11 @@ impl PHandleAlloc {
         let entry = frame.alloc_entry().unwrap();
         entry
     }
+
+    /// Deallocate existing process.
+    pub fn dealloc(&mut self, ph: *mut ProcessH) -> Result<(),()> {
+        unimplemented!()
+    }
 }
 
 impl PhAllocFrame {
@@ -68,7 +74,13 @@ impl PhAllocFrame {
         unimplemented!()
     }
 
+    /// Mark frame element by given index as allocated.
     fn mark_as_allocated(&mut self, index: usize) {
+        unimplemented!()
+    }
+
+    /// Mark frame element by given index as free for allocation.
+    fn mark_as_free(&mut self, index: usize) {
         unimplemented!()
     }
 }
