@@ -87,7 +87,36 @@ impl PhAllocFrame {
 
     /// Deallocate process.
     pub fn dealloc(&mut self, ph: *mut ProcessH) -> Result<(),()> {
-        unimplemented!()
+        let index = self.index_of(ph);
+        if index.is_none() {
+            return Err(());
+        }
+        let index = index.unwrap();
+
+        self.mark_as_free(index);
+        Ok(())
+    }
+
+    /// Index of entry with this process.
+    fn index_of(&self, ph: *mut ProcessH) -> Option<usize> {
+        use core::mem::size_of;
+
+        let start = &self.mem[0] as *const ProcessH as usize;
+        let ph = ph as *const ProcessH as usize;
+
+        let result = ph.overflowing_sub(start);
+        if result.1 {
+            // Overflow occured - address is under the range of this frame.
+            return None;
+        }
+        let offset = result.0;
+
+        if offset >= self.mem.len() * size_of::<ProcessH>() {
+            // Address is above the range of this frame.
+            return None;
+        }
+
+        Some(offset / size_of::<ProcessH>())
     }
 
     /// Whether this process is in this frame.
