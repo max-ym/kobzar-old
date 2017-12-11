@@ -86,7 +86,7 @@ impl PhAllocFrame {
     }
 
     /// Deallocate process.
-    fn dealloc(&mut self, ph: *mut ProcessH) -> Result<(),()> {
+    pub fn dealloc(&mut self, ph: *mut ProcessH) -> Result<(),()> {
         unimplemented!()
     }
 }
