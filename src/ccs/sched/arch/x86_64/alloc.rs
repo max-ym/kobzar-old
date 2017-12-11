@@ -133,4 +133,9 @@ impl PhAllocFrame {
 
         ph >= start && ph < end
     }
+
+    /// Are all entries in the frame free?
+    fn is_clean(&self) -> bool {
+        self.bitmap.is_all_ones()
+    }
 }
