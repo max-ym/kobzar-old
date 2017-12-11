@@ -89,4 +89,14 @@ impl PhAllocFrame {
     pub fn dealloc(&mut self, ph: *mut ProcessH) -> Result<(),()> {
         unimplemented!()
     }
+
+    /// Whether this process is in this frame.
+    fn is_in_frame(&self, ph: *mut ProcessH) -> bool {
+        let start = &self.mem[0] as *const ProcessH;
+        let end = unsafe { start.offset(self.mem.len() as _) };
+
+        let ph = ph as *const _;
+
+        ph >= start && ph < end
+    }
 }
