@@ -18,6 +18,11 @@ pub struct LinkedListNode<T> {
     data    : T,
 }
 
+#[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Bitmap64 {
+    val     : u64,
+}
+
 impl<T, MA> LinkedList<T, MA>
         where MA: LlnAllocator<T> {
 
@@ -436,5 +441,130 @@ impl<T> FixedArray<T> {
             self.swap(i, len - 1 - i);
             i += 1;
         }
+    }
+}
+
+macro_rules! bitmap64_convert {
+    ($opt:expr) => {{
+        match $opt {
+            Some(t) => Some(t as _),
+            None    => None
+        }
+    }};
+}
+
+impl Bitmap64 {
+
+    /// Whether all bits are ones.
+    #[inline(always)]
+    pub fn is_all_ones(&self) -> bool {
+        self.val == !0
+    }
+
+    /// Whether all bits are zeros.
+    #[inline(always)]
+    pub fn is_all_zeros(&self) -> bool {
+        self.val == 0
+    }
+
+    /// First bit index with value one.
+    #[inline(always)]
+    pub fn first_one(&self) -> Option<usize> {
+        self.first_one_arch()
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline(always)]
+    fn first_one_arch(&self) -> Option<usize> {
+        use arch::bit::bsf_u64 as bsf;
+        bitmap64_convert!(bsf(self.val))
+    }
+
+    /// First bit index with value zero.
+    #[inline(always)]
+    pub fn first_zero(&self) -> Option<usize> {
+        self.first_zero_arch()
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline(always)]
+    fn first_zero_arch(&self) -> Option<usize> {
+        use arch::bit::bsf_u64 as bsf;
+        bitmap64_convert!(bsf(!self.val))
+    }
+
+    /// Last bit index with value one.
+    #[inline(always)]
+    pub fn last_one(&self) -> Option<usize> {
+        self.last_one_arch()
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline(always)]
+    fn last_one_arch(&self) -> Option<usize> {
+        use arch::bit::bsr_u64 as bsr;
+        bitmap64_convert!(bsr(self.val))
+    }
+
+    /// Last bit index with value zero.
+    #[inline(always)]
+    pub fn last_zero(&self) -> Option<usize> {
+        self.last_zero_arch()
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline(always)]
+    fn last_zero_arch(&self) -> Option<usize> {
+        use arch::bit::bsr_u64 as bsr;
+        bitmap64_convert!(bsr(!self.val))
+    }
+
+    /// Set bit by given index to one. If value is bigger than bitmap,
+    /// nothing will be changed.
+    #[inline(always)]
+    pub fn set_one(&mut self, index: usize)  {
+        self.val |= 1 << index;
+    }
+
+    /// Set bit by given index to zero. If value is bigger than bitmap,
+    /// nothing will be changed.
+    #[inline(always)]
+    pub fn set_zero(&mut self, index: usize)  {
+        self.val &= !0 ^ 1 << index;
+    }
+
+    /// Invert all ones to zeros and vice versa.
+    #[inline(always)]
+    pub fn invert(&mut self) {
+        self.val = !self.val;
+    }
+}
+
+impl Into<u64> for Bitmap64 {
+
+    fn into(self) -> u64 {
+        self.val
+    }
+}
+
+impl Into<i64> for Bitmap64 {
+
+    fn into(self) -> i64 {
+        self.val as _
+    }
+}
+
+impl From<u64> for Bitmap64 {
+
+    fn from(val: u64) -> Self {
+        Bitmap64 { val }
+    }
+}
+
+impl From<i64> for Bitmap64 {
+
+    fn from(val: i64) -> Self {
+        let val = val as u64;
+        Bitmap64 { val }
     }
 }
