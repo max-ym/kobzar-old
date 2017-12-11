@@ -16,18 +16,35 @@ pub struct PhAllocFrame {
 impl PHandleAlloc {
 
     /// Find frame with free cell.
-    fn frame_with_free(&self) -> &PhAllocFrame {
+    fn frame_with_free(&self) -> Option<&PhAllocFrame> {
         unimplemented!()
     }
 
     /// Find frame with free cell.
-    fn frame_with_free_mut(&mut self) -> &mut PHandleAlloc {
-        let ptr = self.frame_with_free() as *const PhAllocFrame as *mut _;
-        unsafe { &mut *ptr }
+    fn frame_with_free_mut(&mut self) -> Option<&mut PHandleAlloc> {
+        let option = self.frame_with_free();
+        if option.is_none() { return None; }
+        let ptr = option.unwrap();
+
+        let ptr = ptr as *const PhAllocFrame as *mut _;
+        Some(unsafe { &mut *ptr })
+    }
+
+    /// Allocate new frame.
+    fn alloc_new_frame(&mut self) -> &PhAllocFrame {
+        unimplemented!();
     }
 
     /// Allocate new process.
     pub fn alloc(&mut self) -> &mut ProcessH {
         unimplemented!()
+    }
+}
+
+impl PhAllocFrame {
+
+    /// Allocate entry in this frame. None if frame has all handles allocated.
+    pub fn alloc_entry(&self) -> Option<&mut PHandleAlloc> {
+        unimplemented!();
     }
 }
