@@ -54,8 +54,10 @@ impl PHandleAlloc {
         unimplemented!()
     }
 
-    /// Deallocate frame by given pointer.
-    pub fn dealloc_frame(&mut self, fr: *mut PhAllocFrame) {
+    /// Deallocate frame by given pointer. Be aware that frame must not be
+    /// in use anymore. It is expected that it is clean or at least all
+    /// currently allocated processes are released with the frame too.
+    fn dealloc_frame(&mut self, fr: *mut PhAllocFrame) {
         unimplemented!()
     }
 }
