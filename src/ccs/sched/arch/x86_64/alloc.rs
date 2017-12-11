@@ -10,7 +10,7 @@ pub struct PHandleAlloc {
 /// process handles.
 pub struct PhAllocFrame {
     bitmap  : u64,
-    mem     : [*mut PHandleAlloc; 64],
+    mem     : [ProcessH; 64],
 }
 
 impl PHandleAlloc {
@@ -51,7 +51,24 @@ impl PHandleAlloc {
 impl PhAllocFrame {
 
     /// Allocate entry in this frame. None if frame has all handles allocated.
-    pub fn alloc_entry(&self) -> Option<&mut ProcessH> {
-        unimplemented!();
+    pub fn alloc_entry<'a, 'b>(&'a mut self) -> Option<&'b mut ProcessH> {
+        let index = self.free_entry_index();
+        if index.is_none() { return None; }
+        let index = index.unwrap();
+
+        self.mark_as_allocated(index);
+
+        let r = &mut self.mem[index];
+        let ptr = r as *const ProcessH as *mut ProcessH;
+        Some(unsafe { &mut *ptr })
+    }
+
+    /// Index of free element.
+    fn free_entry_index(&self) -> Option<usize> {
+        unimplemented!()
+    }
+
+    fn mark_as_allocated(&mut self, index: usize) {
+        unimplemented!()
     }
 }
