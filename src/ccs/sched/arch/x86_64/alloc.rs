@@ -72,17 +72,17 @@ impl PhAllocFrame {
 
     /// Index of free element.
     fn free_entry_index(&self) -> Option<usize> {
-        unimplemented!()
+        self.bitmap.first_one()
     }
 
     /// Mark frame element by given index as allocated.
     fn mark_as_allocated(&mut self, index: usize) {
-        unimplemented!()
+        self.bitmap.set_zero(index)
     }
 
     /// Mark frame element by given index as free for allocation.
     fn mark_as_free(&mut self, index: usize) {
-        unimplemented!()
+        self.bitmap.set_one(index)
     }
 
     /// Deallocate process.
