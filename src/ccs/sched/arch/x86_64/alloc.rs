@@ -53,6 +53,11 @@ impl PHandleAlloc {
     pub fn dealloc(&mut self, ph: *mut ProcessH) -> Result<(),()> {
         unimplemented!()
     }
+
+    /// Deallocate frame by given pointer.
+    pub fn dealloc_frame(&mut self, fr: *mut PhAllocFrame) {
+        unimplemented!()
+    }
 }
 
 impl PhAllocFrame {
