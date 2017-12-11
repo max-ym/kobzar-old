@@ -35,7 +35,7 @@ pub trait ProcessHandle : Sized {
     fn state(&self) -> ProcessState;
 
     /// Process ID value.
-    fn id(&self) -> u32;
+    fn id(&self) -> usize;
 }
 
 /// The CPU unit that is running single thread. Used to assign to it
