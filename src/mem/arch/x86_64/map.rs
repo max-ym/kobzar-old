@@ -33,6 +33,8 @@
 
 use super::Address;
 
+// TODO consider using macro for creating constants.
+
 /// Local APIC base registers address. They are moved from their default
 /// location here. Note that the registers are 4 KiB in size.
 pub const APIC_BASE: Address = Address::new_from_usize(0x01000usize);
