@@ -583,7 +583,7 @@ impl From<i64> for Bitmap64 {
 impl<T> FreeStack<T> {
 
     /// Create new unchecked stack starting with given memory pointer.
-    pub fn new(start: *mut T) -> Self {
+    pub const fn new(start: *mut T) -> Self {
         FreeStack {
             cur     : start,
             count   : 0,
