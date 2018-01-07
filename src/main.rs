@@ -6,6 +6,8 @@
 #![feature(asm)]
 #![feature(const_fn)]
 
+#![allow(dead_code)]
+
 #[cfg(target_arch = "x86_64")]
 extern crate new_bitflags;
 
