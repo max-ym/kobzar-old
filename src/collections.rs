@@ -232,6 +232,17 @@ pub struct LinkedListNodeIterator<'a, T, MA> where
     list    : &'a LinkedList<T, MA>,
 }
 
+/// Stack without memory allocation.
+pub struct FreeStack<T>
+    where T: Clone + Copy {
+
+    /// Current element pointer.
+    cur     : *mut T,
+
+    /// Count of total stored elements.
+    count   : usize,
+}
+
 impl<'a, T, MA> Iterator for LinkedListNodeIterator<'a, T, MA>
         where MA: LlnAllocator<T> {
 
@@ -568,3 +579,57 @@ impl From<i64> for Bitmap64 {
         Bitmap64 { val }
     }
 }
+
+impl<T> FreeStack<T> {
+
+    /// Create new unchecked stack starting with given memory pointer.
+    pub fn new(start: *mut T) -> Self {
+        FreeStack {
+            cur     : start,
+            count   : 0,
+        }
+    }
+
+    /// Element count of the stack.
+    pub fn count(&self) -> usize {
+        self.count
+    }
+
+    /// Last element reference.
+    pub fn last(&self) -> Option<&T> {
+        if self.count > 0 {
+            Some(unsafe { &*self.cur })
+        } else {
+            None
+        }
+    }
+
+    /// Last element mutable reference.
+    pub fn last_mut(&self) -> Option<&mut T> {
+        if self.count > 0 {
+            Some(unsafe { &mut *self.cur })
+        } else {
+            None
+        }
+    }
+
+    /// Pop last element from the stack.
+    pub fn pop(&mut self) -> Option<T> {
+        if self.count > 0 {
+            self.count -= 1;
+            let r = unsafe { &mut *self.cur };
+            self.cur = self.cur.offset(1);
+            Some(r)
+        } else {
+            None
+        }
+    }
+
+    /// Push new element onto the stack.
+    pub fn push(&mut self, elm: T) {
+        self.count += 1;
+        self.cur.offset(-1);
+        unsafe { *self.cur = elm };
+    }
+}
+
