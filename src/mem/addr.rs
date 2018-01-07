@@ -1,4 +1,5 @@
 use core::ops::*;
+use core::cmp::*;
 
 /// Simple wrapper for memory address.
 #[derive(Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -191,6 +192,20 @@ impl RemAssign<usize> for Address {
 
     fn rem_assign(&mut self, rhs: usize) {
         self.addr %= rhs;
+    }
+}
+
+impl PartialEq<usize> for Address {
+
+    fn eq(&self, other: &usize) -> bool {
+        self.addr == *other
+    }
+}
+
+impl PartialOrd<usize> for Address {
+
+    fn partial_cmp(&self, other: &usize) -> Option<Ordering> {
+        other.partial_cmp(&self.addr)
     }
 }
 
