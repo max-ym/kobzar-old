@@ -44,8 +44,8 @@ mod timer;
 // mod collections;
 
 /// The starting point of kernel Rust code execution.
-/// Before this point runs some initial assembly code that initializes
-/// the environment where Rust code can start performing.
+/// Earlier was launched the initial assembly code that initialized
+/// the environment where Rust code could perform.
 #[no_mangle]
 pub extern fn main() -> ! {
     halt_forever();
@@ -59,11 +59,16 @@ pub extern fn eh_personality() {
 
 #[lang = "panic_fmt"]
 #[no_mangle]
-pub extern fn panic_impl(_fmt: ::core::fmt::Arguments,
+pub extern fn panic_fmt(_fmt: ::core::fmt::Arguments,
                         _file: &'static str, _line: u32) -> ! {
     halt_forever();
 }
 
+/// Halt the kernel process forever. Note that this may not halt all
+/// cores immediately on multicore systems. It is designed to
+/// be used on early system setup when unrecoverable error
+/// occurs. It is expeted that system has no more than one
+/// thread running.
 #[cfg(target_arch = "x86_64")]
 fn halt_forever() -> ! {
     loop { unsafe { asm!("cli \n hlt"); }}
