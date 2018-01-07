@@ -5,8 +5,8 @@ pub use self::arch::*;
 /// for storing any sort of address as a number instead of a pointer on a
 /// type instance.
 mod addr;
-
 pub use self::addr::Address;
 
 /// Memory allocator traits and structs.
 mod alloc;
+pub use self::alloc::*;
