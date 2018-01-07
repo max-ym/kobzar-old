@@ -122,3 +122,44 @@ impl SimpleAllocator {
         self.curaddr
     }
 }
+
+impl TopLimitedAllocator {
+
+    /// Create new allocator for address range.
+    pub const fn new(start: Address, end: Address) -> Self {
+        TopLimitedAllocator {
+            alloc   : SimpleAllocator::new(start),
+            maxaddr : end,
+        }
+    }
+}
+
+impl Allocator for TopLimitedAllocator {
+
+    fn alloc(&mut self, size: usize) -> Address {
+        if self.alloc.current_address() + size > self.maxaddr {
+            Address::from(0usize) // NULL
+        } else {
+            self.alloc.alloc(size)
+        }
+    }
+
+    fn alloc_align(&mut self, size: usize, boundary: usize)
+            -> (Address, Option<Address>) {
+        if self.alloc.current_address() % boundary != 0 {
+            let addrval: usize = self.alloc.current_address().into();
+            let oldaddr = self.alloc(boundary - addrval % boundary);
+            let alloc = self.alloc(size);
+            (alloc, Some(oldaddr))
+        } else {
+            (self.alloc(size), None)
+        }
+    }
+}
+
+impl AllocatorTopLimit for TopLimitedAllocator {
+
+    fn top_limit(&self) -> Address {
+        self.maxaddr
+    }
+}
