@@ -27,9 +27,24 @@
 //! 7E000:7EFFF - Initial paging. Page Table Level 4 OR allocator memory.
 //! 7F000:7FFFF - Stack.
 //!
+//! Virtual memory of the kernel of above listed memory ranges is
+//! directly mapped to the same addresses of physical memory.
+//! Below is located virtual kernel memory which is not mapped to the
+//! same physical addresses. Their physical location is defined at runtime
+//! by memory allocator and may not be the same on different machines.
+//!
+//! Kernel virtual memory map:
+//! 0x40000000:0x7FFFFFFF - Memory allocator for CCS module. (1)
+//! 0x80000000:0xAFFFFFFF - Memory allocator for memory module. (1)
+//!
 //! Note that as soon as main paging tables are set,
 //! memory region of 7C000:7EFFF gets free and is used by kernel memory
 //! allocators.
+//!
+//! 1 - Memory allocators may not access all the memory of the range they are
+//! provided with. They can only access it when particular memory was allocated
+//! by
+//! page allocator and must be released as soon as it is not needed anymore.
 
 use super::Address;
 
