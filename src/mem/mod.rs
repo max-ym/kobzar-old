@@ -7,3 +7,6 @@ pub use self::arch::*;
 mod addr;
 
 pub use self::addr::Address;
+
+/// Memory allocator traits and structs.
+mod alloc;
