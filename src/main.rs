@@ -38,6 +38,8 @@ mod ints;
 /// Module to provide system timer implementation.
 mod timer;
 
+mod collections;
+
 // /// Collections that are abscent in 'core' crate but are useful.
 // /// When there is a need to store the data collection in a way that
 // /// was yet not defined in this module consider implementing it

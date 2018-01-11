@@ -580,7 +580,8 @@ impl From<i64> for Bitmap64 {
     }
 }
 
-impl<T> FreeStack<T> {
+impl<T> FreeStack<T>
+    where T: Clone + Copy {
 
     /// Create new unchecked stack starting with given memory pointer.
     pub const fn new(start: *mut T) -> Self {
@@ -618,8 +619,8 @@ impl<T> FreeStack<T> {
         if self.count > 0 {
             self.count -= 1;
             let r = unsafe { &mut *self.cur };
-            self.cur = self.cur.offset(1);
-            Some(r)
+            unsafe { self.cur = self.cur.offset(1) };
+            Some(r.clone())
         } else {
             None
         }
@@ -628,7 +629,7 @@ impl<T> FreeStack<T> {
     /// Push new element onto the stack.
     pub fn push(&mut self, elm: T) {
         self.count += 1;
-        self.cur.offset(-1);
+        unsafe { self.cur.offset(-1) };
         unsafe { *self.cur = elm };
     }
 }
