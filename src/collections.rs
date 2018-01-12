@@ -4,6 +4,10 @@ pub trait LlnAllocator<T>
         : TypedAllocator<LinkedListNode<T>> + AllocatorRelease {
 }
 
+pub trait HeapAllocator<T>
+        : TypedAllocator<HeapFrame<T>> + AllocatorRelease {
+}
+
 /// Linked List implementation.
 pub struct LinkedList<T, MA : LlnAllocator<T>> {
     mem     : MA,
@@ -241,6 +245,39 @@ pub struct FreeStack<T>
 
     /// Count of total stored elements.
     count   : usize,
+}
+
+/// The heap that stores an instance of particular type only.
+///
+/// Heap is represented by frames. Each frame stores information
+/// about usage of 64 memory cells allocated for storing data of given
+/// type. It contains these cells and the pointer to next heap frame.
+/// Frames are cycled - last frame points to first one. Thus, heap
+/// of only one frame has it's pointer referring to itself.
+#[cfg(target_arch = "x86_64")]
+pub struct Heap<'a, T, MA: HeapAllocator<T> + 'a> {
+
+    /// Memory allocator used to allocate and release memory for frames.
+    mem     : &'a mut MA,
+
+    /// The first frame of the heap. May be NULL.
+    top     : *mut HeapFrame<T>,
+
+    /// Counter of free entries.
+    free    : usize,
+}
+
+/// The heap frame. See Heap docs for more info.
+pub struct HeapFrame<T> {
+
+    /// Bitmap of current frame usage. Shows what cells are released or used.
+    map     : Bitmap64,
+
+    /// Next frame of heap.
+    next    : *mut HeapFrame<T>,
+
+    /// Array with data that current heap frame stores.
+    arr     : [T; 64],
 }
 
 impl<'a, T, MA> Iterator for LinkedListNodeIterator<'a, T, MA>
@@ -549,6 +586,21 @@ impl Bitmap64 {
     pub fn invert(&mut self) {
         self.val = !self.val;
     }
+
+
+    /// Whether bit at given index is set to one. If index is greater that
+    /// amount of bits in the bitmap then 'false' will be returned.
+    #[inline(always)]
+    pub fn is_one(&self, index: usize) -> bool {
+        self.val & (1 << index) != 0
+    }
+
+    /// Whether bit at given index is set to zero. If index is greater that
+    /// amount of bits in the bitmap then 'true' will be returned.
+    #[inline(always)]
+    pub fn is_zero(&self, index: usize) -> bool {
+        self.val & (1 << index) == 0
+    }
 }
 
 impl Into<u64> for Bitmap64 {
@@ -634,3 +686,329 @@ impl<T> FreeStack<T>
     }
 }
 
+#[cfg(target_arch = "x86_64")]
+impl<'a, T, MA> Heap<'a, T, MA>
+        where MA: HeapAllocator<T> {
+
+    pub const FRAME_LENGTH: usize = 64;
+
+    /// Create new heap. For memory operations use given frame allocator.
+    /// The heap will not be created if memory allocator fails.
+    pub fn new(alloc: &'a mut MA) -> Option<Self> {
+        let initial_frame_ptr = alloc.next(1);
+        if initial_frame_ptr.is_null() {
+            None
+        } else {
+            Some(Heap {
+                mem     : alloc,
+                top     : initial_frame_ptr,
+                free    : Self::FRAME_LENGTH,
+            })
+        }
+    }
+
+    /// Allocate new frame and increase counter of free entries.
+    /// None is returned if memory allocator fails.
+    fn allocate_new_frame(&mut self) -> Option<&mut HeapFrame<T>> {
+        let new_frame_ptr = self.mem.next(1);
+        if new_frame_ptr.is_null() {
+            // Failed to allocate memory.
+            return None;
+        }
+
+        // Find proper place to store the frame. The heap frames must be
+        // sorted ascending. This is required because of release search
+        // optimization which expects ascending order. See 'release_frame' fn.
+        let mut prev = self.top;
+        let mut cur = self.top;
+        loop {
+            if cur > new_frame_ptr {
+                // 'cur' became great enough and must be stored after
+                // 'new_frame'. 'prev' must be stored before 'new_frame'.
+
+                // Initialize new frame with proper values.
+                unsafe {
+                    let new_frame = &mut *new_frame_ptr;
+                    new_frame.initialize(cur);
+                }
+
+                // Stop 'prev' from pointing to 'cur' and point to 'new_frame'
+                // instead.
+                unsafe {
+                    let prev = &mut *prev;
+                    prev.set_next_frame(new_frame_ptr);
+                }
+
+                break;
+            }
+
+            // Move to next frame.
+            unsafe {
+                let c = &*cur;
+                prev = cur;
+                cur = c.next;
+            }
+        }
+
+        // Update free entry counter.
+        self.free += Self::FRAME_LENGTH;
+
+        unsafe {
+            Some(&mut *new_frame_ptr)
+        }
+    }
+
+    /// Release a frame that is no longer in use. Note that this fn does not
+    /// check whether the frame is really empty. This is the reason it is
+    /// marked unsafe.
+    /// Returns Err if frame is not present in the heap. Ok does not mean that
+    /// frame was deallocated. It will be kept if it is the only frame in
+    /// the heap.
+    unsafe fn release_frame(&mut self, frame: &HeapFrame<T>) -> Result<(),()> {
+        // NOTE. The implementation expects ascending order of frames.
+
+        let mut prev = self.top;
+        let mut cur = self.top;
+        loop {
+            let c = &*cur;
+            if c < frame {
+                // Search further to find the given frame.
+                prev = cur;
+                cur = c.next;
+            } else if c == frame {
+                // Found the frame! Release it.
+                if prev == cur {
+                    // This is the only frame in the heap and cannot be
+                    // released!
+                    return Ok(());
+                }
+
+                (&mut *prev).set_next_frame(c.next);
+                self.mem.release_ptr(cur).unwrap();
+                return Ok(());
+            } else if c > frame {
+                // Frame is not present in the heap!
+                return Err(());
+            }
+        }
+    }
+
+    /// Allocate new entry. None if memory allocator fails.
+    pub fn allocate(&mut self) -> Option<&mut T> {
+        // Find if any frame still has free space.
+        if self.free == 0 {
+            // Allocate new frame.
+            let addr = {
+                let frame = self.allocate_new_frame();
+                if frame.is_none() {
+                    return None;
+                }
+                let frame = frame.unwrap();
+                frame as *const HeapFrame<T> as *mut HeapFrame<T>
+            };
+
+            // Allocate new entry from new frame.
+            self.free -= 1;
+            let entry = unsafe { &mut *addr }.allocate();
+            return entry;
+        }
+
+        // Find not full frame.
+        let mut cur = self.top;
+        loop {
+            // Try allocating in current frame.
+            unsafe {
+                let c = &mut *cur;
+                let i = c.allocate();
+                if i.is_some() {
+                    return Some(i.unwrap());
+                }
+            }
+
+            // Move to next frame.
+            unsafe {
+                let c = &*cur;
+                cur = c.next_frame();
+            }
+        }
+    }
+
+    /// Release the entry from the heap. It must not be accessed any further.
+    pub fn release(&mut self, entry: &T) -> Result<(),()> {
+        use core::cmp::Ordering;
+
+        let mut cur = self.top;
+        loop {
+            let result = unsafe {
+                let c = &*cur;
+                c.index_of(entry)
+            };
+
+            if result.is_err() {
+                let ord = result.unwrap_err();
+                if ord == Ordering::Greater {
+                    // Reached end of arrays lower of given
+                    // address. As all arays are sorted in ascending
+                    // order then this heap does not contain entry.
+                    return Err(());
+                }
+                // continue otherwise...
+            } else {
+                // Found! Release the entry.
+                let index = result.unwrap();
+
+                unsafe {
+                    let c = &mut *cur;
+                    c.release(index).unwrap();
+
+                    // Release the frame if it is empty.
+                    if c.is_empty() {
+                        self.release_frame(c).unwrap();
+                    }
+                }
+                self.free += 1;
+                return Ok(());
+            }
+
+            // Move to next frame.
+            unsafe {
+                let c = &*cur;
+                cur = c.next;
+            }
+        }
+    }
+
+    /// Number of free entries.
+    pub fn free_count(&self) -> usize {
+        self.free
+    }
+}
+
+impl<T> HeapFrame<T> {
+
+    /// Initialize given frame of the heap. It was previously allocated by
+    /// the memory allocator and must be initialized by this function.
+    /// The 'next' address points to next frame of the heap. if this frame is
+    /// the only one then given pointer must point to self instance.
+    pub fn initialize(&mut self, next: *mut HeapFrame<T>) {
+        use core::mem::uninitialized;
+
+        *self = HeapFrame {
+            map     : Default::default(),
+            next,
+            arr     : unsafe { uninitialized() },
+        };
+    }
+
+    fn is_present(&self, index: usize) -> bool {
+        self.map.is_zero(index)
+    }
+
+    fn is_absent(&self, index: usize) -> bool {
+        !self.is_present(index)
+    }
+
+    /// Mark that corresponding value in array cell as present.
+    fn mark_present(&mut self, index: usize) {
+        self.map.set_zero(index)
+    }
+
+    /// Mark that corresponding value in array cell as absent.
+    fn mark_absent(&mut self, index: usize) {
+        self.map.set_one(index)
+    }
+
+    /// Find free array cell.
+    fn find_free(&self) -> Option<usize> {
+        self.map.first_one()
+    }
+
+    /// Release entry in given cell. If there was no entry, Err is returned.
+    pub fn release(&mut self, index: usize) -> Result<(),()> {
+        if self.is_absent(index) {
+            return Err(());
+        }
+
+        self.mark_absent(index);
+        Ok(())
+    }
+
+    /// Allocate new entry. If no more free space then None will be returned.
+    pub fn allocate(&mut self) -> Option<&mut T> {
+        let free_index = self.find_free();
+        if free_index.is_none() {
+            return None;
+        }
+        let free_index = free_index.unwrap();
+
+        self.mark_present(free_index);
+        Some(&mut self.arr[free_index])
+    }
+
+    /// Address of next frame.
+    pub fn next_frame(&self) -> *mut Self {
+        self.next
+    }
+
+    /// Set new next frame. Old one will be returned.
+    pub fn set_next_frame(&mut self, next: *mut HeapFrame<T>)
+            -> *mut HeapFrame<T> {
+        let old = self.next;
+        self.next = next;
+        old
+    }
+
+    /// Calculate index of given entry reference. If entry is not from this
+    /// frame then return whether it's address is greater or less that the
+    /// address of internal entry array.
+    pub fn index_of(&self, entry: &T) -> Result<usize, ::core::cmp::Ordering> {
+        use core::cmp::Ordering;
+
+        let addr = entry as *const T;
+        let arr_addr = &self.arr[0] as *const T;
+        let arr_end = unsafe { arr_addr.offset(self.arr.len() as _) };
+
+        let addr        = addr      as isize;
+        let arr_addr    = arr_addr  as isize;
+        let arr_end     = arr_end   as isize;
+
+        let arr_size    = arr_end - arr_addr;
+
+        let offset = arr_end - addr;
+        if offset > arr_size {
+            Err(Ordering::Greater)
+        } else if offset < 0 {
+            Err(Ordering::Less)
+        } else {
+            use core::mem::size_of;
+            let index = offset as usize / size_of::<T>();
+            Ok(index)
+        }
+    }
+
+    /// Whether this frames contains no entries.
+    pub fn is_empty(&self) -> bool {
+        self.map.is_all_ones()
+    }
+}
+
+impl<T> PartialEq for HeapFrame<T> {
+
+    fn eq(&self, other: &HeapFrame<T>) -> bool {
+        let self_addr = self  as *const HeapFrame<T> as usize;
+        let rhs_addr  = other as *const HeapFrame<T> as usize;
+
+        self_addr.eq(&rhs_addr)
+    }
+}
+
+impl<T> PartialOrd for HeapFrame<T> {
+
+    fn partial_cmp(&self, other: &HeapFrame<T>)
+            -> Option<::core::cmp::Ordering> {
+        let self_addr = self  as *const HeapFrame<T> as usize;
+        let rhs_addr  = other as *const HeapFrame<T> as usize;
+
+        self_addr.partial_cmp(&rhs_addr)
+    }
+}
