@@ -5,6 +5,7 @@
 #![feature(lang_items)]
 #![feature(asm)]
 #![feature(const_fn)]
+#![feature(untagged_unions)]
 
 #![allow(dead_code)]
 

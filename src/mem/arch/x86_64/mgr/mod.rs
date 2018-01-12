@@ -1,52 +1,15 @@
-use collections::{
-    FreeStack,
-};
+/// The type of process counter. Must be unsigned int enough big to
+/// index all processes in the system.
+///
+/// TODO connect to appropriate module.
+type ProcessCount = u32;
 
 /// Structures related to 2MiB and 4KiB pages.
 mod page;
 use self::page::*;
 
-/// Stack of 2MiB pages. Wrapper for the stack structure from 'collections'.
-struct StackP2 {
-    base    : FreeStack<Page2m>,
-}
+/// 2M page stack.
+mod stack;
 
-impl StackP2 {
-
-    /// Create new stack structure that has it's top set to NULL address.
-    pub fn new() -> Self {
-        StackP2 {
-            base    : FreeStack::new(::core::ptr::null_mut()),
-        }
-    }
-
-    /// Pop next page from the stack.
-    pub fn pop_page(&mut self) -> Option<Page2m> {
-        self.base.pop()
-    }
-
-    /// Push page that is now free for use.
-    pub fn push_page(&mut self, page: Page2m) {
-        self.base.push(page)
-    }
-
-    /// Count of free pages.
-    pub fn count(&self) -> usize {
-        self.base.count()
-    }
-
-    /// Access the base stack structure.
-    pub fn base(&self) -> &FreeStack<Page2m> {
-        &self.base
-    }
-
-    /// Access the base stack structure.
-    ///
-    /// # Safety
-    /// Mutating the stack is discouraged
-    /// because some important changes will not be tracked by the wrapper
-    /// which may lead to it's corruption.
-    pub unsafe fn base_mut(&mut self) -> &mut FreeStack<Page2m> {
-        &mut self.base
-    }
-}
+/// 2M page tree and related stuff.
+mod tree;
