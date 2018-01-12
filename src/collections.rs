@@ -27,6 +27,11 @@ pub struct Bitmap64 {
     val     : u64,
 }
 
+#[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Bitmap512 {
+    maps    : [Bitmap64; 8],
+}
+
 impl<T, MA> LinkedList<T, MA>
         where MA: LlnAllocator<T> {
 
@@ -631,6 +636,166 @@ impl From<i64> for Bitmap64 {
     fn from(val: i64) -> Self {
         let val = val as u64;
         Bitmap64 { val }
+    }
+}
+
+impl Bitmap512 {
+
+    /// Whether all bits are ones.
+    pub fn is_all_ones(&self) -> bool {
+        for m in self.maps.iter() {
+            if !m.is_all_ones() {
+                return false;
+            }
+        }
+        true
+    }
+
+    /// Whether all bits are zeros.
+    pub fn is_all_zeros(&self) -> bool {
+        for m in self.maps.iter() {
+            if !m.is_all_zeros() {
+                return false;
+            }
+        }
+        true
+    }
+
+    /// First bit index with value one.
+    pub fn first_one(&self) -> Option<usize> {
+        let mut i = 0;
+        loop {
+            let option = self.maps[i].first_one();
+            if option.is_some() {
+                return Some(i * 64 + option.unwrap());
+            }
+
+            i += 1;
+            if i >= 8 {
+                return None;
+            }
+        }
+    }
+
+    /// First bit index with value zero.
+    pub fn first_zero(&self) -> Option<usize> {
+        let mut i = 0;
+        loop {
+            let option = self.maps[i].first_zero();
+            if option.is_some() {
+                return Some(i * 64 + option.unwrap());
+            }
+
+            i += 1;
+            if i >= 8 {
+                return None;
+            }
+        }
+    }
+
+    /// Last bit index with value one.
+    pub fn last_one(&self) -> Option<usize> {
+        let mut i = 7;
+        loop {
+            let option = self.maps[i].last_one();
+            if option.is_some() {
+                return Some(i * 64 + option.unwrap());
+            }
+
+            if i == 0 {
+                return None;
+            }
+            i -= 1;
+        }
+    }
+
+    /// Last bit index with value zero.
+    pub fn last_zero(&self) -> Option<usize> {
+        let mut i = 7;
+        loop {
+            let option = self.maps[i].last_zero();
+            if option.is_some() {
+                return Some(i * 64 + option.unwrap());
+            }
+
+            if i == 0 {
+                return None;
+            }
+            i -= 1;
+        }
+    }
+
+    /// Set bit by given index to one. If value is bigger than bitmap,
+    /// nothing will be changed.
+    pub fn set_one(&mut self, index: usize) {
+        let map     = index / 64;
+        let index   = index % 64;
+
+        if map > 7 {
+            return;
+        }
+
+        self.maps[map].set_one(index);
+    }
+
+    /// Set bit by given index to zero. If value is bigger than bitmap,
+    /// nothing will be changed.
+    pub fn set_zero(&mut self, index: usize) {
+        let map     = index / 64;
+        let index   = index % 64;
+
+        if map > 7 {
+            return;
+        }
+
+        self.maps[map].set_zero(index);
+    }
+
+    /// Invert all ones to zeros and vice versa.
+    pub fn invert(&mut self) {
+        for m in self.maps.iter_mut() {
+            m.invert();
+        }
+    }
+
+    /// Whether bit at given index is set to one. If index is greater
+    /// than amount of bits in the bitmap then 'false' will be returned.
+    pub fn is_one(&self, index: usize) -> bool {
+        let map     = index / 64;
+        let index   = index % 64;
+
+        if map > 7 {
+            false
+        } else {
+            self.maps[map].is_one(index)
+        }
+    }
+
+    /// Whether bit at given index is set to zero. If index is greater
+    /// than amount of bits in the bitmap then 'false' will be returned.
+    pub fn is_zero(&self, index: usize) -> bool {
+        let map     = index / 64;
+        let index   = index % 64;
+
+        if map > 7 {
+            true
+        } else {
+            self.maps[map].is_zero(index)
+        }
+    }
+}
+
+impl Into<[Bitmap64; 8]> for Bitmap512 {
+
+    fn into(self) -> [Bitmap64; 8] {
+        self.maps
+    }
+}
+
+impl From<[Bitmap64; 8]> for Bitmap512 {
+
+    fn from(maps: [Bitmap64; 8]) -> Self {
+        Bitmap512 { maps }
     }
 }
 
