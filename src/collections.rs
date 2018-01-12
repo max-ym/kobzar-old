@@ -252,7 +252,7 @@ pub struct FreeStack<T>
 /// Heap is represented by frames. Each frame stores information
 /// about usage of 64 memory cells allocated for storing data of given
 /// type. It contains these cells and the pointer to next heap frame.
-/// Frames are cycled - last frame points to first one. Thus, heap
+/// Frames are looped - last frame points to first one. Thus, heap
 /// of only one frame has it's pointer referring to itself.
 #[cfg(target_arch = "x86_64")]
 pub struct Heap<'a, T, MA: HeapAllocator<T> + 'a> {
@@ -260,7 +260,9 @@ pub struct Heap<'a, T, MA: HeapAllocator<T> + 'a> {
     /// Memory allocator used to allocate and release memory for frames.
     mem     : &'a mut MA,
 
-    /// The first frame of the heap. May be NULL.
+    /// The first frame of the heap. May be NULL. Note that frames must
+    /// be stored in ascending order and are looped - the last frame points
+    /// to the first.
     top     : *mut HeapFrame<T>,
 
     /// Counter of free entries.
