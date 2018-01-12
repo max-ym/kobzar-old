@@ -595,14 +595,14 @@ impl Bitmap64 {
     }
 
 
-    /// Whether bit at given index is set to one. If index is greater that
+    /// Whether bit at given index is set to one. If index is greater than
     /// amount of bits in the bitmap then 'false' will be returned.
     #[inline(always)]
     pub fn is_one(&self, index: usize) -> bool {
         self.val & (1 << index) != 0
     }
 
-    /// Whether bit at given index is set to zero. If index is greater that
+    /// Whether bit at given index is set to zero. If index is greater than
     /// amount of bits in the bitmap then 'true' will be returned.
     #[inline(always)]
     pub fn is_zero(&self, index: usize) -> bool {
