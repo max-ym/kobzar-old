@@ -260,7 +260,7 @@ pub struct Heap<'a, T, MA: HeapAllocator<T> + 'a> {
     /// Memory allocator used to allocate and release memory for frames.
     mem     : &'a mut MA,
 
-    /// The first frame of the heap. May be NULL. Note that frames must
+    /// The first frame of the heap. Can't be NULL. Note that frames must
     /// be stored in ascending order and are looped - the last frame points
     /// to the first.
     top     : *mut HeapFrame<T>,
