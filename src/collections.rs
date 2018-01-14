@@ -642,6 +642,20 @@ macro_rules! bitmap64_convert {
 
 impl Bitmap64 {
 
+    /// Create new bitmap with all bits set to one.
+    pub const fn new_ones() -> Self {
+        Bitmap64 {
+            val     : !0
+        }
+    }
+
+    /// Create new bitmap with all bits zero.
+    pub const fn new_zeros() -> Self {
+        Bitmap64 {
+            val     : 0
+        }
+    }
+
     /// Whether all bits are ones.
     #[inline(always)]
     pub fn is_all_ones(&self) -> bool {
@@ -772,6 +786,22 @@ impl From<i64> for Bitmap64 {
 }
 
 impl Bitmap512 {
+
+    /// Create new bitmap with all bits set to one.
+    pub fn new_ones() -> Self {
+        let mask = Bitmap64::new_ones();
+        Bitmap512 {
+            maps    : [mask, mask, mask, mask, mask, mask, mask, mask]
+        }
+    }
+
+    /// Create new bitmap with all bits zero.
+    pub fn new_zeros() -> Self {
+        let z = Bitmap64::new_zeros();
+        Bitmap512 {
+            maps    : [z, z, z, z, z, z, z, z]
+        }
+    }
 
     /// Whether all bits are ones.
     pub fn is_all_ones(&self) -> bool {
