@@ -7,11 +7,13 @@ use mem::Address;
 
 /// The page tree master structure.
 struct Tree {
-    // TODO
+    middle_addr : Address,
+    lower       : FixedArray<NodeData>,
+    upper       : FixedArray<NodeData>,
 }
 
 /// The data of a single tree node.
-struct TreeNode {
+struct NodeData {
     base_addr   : Address,
     arr         : FixedArray<ArrayEntry>,
 }
