@@ -1,4 +1,7 @@
+use core::ops::Range;
 use super::ProcessCount;
+use super::Page2m;
+use super::Page2mRangeIter;
 use collections::{
     FixedArray,
     Bitmap512,
@@ -18,6 +21,7 @@ struct NodeData {
     arr         : FixedArray<ArrayEntry>,
 }
 
+/// Array entry of the tree node.
 struct ArrayEntry {
     is_divided  : bool,
     data        : PageDataUnion,
@@ -35,11 +39,39 @@ union PageDataUnion {
 /// 512 4 KiB pages.
 struct DivData {
 
-    /// Map that indicates the
+    /// Map that indicates the availability of pages for allocation.
+    /// Map increases search speed on x86_64 processors because
+    /// it uses a single instruction search for each 64-bits.
+    /// So whole map check will be finished much faster than checking
+    /// each individual counter from the array.
     map     : Bitmap512,
 
     /// Array of counters for each page. Counter of page allocation.
     counters: [ProcessCount; 512],
+}
+
+impl NodeData {
+
+    /// Range of pages covered.
+    pub fn page_range(&self) -> Range<Page2m> {
+        let start_addr  = self.base_addr;
+        let end_addr    = self.base_addr + self.page_count() * Page2m::SIZE;
+
+        let start   = unsafe { Page2m::new_unchecked(start_addr)    };
+        let end     = unsafe { Page2m::new_unchecked(end_addr)      };
+
+        Range { start, end }
+    }
+
+    /// Count of pages covered by the range.
+    pub fn page_count(&self) -> usize {
+        self.arr.length()
+    }
+
+    /// Iterator over the page range.
+    pub fn range_iter(&self) -> Page2mRangeIter {
+        Page2mRangeIter::for_range(&self.page_range())
+    }
 }
 
 /// Error that occurs when 2 MiB page gets divided and fails.
@@ -193,18 +225,18 @@ impl DivData {
     /// Mark page by index as once more shared.
     ///
     /// # Safety
-    /// Does not check whether index is valid and whether page was really
-    /// allocated.
+    /// Does not check whether index is valid and whether page is really
+    /// allocated. For new page allocation use 'alloc' fn.
     pub unsafe fn share(&mut self, index: usize) {
         self.counters[index] += 1;
     }
 
-    /// Decrease share counter. Page is now not used by someone.
+    /// Decrease share counter. Shows that page is now not used by someone.
     /// Updates bitmap when page share counter reaches zero which means
     /// complete page deallocation and that it's free for use again.
     ///
     /// # Safety
-    /// Does not check whether index is valid and whether page was really
+    /// Does not check whether index is valid and whether page is really
     /// allocated.
     pub unsafe fn unshare(&mut self, index: usize) {
         self.counters[index] -= 1;
