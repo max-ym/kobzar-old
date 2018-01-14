@@ -109,3 +109,13 @@ impl DivData {
         }
     }
 }
+
+impl Default for DivData {
+
+    fn default() -> Self {
+        DivData {
+            map         : Bitmap512::new_zeros(),
+            counters    : [0; 512],
+        }
+    }
+}
