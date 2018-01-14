@@ -10,6 +10,8 @@ pub struct Page2m {
 
 impl Page2m {
 
+    pub const SIZE: usize = 2 * 1024 * 1024;
+
     /// Create new Page2m wrap without checking if given address is a
     /// valid 2 MiB page address. Valid address must be aligned to
     /// 2 MiB boundary.
@@ -20,7 +22,7 @@ impl Page2m {
     /// Create new Page2m wrap. None is returned if address is not aligned
     /// and thus cannot point to a valid 2 MiB page.
     pub fn new(addr: Address) -> Option<Self> {
-        if addr % (2048 * 1024 * 1024) != 0 {
+        if addr % Self::SIZE != 0 {
             None
         } else {
             let s = unsafe { Self::new_unchecked(addr) };
