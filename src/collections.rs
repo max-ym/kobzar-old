@@ -16,6 +16,11 @@ pub struct LinkedList<T, MA : LlnAllocator<T>> {
     bot     : *mut LinkedListNode<T>,
 }
 
+/// Linked List with fixed size. Without direct access to the list end.
+pub struct FixedLinkedList<T> {
+    top     : *mut LinkedListNode<T>,
+}
+
 /// Node of linked list.
 pub struct LinkedListNode<T> {
     next    : *mut LinkedListNode<T>,
@@ -226,6 +231,95 @@ impl<T, MA> Drop for LinkedList<T, MA>
     }
 }
 
+impl<T> LinkedListNode<T> {
+
+    /// Whether this node points to next node of the list.
+    pub fn has_next(&self) -> bool {
+        !self.next.is_null()
+    }
+
+    /// Pointer to next node.
+    pub fn next_mut_ptr(&self) -> *mut Self {
+        self.next
+    }
+
+    /// Next node reference.
+    pub fn next(&self) -> Option<&Self> {
+        if self.has_next() {
+            let next = unsafe { &*self.next };
+            Some(next)
+        } else {
+            None
+        }
+    }
+
+    /// Next node reference.
+    pub fn next_mut(&self) -> Option<&mut Self> {
+        if self.has_next() {
+            let next = unsafe { &mut *self.next };
+            Some(next)
+        } else {
+            None
+        }
+    }
+
+    /// Reference to the node value.
+    pub fn value(&self) -> &T {
+        &self.data
+    }
+
+    /// Reference to the node value.
+    pub fn value_mut(&mut self) -> &mut T {
+        &mut self.data
+    }
+}
+
+impl<T> FixedLinkedList<T> {
+
+    /// Create new FixedLinkedList and set given node to it's top.
+    pub const unsafe fn new(top_node: *mut LinkedListNode<T>) -> Self {
+        FixedLinkedList {
+            top     : top_node,
+        }
+    }
+
+    /// Provide a reference to the front element, or None if the list is empty.
+    pub fn front(&self) -> Option<&T> {
+        if self.is_empty() {
+            None
+        } else { unsafe {
+            let top = &*self.top;
+            Some(&top.data)
+        }}
+    }
+
+    /// Provides a mutable reference to the front element, or None if the list
+    /// is empty.
+    pub fn front_mut(&mut self) -> Option<&mut T> {
+        if self.is_empty() {
+            None
+        } else { unsafe {
+            let top = &mut *self.top;
+            Some(&mut top.data)
+        }}
+    }
+
+    /// Check if list is empty.
+    ///
+    /// This operation should compute in O(1) time.
+    pub fn is_empty(&self) -> bool {
+        self.top.is_null()
+    }
+
+    /// Length of the list.
+    ///
+    /// This operation should compute in O(n) time.
+    pub fn len(&self) -> usize {
+        let mut count = 0;
+        unimplemented!()
+    }
+}
+
 /// Iterator over linked list.
 pub struct LinkedListIterator<'a, T, MA> where
         T: 'a,
@@ -239,6 +333,15 @@ pub struct LinkedListNodeIterator<'a, T, MA> where
         MA: LlnAllocator<T> + 'a {
     cur     : *mut LinkedListNode<T>,
     list    : &'a LinkedList<T, MA>,
+}
+
+/// FixedLinkedList node iterator.
+pub struct FllNodeIterator<'a, T: 'a> {
+
+    _life   : ::core::marker::PhantomData<&'a T>,
+
+    cur     : *mut LinkedListNode<T>,
+    list    : *mut FixedLinkedList<T>,
 }
 
 /// Stack without memory allocation.
@@ -338,6 +441,20 @@ impl<'a, T, MA> Iterator for LinkedListIterator<'a, T, MA>
     }
 }
 
+impl<'a, T> Iterator for FllNodeIterator<'a, T> {
+
+    type Item = &'a mut LinkedListNode<T>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.cur.is_null() {
+            None
+        } else {
+            let cur = unsafe { &*self.cur };
+            cur.next_mut()
+        }
+    }
+}
+
 impl<'a, T, MA> LinkedListNodeIterator<'a, T, MA>
         where MA: LlnAllocator<T> {
 
@@ -359,6 +476,21 @@ impl<'a, T, MA> IntoIterator for &'a LinkedList<T, MA>
 
     fn into_iter(self) -> Self::IntoIter {
         LinkedListNodeIterator::new(self)
+    }
+}
+
+impl<'a, T> IntoIterator for &'a mut FixedLinkedList<T>
+        where T: 'a {
+
+    type Item       = &'a mut LinkedListNode<T>;
+    type IntoIter   = FllNodeIterator<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        FllNodeIterator {
+            _life   : Default::default(),
+            cur     : self.top,
+            list    : self as *mut _,
+        }
     }
 }
 
