@@ -57,10 +57,13 @@ enum PageDivisionError {
 enum PageMergeError {
 
     /// Cannot merge the page that is not divided in first place.
+    /// Maybe you're trying to merge the page twice mistakenly?
+    /// Divide the page and this error will not occur.
     NotDivided,
 
     /// Some page parts are still in use among the system. Cannot merge the
-    /// page having it's slices used.
+    /// page having it's slices used. When all 4 KiB parts get free,
+    /// the merge will not cause this error.
     Used,
 }
 
